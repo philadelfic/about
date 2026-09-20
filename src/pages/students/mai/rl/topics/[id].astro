@@ -73,14 +73,22 @@ const current = Astro.url.pathname;
       {topic.data.terms.length > 0 && (
         <>
           <h2>Терминология</h2>
-          <dl class="terms">
-            {topic.data.terms.map((item) => (
-              <>
-                <dt>{item.term}</dt>
-                <dd>{item.definition}</dd>
-              </>
-            ))}
-          </dl>
+          <table class="terms-table">
+            <thead>
+              <tr>
+                <th>Термин</th>
+                <th>Что это</th>
+              </tr>
+            </thead>
+            <tbody>
+              {topic.data.terms.map((item) => (
+                <tr>
+                  <td>{item.term}</td>
+                  <td>{item.definition}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </>
       )}
 
