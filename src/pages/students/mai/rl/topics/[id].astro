@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
+import { slugify } from '../../../../../lib/slug.mjs';
 
 export async function getStaticPaths() {
   const topics = await getCollection('topics');
@@ -19,6 +20,28 @@ const current = Astro.url.pathname;
 
 const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
 const isFile = (value: string) => !value.startsWith('http');
+
+// Оглавление темы: разделы страницы + заголовки теории (id расставляет rehype-плагин).
+const used = new Map();
+const theoryHeadings = [];
+for (const raw of (topic.body ?? '').split('\n')) {
+  const match = /^(##|###)\s+(.*)$/.exec(raw.trim());
+  if (!match) continue;
+  const text = match[2].replace(/\*\*/g, '').trim();
+  let id = slugify(text) || 'section';
+  const count = used.get(id) ?? 0;
+  used.set(id, count + 1);
+  if (count > 0) id = `${id}-${count}`;
+  theoryHeadings.push({ text, id, level: match[1] === '###' ? 2 : 1 });
+}
+
+const toc = [
+  ...(topic.data.covered.length > 0 ? [{ text: 'Что разбирали', id: 'chto-razbirali', level: 0 }] : []),
+  { text: 'Теория', id: 'teoriya', level: 0 },
+  ...theoryHeadings,
+  ...(topic.data.qa.length > 0 ? [{ text: 'Вопросы и ответы', id: 'voprosy-i-otvety', level: 0 }] : []),
+  ...(topic.data.terms.length > 0 ? [{ text: 'Терминология', id: 'terminologiya', level: 0 }] : []),
+];
 ---
 
 <BaseLayout
@@ -26,7 +49,7 @@ const isFile = (value: string) => !value.startsWith('http');
   description={topic.data.summary}
 >
   <div class="course">
-    <CourseNav current={current} />
+    <CourseNav current={current} toc={toc} />
 
     <article>
       <p class="muted">
@@ -52,7 +75,7 @@ const isFile = (value: string) => !value.startsWith('http');
       )}
 
       {topic.data.covered.length > 0 && (
-        <div class="panel">
+        <div class="panel" id="chto-razbirali">
           <b>Что разбирали на лекции</b>
           <ul class="tasks">
             {topic.data.covered.map((line) => (
@@ -62,12 +85,12 @@ const isFile = (value: string) => !value.startsWith('http');
         </div>
       )}
 
-      <h2>Теория</h2>
+      <h2 id="teoriya">Теория</h2>
       <Content />
 
       {topic.data.qa.length > 0 && (
         <>
-          <h2>Вопросы и ответы</h2>
+          <h2 id="voprosy-i-otvety">Вопросы и ответы</h2>
           <div class="qa">
             {topic.data.qa.map((item) => (
               <details>
@@ -81,7 +104,7 @@ const isFile = (value: string) => !value.startsWith('http');
 
       {topic.data.terms.length > 0 && (
         <>
-          <h2>Терминология</h2>
+          <h2 id="terminologiya">Терминология</h2>
           <table class="terms-table">
             <thead>
               <tr>

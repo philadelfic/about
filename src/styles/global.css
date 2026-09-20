@@ -993,3 +993,37 @@ body.theme-t1 .notice {
 body.theme-t1 .gate button {
   background: #1daff7;
 }
+
+/* ---------- содержание темы в левом меню ---------- */
+
+.course-nav .toc a {
+  font-size: 14px;
+  padding: 6px 11px;
+}
+
+.course-nav .toc .lvl-1 a {
+  padding-left: 24px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+.course-nav .toc .lvl-2 a {
+  padding-left: 34px;
+  color: var(--muted);
+  font-size: 13.5px;
+}
+
+/* чтобы залипающее меню с содержанием не растягивалось на всю страницу */
+@media (min-width: 900px) {
+  .course-nav {
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+  }
+}
+
+/* заголовки не прячутся под липкой шапкой при переходе по ссылкам */
+article h2,
+article h3,
+article .panel {
+  scroll-margin-top: 92px;
+}
