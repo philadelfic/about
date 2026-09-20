@@ -1,0 +1,43 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
+import { optionalCollection } from '../../../../../lib/collections';
+
+const items = (await optionalCollection('homework')).sort(
+  (a, b) => (a.data.topic ?? 0) - (b.data.topic ?? 0)
+);
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title="Домашние задания" description="Домашние задания курса «Обучение с подкреплением».">
+  <div class="course">
+    <CourseNav current={current} />
+
+    <div>
+      <p class="muted">Т1 + МАИ · Обучение с подкреплением</p>
+      <h1>Домашние задания</h1>
+      <p class="lead">Задания курса: что нужно сделать и к какому сроку.</p>
+
+      {items.length === 0 ? (
+        <p class="muted">Пока заданий нет.</p>
+      ) : (
+        <ul class="topic-list">
+          {items.map((item) => (
+            <li>
+              <a href={withBase(`students/mai/rl/homework/${item.id}/`)}>
+                <span class="step">
+                  {item.data.topic ? `К теме ${item.data.topic}` : 'Задание'}
+                  {item.data.due ? ` · сдать ${item.data.due}` : ''}
+                </span>
+                <h3>{item.data.title}</h3>
+                <p class="muted">{item.data.summary}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</BaseLayout>

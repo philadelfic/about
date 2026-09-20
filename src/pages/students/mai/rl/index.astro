@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../components/CourseNav.astro';
+import { withBase } from '../../../../data/site';
+import { optionalCollection } from '../../../../lib/collections';
+
+const topics = await getCollection('topics');
+const homework = await optionalCollection('homework');
+const seminars = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
+const current = Astro.url.pathname;
+
+const sections = [
+  {
+    href: withBase('students/mai/rl/topics/'),
+    title: 'Темы',
+    text: `Пройденные темы: что разбирали, теория и вопросы-ответы. Сейчас открыто: ${topics.length}.`,
+  },
+  {
+    href: withBase('students/mai/rl/homework/'),
+    title: 'Домашние задания',
+    text: homework.length > 0 ? `Задания: ${homework.length}.` : 'Задания к темам курса.',
+  },
+  {
+    href: withBase('students/mai/rl/seminars/'),
+    title: 'Семинарские занятия',
+    text: seminars.length > 0 ? `Проведено занятий: ${seminars.length}.` : 'Материалы семинаров.',
+  },
+];
+---
+
+<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, семинарские занятия.">
+  <div class="course">
+    <CourseNav current={current} />
+
+    <div>
+      <p class="muted">Т1 + МАИ · магистратура</p>
+      <h1>Обучение с подкреплением</h1>
+      <p class="lead">Материалы курса: темы, домашние задания и семинарские занятия.</p>
+
+      <div class="cards">
+        {sections.map((section) => (
+          <a class="card" href={section.href}>
+            <h3>{section.title}</h3>
+            <p>{section.text}</p>
+            <span class="more">Открыть →</span>
+          </a>
+        ))}
+      </div>
+
+      <p class="muted">Материалы добавляются по мере прохождения занятий.</p>
+    </div>
+  </div>
+</BaseLayout>

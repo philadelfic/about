@@ -1,0 +1,49 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { optionalCollection } from '../../../../../lib/collections';
+
+export async function getStaticPaths() {
+  const items = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title={`Занятие ${item.data.number}. ${item.data.title}`} description={item.data.summary}>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">
+        Семинарское занятие {item.data.number}
+        {item.data.date ? ` · ${item.data.date}` : ''}
+      </p>
+      <h1>{item.data.title}</h1>
+      <p class="lead">{item.data.summary}</p>
+
+      <Content />
+
+      {item.data.materials.length > 0 && (
+        <>
+          <h2>Материалы</h2>
+          <ul class="links">
+            {item.data.materials.map((material) => (
+              <li>
+                {material.href ? (
+                  <a href={material.href}>{material.title}</a>
+                ) : (
+                  <span>{material.title}</span>
+                )}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </article>
+  </div>
+</BaseLayout>

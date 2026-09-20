@@ -1,0 +1,136 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import TopicToc from '../../../../../components/TopicToc.astro';
+import { withBase } from '../../../../../data/site';
+import { slugify } from '../../../../../lib/slug.mjs';
+
+export async function getStaticPaths() {
+  const topics = await getCollection('topics');
+  return topics.map((topic) => ({ params: { id: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props;
+const { Content } = await render(topic);
+const all = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
+const index = all.findIndex((item) => item.id === topic.id);
+const prev = index > 0 ? all[index - 1] : undefined;
+const next = index < all.length - 1 ? all[index + 1] : undefined;
+const current = Astro.url.pathname;
+
+const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
+const isFile = (value: string) => !value.startsWith('http');
+
+// Содержание темы (правая колонка): разделы страницы + заголовки теории.
+const used = new Map();
+const theoryHeadings = [];
+for (const raw of (topic.body ?? '').split('\n')) {
+  const match = /^(##|###)\s+(.*)$/.exec(raw.trim());
+  if (!match) continue;
+  const text = match[2].replace(/\*\*/g, '').trim();
+  let id = slugify(text) || 'section';
+  const count = used.get(id) ?? 0;
+  used.set(id, count + 1);
+  if (count > 0) id = `${id}-${count}`;
+  theoryHeadings.push({ text, id, level: match[1] === '###' ? 2 : 1 });
+}
+
+const toc = [
+  ...(topic.data.covered.length > 0 ? [{ text: 'Что разбирали', id: 'chto-razbirali', level: 0 }] : []),
+  { text: 'Теория', id: 'teoriya', level: 0 },
+  ...theoryHeadings,
+  ...(topic.data.qa.length > 0 ? [{ text: 'Вопросы и ответы', id: 'voprosy-i-otvety', level: 0 }] : []),
+  ...(topic.data.terms.length > 0 ? [{ text: 'Терминология', id: 'terminologiya', level: 0 }] : []),
+];
+---
+
+<BaseLayout
+  title={`Тема ${topic.data.number}. ${topic.data.title}`}
+  description={topic.data.summary}
+>
+  <div class="course course--toc">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">
+        Тема {topic.data.number}{topic.data.date ? ` · лекция ${topic.data.date}` : ''}
+      </p>
+      <h1>{topic.data.title}</h1>
+      <p class="lead">{topic.data.summary}</p>
+
+      {topic.data.lecture.length > 0 && (
+        <ul class="links materials">
+          {topic.data.lecture.map((item) => (
+            <li>
+              {item.href ? (
+                <a href={href(item.href)} target={isFile(item.href) ? '_blank' : undefined}>
+                  {item.title}
+                </a>
+              ) : (
+                <span>{item.title}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
+      {topic.data.covered.length > 0 && (
+        <div class="panel" id="chto-razbirali">
+          <b>Что разбирали на лекции</b>
+          <ul class="tasks">
+            {topic.data.covered.map((line) => (
+              <li>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <h2 id="teoriya">Теория</h2>
+      <Content />
+
+      {topic.data.qa.length > 0 && (
+        <>
+          <h2 id="voprosy-i-otvety">Вопросы и ответы</h2>
+          <div class="qa">
+            {topic.data.qa.map((item) => (
+              <details>
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
+          </div>
+        </>
+      )}
+
+      {topic.data.terms.length > 0 && (
+        <>
+          <h2 id="terminologiya">Терминология</h2>
+          <table class="terms-table">
+            <thead>
+              <tr>
+                <th>Термин</th>
+                <th>Что это</th>
+              </tr>
+            </thead>
+            <tbody>
+              {topic.data.terms.map((item) => (
+                <tr>
+                  <td>{item.term}</td>
+                  <td>{item.definition}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      <div class="row" style="margin-top:28px">
+        {prev && <a href={withBase(`students/mai/rl/topics/${prev.id}/`)}>← Тема {prev.data.number}</a>}
+        {next && <a href={withBase(`students/mai/rl/topics/${next.id}/`)}>Тема {next.data.number} →</a>}
+      </div>
+    </article>
+
+    <TopicToc items={toc} />
+  </div>
+</BaseLayout>

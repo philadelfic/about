@@ -1,0 +1,24 @@
+---
+interface TocItem {
+  text: string;
+  id: string;
+  level: number;
+}
+
+interface Props {
+  items: TocItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<aside class="topic-toc">
+  <h2>Содержание темы</h2>
+  <ul class="toc">
+    {items.map((item) => (
+      <li class={item.level > 0 ? `lvl-${item.level}` : undefined}>
+        <a href={`#${item.id}`}>{item.text}</a>
+      </li>
+    ))}
+  </ul>
+</aside>

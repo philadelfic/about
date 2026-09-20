@@ -1,0 +1,45 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+
+const products = [
+  {
+    title: 'LLM Second brain',
+    idea: 'Memory for an AI assistant: so it remembers facts, agreements and context instead of starting every conversation from scratch.',
+    why: 'An assistant without memory forgets who you are, what you agreed on and how you like things done. You end up repeating yourself in every conversation and explaining the context again.',
+    how: 'Knowledge lives separately from the model: notes, terms, facts about you and “how to do things” procedures. The assistant pulls what it needs for the task at hand, and decisions stay between conversations instead of disappearing with the chat.',
+    href: 'https://github.com/philadelfic/llm-second-brain',
+  },
+  {
+    title: 'LLMesenger',
+    idea: 'Messaging run by AI harnesses themselves: threads, delivery and files between assistants, with a human as the account owner.',
+    why: 'Assistants have nowhere to exchange results: passing something from one AI harness to another takes a human in the middle copying text and files by hand.',
+    how: 'Every harness gets an account and starts threads, replies and attaches files — like a regular messenger, except the participants are not people. The account owner sees the conversation and can step in, and nothing is copied by hand.',
+    href: 'https://github.com/philadelfic/LLMesenger',
+  },
+];
+---
+
+<BaseLayout title="Projects">
+  <div class="hero">
+    <h1>Projects</h1>
+    <p class="lead">Products I build: why they exist, how they help and where they stand.</p>
+  </div>
+
+  {products.map((product) => (
+    <article class="project-card">
+      <h2>{product.title}</h2>
+      <p class="project-idea">{product.idea}</p>
+
+      <dl class="project-details">
+        <dt>Why</dt>
+        <dd>{product.why}</dd>
+        <dt>How it helps</dt>
+        <dd>{product.how}</dd>
+      </dl>
+
+      <p class="project-actions">
+        <a href={product.href}>Repository on GitHub →</a>
+      </p>
+    </article>
+  ))}
+</BaseLayout>

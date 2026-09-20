@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../data/site';
+---
+
+<BaseLayout title="Студентам">
+  <div class="hero">
+    <h1>Студентам</h1>
+    <p class="lead">Материалы курсов, которые я веду.</p>
+  </div>
+
+  <div class="cards">
+    <a class="card" href={withBase('students/mai/')}>
+      <h3>Т1 + МАИ</h3>
+      <p>Магистратура: курс «Обучение с подкреплением».</p>
+      <span class="more">Открыть →</span>
+    </a>
+  </div>
+
+  <p class="muted">Материалы по темам добавляются по ходу семестра.</p>
+</BaseLayout>

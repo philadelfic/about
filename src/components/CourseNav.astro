@@ -1,0 +1,112 @@
+---
+import { getCollection } from 'astro:content';
+import { withBase } from '../data/site';
+import { optionalCollection } from '../lib/collections';
+
+interface Props {
+  current: string;
+}
+
+const { current } = Astro.props;
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
+const homework = (await optionalCollection('homework')).sort(
+  (a, b) => (a.data.topic ?? 0) - (b.data.topic ?? 0)
+);
+const seminars = (await optionalCollection('seminars'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => a.data.number - b.data.number);
+
+const sections = {
+  topics: withBase('students/mai/rl/topics/'),
+  homework: withBase('students/mai/rl/homework/'),
+  seminars: withBase('students/mai/rl/seminars/'),
+};
+
+// Какая из трёх частей курса открыта сейчас — от этого зависит нижний список.
+const section = current.startsWith(sections.homework)
+  ? 'homework'
+  : current.startsWith(sections.seminars)
+    ? 'seminars'
+    : 'topics';
+
+const isCurrent = (href: string) => current === href;
+const homeworkLabel = (item: (typeof homework)[number]) =>
+  item.data.topic ? `ДЗ по лекции ${item.data.topic}` : item.data.title;
+---
+
+<nav class="course-nav">
+  <h2>Курс</h2>
+  <ul>
+    <li>
+      <a href={sections.topics} aria-current={section === 'topics' ? 'page' : undefined}> Темы </a>
+    </li>
+    <li>
+      <a href={sections.homework} aria-current={section === 'homework' ? 'page' : undefined}>
+        Домашние задания
+      </a>
+    </li>
+    <li>
+      <a href={sections.seminars} aria-current={section === 'seminars' ? 'page' : undefined}>
+        Семинарские занятия
+      </a>
+    </li>
+  </ul>
+
+  {section === 'homework' && homework.length > 0 && (
+    <>
+      <h2>Задания</h2>
+      <ul>
+        {homework.map((item) => {
+          const href = withBase(`students/mai/rl/homework/${item.id}/`);
+          return (
+            <li>
+              <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                {homeworkLabel(item)}
+                {item.data.due && <span class="muted"> · до {item.data.due}</span>}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  )}
+
+  {section === 'seminars' && seminars.length > 0 && (
+    <>
+      <h2>Занятия</h2>
+      <ul>
+        {seminars.map((item) => {
+          const href = withBase(`students/mai/rl/seminars/${item.id}/`);
+          return (
+            <li>
+              <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                Занятие {item.data.number}
+                {item.data.date && <span class="muted"> · {item.data.date}</span>}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  )}
+
+  {section === 'topics' && (
+    <>
+      <h2>Пройденные темы</h2>
+      <ul>
+        {topics.map((topic) => {
+          const href = withBase(`students/mai/rl/topics/${topic.id}/`);
+          return (
+            <li>
+              <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                <span class="num">{topic.data.number}</span>
+                {topic.data.title}
+              </a>
+            </li>
+          );
+        })}
+      </ul>
+    </>
+  )}
+</nav>

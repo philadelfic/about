@@ -1,0 +1,57 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { externalLinks, withBase } from '../../data/site';
+
+const entries = [
+  {
+    href: withBase('en/projects/'),
+    title: 'Projects',
+    text: 'Two products — LLM Second brain and LLMesenger: why they exist and how they help.',
+  },
+  {
+    href: withBase('en/students/'),
+    title: 'Students',
+    text: 'The Reinforcement Learning course: topics, lectures and seminars.',
+  },
+];
+
+const links = [
+  { title: 'GitHub', href: externalLinks[0].href, note: 'code and releases' },
+  {
+    title: 'Telegram channel “Hobby of an IT guy”',
+    href: externalLinks[1].href,
+    note: 'personal blog (in Russian)',
+  },
+];
+---
+
+<BaseLayout>
+  <div class="hero">
+    <h1>Hi, I’m Oleg Orlovsky.<br /><span class="grad">IT lead of a development team and teacher</span></h1>
+    <p class="lead">
+      I build HR self-service services with my team. I teach Reinforcement Learning in a master’s
+      programme and build tools for LLM harnesses. Here — my projects and study materials, for
+      students and for anyone curious about what I do.
+    </p>
+  </div>
+
+  <div class="cards">
+    {entries.map((entry) => (
+      <a class="card" href={entry.href}>
+        <h3>{entry.title}</h3>
+        <p>{entry.text}</p>
+        <span class="more">Open →</span>
+      </a>
+    ))}
+  </div>
+
+  <h2>Links</h2>
+  <ul class="links">
+    {links.map((link) => (
+      <li>
+        <a href={link.href}>{link.title}</a>
+        <span class="muted"> — {link.note}</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

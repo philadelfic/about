@@ -1,0 +1,336 @@
+---
+import '../styles/global.css';
+import { base, withBase, gate, links } from '../data/site';
+import { dict, type Lang } from '../data/i18n';
+
+interface Props {
+  title?: string;
+  description?: string;
+  lang?: Lang;
+}
+
+const current = Astro.url.pathname;
+// Путь без базового префикса и без ведущего слэша: '' | 'projects/' | 'en/projects/'
+const root = base.replace(/\/$/, '');
+const rel = (current.startsWith(root) ? current.slice(root.length) : current).replace(/^\//, '');
+
+// Язык страницы: русский в корне, английский — под /en/.
+const lang: Lang = Astro.props.lang ?? (rel === 'en' || rel.startsWith('en/') ? 'en' : 'ru');
+const t = dict[lang];
+
+// Внутри «Т1 + МАИ» — только русский: без переключателей языка и темы.
+const isT1 = current.startsWith(withBase('students/mai/'));
+const showTools = !isT1;
+
+const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t.siteName}` : t.title;
+const description = Astro.props.description ?? t.description;
+
+const nav = [
+  { href: withBase(lang === 'en' ? 'en/projects/' : 'projects/'), label: t.nav.projects },
+  { href: withBase(lang === 'en' ? 'en/students/' : 'students/'), label: t.nav.students },
+  { href: withBase(lang === 'en' ? 'en/me/' : 'me/'), label: t.nav.me },
+];
+
+// Та же страница на другом языке.
+const altHref =
+  lang === 'en' ? withBase(rel.replace(/^en\/?/, '')) : withBase(`en/${rel}`);
+
+const courseNav = [
+  { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
+  { href: withBase('students/mai/rl/homework/'), label: 'Домашние задания' },
+  { href: withBase('students/mai/rl/seminars/'), label: 'Семинары' },
+];
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="alternate" hreflang="ru" href={new URL(lang === 'en' ? altHref : current, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? current : altHref, Astro.site)} />
+
+    <script is:inline define:vars={{ base }}>
+      // Тема и язык до первой отрисовки: без мигания и прыжков.
+      (function () {
+        try {
+          var theme = localStorage.getItem('about.theme');
+          if (theme === 'dark' || theme === 'light') {
+            document.documentElement.dataset.theme = theme;
+          }
+        } catch (e) {}
+
+        try {
+          var root = base.replace(/\/$/, '');
+          var path = location.pathname;
+          var rel = (path.indexOf(root) === 0 ? path.slice(root.length) : path).replace(/^\//, '');
+
+          // Раздел курса «Т1 + МАИ» — только по-русски.
+          if (rel.indexOf('students/mai') === 0) return;
+
+          var isEn = rel === 'en' || rel.indexOf('en/') === 0;
+          var saved = localStorage.getItem('about.lang');
+          var browserRu = (navigator.language || 'ru').toLowerCase().indexOf('ru') === 0;
+          var want = saved || (browserRu ? 'ru' : 'en');
+
+          if (want === 'en' && !isEn) location.replace(root + '/en/' + rel);
+          if (want === 'ru' && isEn) location.replace(root + '/' + rel.replace(/^en\/?/, ''));
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body class={isT1 ? 'theme-t1' : undefined}>
+    {isT1 ? (
+      <header class="t1-header">
+        <div class="wrap">
+          <a class="t1-logo" href={withBase('students/mai/')}>
+            <img class="t1-logo-t1" src={withBase('img/brand/t1.svg')} alt="Т1" />
+            <span class="t1-logo-plus">+</span>
+            <img class="t1-logo-mai" src={withBase('img/brand/mai.svg')} alt="МАИ" />
+          </a>
+          <nav class="t1-nav">
+            {courseNav.map((item) => (
+              <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <a class="t1-chat" href={links.chat} target="_blank" rel="noopener">
+            Чат группы →
+          </a>
+        </div>
+      </header>
+    ) : (
+      <header class="site-header">
+        <div class="wrap">
+          <a class="brand" href={lang === 'en' ? withBase('en/') : base}>
+            <span class="mark">О</span>
+            <span>{t.siteName}</span>
+          </a>
+          <nav class="site-nav">
+            {nav.map((item) => (
+              <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          {showTools && (
+            <div class="header-tools">
+              <div class="lang-switch" aria-label={t.langLabel}>
+                <a
+                  href={lang === 'en' ? altHref : current}
+                  data-lang="ru"
+                  aria-current={lang === 'ru' ? 'true' : undefined}
+                  title="Русский"
+                >
+                  ru
+                </a>
+                <a
+                  href={lang === 'ru' ? altHref : current}
+                  data-lang="en"
+                  aria-current={lang === 'en' ? 'true' : undefined}
+                  title="English"
+                >
+                  en
+                </a>
+              </div>
+              <button class="tool-btn" type="button" data-theme-toggle aria-label={t.theme.toDark}>
+                <svg data-icon="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+                </svg>
+                <svg data-icon="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" hidden>
+                  <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+                </svg>
+              </button>
+            </div>
+          )}
+        </div>
+      </header>
+    )}
+
+    <main>
+      <div class="wrap">
+        <div id="gate" class="gate" hidden>
+          <h1>Материалы курса</h1>
+          <p class="lead">
+            Это раздел для студентов курса. Введите код, который я дал на занятии, — откроются
+            материалы.
+          </p>
+          <form id="gate-form">
+            <input
+              id="gate-code"
+              type="password"
+              name="code"
+              placeholder="Код доступа"
+              autocomplete="off"
+              aria-label="Код доступа"
+            />
+            <button type="submit">Открыть</button>
+          </form>
+          <p id="gate-error" class="muted" hidden>Код не подошёл. Проверьте раскладку и попробуйте ещё раз.</p>
+        </div>
+
+        <div id="page-content">
+          <slot />
+        </div>
+      </div>
+    </main>
+
+    {isT1 ? (
+      <footer class="t1-footer">
+        <div class="wrap">
+          <span>Т1 + МАИ · курс «Обучение с подкреплением»</span>
+          <span>
+            <a href={base}>На портал</a>
+          </span>
+        </div>
+      </footer>
+    ) : (
+      <footer class="site-footer">
+        <div class="wrap">
+          <span>© {new Date().getFullYear()} {t.siteName}</span>
+          <span>
+            <a href={links.github}>GitHub</a> ·
+            <a href={links.telegram}>{lang === 'en' ? 'Blog (RU)' : 'Телеграм'}</a>
+          </span>
+        </div>
+      </footer>
+    )}
+
+    <script is:inline>
+      // Переключатели: тема и язык (запоминаем выбор в localStorage).
+      (function () {
+        var root = document.documentElement;
+
+        function currentTheme() {
+          if (root.dataset.theme) return root.dataset.theme;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function paintTheme() {
+          var theme = currentTheme();
+          document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+            var sun = btn.querySelector('[data-icon="sun"]');
+            var moon = btn.querySelector('[data-icon="moon"]');
+            if (sun) sun.hidden = theme === 'dark';
+            if (moon) moon.hidden = theme !== 'dark';
+            btn.setAttribute('aria-label', theme === 'dark' ? 'Light theme' : 'Dark theme');
+          });
+        }
+
+        document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var next = currentTheme() === 'dark' ? 'light' : 'dark';
+            root.dataset.theme = next;
+            try {
+              localStorage.setItem('about.theme', next);
+            } catch (e) {}
+            paintTheme();
+          });
+        });
+
+        document.querySelectorAll('[data-lang]').forEach(function (link) {
+          link.addEventListener('click', function () {
+            try {
+              localStorage.setItem('about.lang', link.dataset.lang);
+            } catch (e) {}
+          });
+        });
+
+        paintTheme();
+
+        // Увеличиваем картинки по клику: оверлей на весь экран, закрытие — клик или Esc
+        const images = document.querySelectorAll('article img');
+        if (!images.length) return;
+
+        function close(box) {
+          box.remove();
+          document.body.style.overflow = '';
+        }
+
+        function open(src, alt) {
+          const box = document.createElement('div');
+          box.className = 'lightbox';
+          const big = document.createElement('img');
+          big.src = src;
+          big.alt = alt || '';
+          box.appendChild(big);
+          box.addEventListener('click', () => close(box));
+          document.addEventListener('keydown', function onKey(event) {
+            if (event.key === 'Escape') {
+              close(box);
+              document.removeEventListener('keydown', onKey);
+            }
+          });
+          document.body.style.overflow = 'hidden';
+          document.body.appendChild(box);
+        }
+
+        images.forEach((img) => {
+          img.setAttribute('tabindex', '0');
+          img.setAttribute('role', 'button');
+          img.setAttribute('title', 'Нажмите, чтобы увеличить');
+          img.addEventListener('click', () => open(img.currentSrc || img.src, img.alt));
+          img.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              open(img.currentSrc || img.src, img.alt);
+            }
+          });
+        });
+      })();
+    </script>
+
+    <script is:inline define:vars={{ gate, base }}>
+      (function () {
+        const cfg = { scope: gate.scope, hash: gate.hash, key: gate.key, base: base };
+        const path = location.pathname;
+        const rel = path.startsWith(cfg.base) ? path.slice(cfg.base.length) : path;
+        const isProtected = cfg.scope.some((s) => rel === s || rel.startsWith(s) || rel.startsWith(s + '/'));
+        if (!isProtected) return;
+        if (localStorage.getItem(cfg.key) === 'ok') return;
+
+        function fnv1a(str) {
+          let h = 0x811c9dc5;
+          const bytes = new TextEncoder().encode(str);
+          for (const b of bytes) {
+            h ^= b;
+            h = Math.imul(h, 0x01000193) >>> 0;
+          }
+          return h.toString(16).padStart(8, '0');
+        }
+
+        const content = document.getElementById('page-content');
+        const box = document.getElementById('gate');
+        const form = document.getElementById('gate-form');
+        const input = document.getElementById('gate-code');
+        const error = document.getElementById('gate-error');
+        if (!content || !box || !form || !input || !error) return;
+
+        content.hidden = true;
+        box.hidden = false;
+        input.focus();
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          if (fnv1a(input.value.trim().toLowerCase()) === cfg.hash) {
+            localStorage.setItem(cfg.key, 'ok');
+            location.reload();
+            return;
+          }
+          error.hidden = false;
+          input.select();
+        });
+      })();
+    </script>
+  </body>
+</html>
