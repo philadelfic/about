@@ -1,25 +1,19 @@
 ---
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { getCollection } from 'astro:content';
 import { withBase } from '../../data/site';
-
-const lectures = await getCollection('lectures');
-const labs = await getCollection('labs');
 ---
 
 <BaseLayout title="Студентам">
   <div class="hero">
     <h1>Студентам</h1>
-    <p class="lead">
-      Материалы курса «Обучение с подкреплением»: программа, темы лекций и лабораторные работы.
-    </p>
+    <p class="lead">Материалы курсов, которые я веду.</p>
   </div>
 
   <div class="cards">
-    <a class="card" href={withBase('students/rl/')}>
-      <h3>Обучение с подкреплением</h3>
-      <p>{lectures.length} лекции, {labs.length} лабораторные работы, рубежные контроли.</p>
-      <span class="more">Открыть курс →</span>
+    <a class="card" href={withBase('students/mai/')}>
+      <h3>МАИ</h3>
+      <p>Магистратура: курс «Обучение с подкреплением».</p>
+      <span class="more">Открыть →</span>
     </a>
   </div>
 

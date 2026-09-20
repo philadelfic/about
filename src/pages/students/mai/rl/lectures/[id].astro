@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../components/CourseNav.astro';
-import { withBase } from '../../../../data/site';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
 
 export async function getStaticPaths() {
   const lectures = await getCollection('lectures');
@@ -36,8 +36,8 @@ const current = Astro.url.pathname;
       )}
 
       <div class="row" style="margin-top:28px">
-        {prev && <a href={withBase(`students/rl/lectures/${prev.id}/`)}>← Лекция {prev.data.number}</a>}
-        {next && <a href={withBase(`students/rl/lectures/${next.id}/`)}>Лекция {next.data.number} →</a>}
+        {prev && <a href={withBase(`students/mai/rl/lectures/${prev.id}/`)}>← Лекция {prev.data.number}</a>}
+        {next && <a href={withBase(`students/mai/rl/lectures/${next.id}/`)}>Лекция {next.data.number} →</a>}
       </div>
     </article>
   </div>

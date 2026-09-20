@@ -16,7 +16,10 @@ const isCurrent = (href: string) => current === href;
   <h2>Курс</h2>
   <ul>
     <li>
-      <a href={withBase('students/rl/')} aria-current={isCurrent(withBase('students/rl/')) ? 'page' : undefined}>
+      <a
+        href={withBase('students/mai/rl/')}
+        aria-current={isCurrent(withBase('students/mai/rl/')) ? 'page' : undefined}
+      >
         Программа курса
       </a>
     </li>
@@ -25,7 +28,7 @@ const isCurrent = (href: string) => current === href;
   <h2>Лекции</h2>
   <ul>
     {lectures.map((lecture) => {
-      const href = withBase(`students/rl/lectures/${lecture.id}/`);
+      const href = withBase(`students/mai/rl/lectures/${lecture.id}/`);
       return (
         <li>
           <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
@@ -40,7 +43,7 @@ const isCurrent = (href: string) => current === href;
   <h2>Лабораторные</h2>
   <ul>
     {labs.map((lab) => {
-      const href = withBase(`students/rl/labs/${lab.id}/`);
+      const href = withBase(`students/mai/rl/labs/${lab.id}/`);
       return (
         <li>
           <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>

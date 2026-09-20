@@ -1,8 +1,8 @@
 ---
 import { getCollection } from 'astro:content';
-import BaseLayout from '../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../components/CourseNav.astro';
-import { withBase } from '../../../data/site';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../components/CourseNav.astro';
+import { withBase } from '../../../../data/site';
 
 const lectures = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
 const labs = (await getCollection('labs')).sort((a, b) => a.data.number - b.data.number);
@@ -21,6 +21,7 @@ const current = Astro.url.pathname;
     <CourseNav current={current} />
 
     <div>
+      <p class="muted">МАИ · магистратура</p>
       <h1>Обучение с подкреплением</h1>
       <p class="lead">Программа курса: темы лекций, лабораторные работы и рубежные контроли.</p>
 
@@ -34,7 +35,7 @@ const current = Astro.url.pathname;
             <tr>
               <td>{lecture.data.number}</td>
               <td>
-                <a href={withBase(`students/rl/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
+                <a href={withBase(`students/mai/rl/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
               </td>
               <td class="muted">{lecture.data.date ?? '—'}</td>
             </tr>
@@ -52,7 +53,7 @@ const current = Astro.url.pathname;
             <tr>
               <td>{lab.data.number}</td>
               <td>
-                <a href={withBase(`students/rl/labs/${lab.id}/`)}>{lab.data.title}</a>
+                <a href={withBase(`students/mai/rl/labs/${lab.id}/`)}>{lab.data.title}</a>
               </td>
               <td class="muted">{lab.data.when ?? '—'}</td>
             </tr>
