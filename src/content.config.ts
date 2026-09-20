@@ -9,10 +9,7 @@ const lectures = defineCollection({
     title: z.string(),
     summary: z.string(),
     date: z.string().optional(),
-    status: z.enum(['planned', 'ready', 'done']).default('planned'),
     slides: z.string().optional(),
-    blocks: z.array(z.object({ name: z.string(), hint: z.string() })).default([]),
-    tasks: z.array(z.string()).default([]),
   }),
 });
 
@@ -25,7 +22,6 @@ const labs = defineCollection({
     summary: z.string(),
     when: z.string().optional(),
     deliverable: z.string().optional(),
-    steps: z.array(z.string()).default([]),
   }),
 });
 

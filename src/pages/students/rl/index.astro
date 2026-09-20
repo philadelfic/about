@@ -7,12 +7,6 @@ import { withBase } from '../../../data/site';
 const lectures = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
 const labs = (await getCollection('labs')).sort((a, b) => a.data.number - b.data.number);
 
-const statusLabel: Record<string, string> = {
-  done: 'проведена',
-  ready: 'готова',
-  planned: 'в плане',
-};
-
 const controls = [
   { number: 1, topic: 'Область применимости машинного обучения с подкреплением', when: 'после лекции 2' },
   { number: 2, topic: 'Концепция взаимодействия агента и среды', when: 'после лекции 3' },
@@ -22,21 +16,18 @@ const controls = [
 const current = Astro.url.pathname;
 ---
 
-<BaseLayout title="Обучение с подкреплением" description="Программа курса «Обучение с подкреплением»: лекции, лабораторные, рубежные контроли и материалы по темам.">
+<BaseLayout title="Обучение с подкреплением" description="Программа курса «Обучение с подкреплением»: лекции, лабораторные работы и рубежные контроли.">
   <div class="course">
     <CourseNav current={current} />
 
     <div>
       <h1>Обучение с подкреплением</h1>
-      <p class="lead">
-        Курс магистратуры: от постановки задачи и формализма «агент — среда» до табличных методов и
-        Q-обучения. Всё, что нужно для лекций, практик и лабораторных, — на этой странице.
-      </p>
+      <p class="lead">Программа курса: темы лекций, лабораторные работы и рубежные контроли.</p>
 
       <h2 id="lectures">Лекции</h2>
       <table>
         <thead>
-          <tr><th>№</th><th>Тема</th><th>Дата</th><th>Статус</th></tr>
+          <tr><th>№</th><th>Тема</th><th>Дата</th></tr>
         </thead>
         <tbody>
           {lectures.map((lecture) => (
@@ -45,8 +36,7 @@ const current = Astro.url.pathname;
               <td>
                 <a href={withBase(`students/rl/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
               </td>
-              <td>{lecture.data.date ?? '—'}</td>
-              <td class="muted">{statusLabel[lecture.data.status]}</td>
+              <td class="muted">{lecture.data.date ?? '—'}</td>
             </tr>
           ))}
         </tbody>
@@ -85,26 +75,8 @@ const current = Astro.url.pathname;
           ))}
         </tbody>
       </table>
-      <p class="muted">Экзамен — по списку вопросов курса, с фокусом на разобранные темы.</p>
 
-      <h2 id="tools">Что понадобится</h2>
-      <ul class="links">
-        <li><b>Python и NumPy</b> <span class="muted">— массивы, индексация, базовые операции</span></li>
-        <li><b>Jupyter</b> <span class="muted">— ноутбуки для экспериментов и отчётов</span></li>
-        <li><b>Gymnasium</b> <span class="muted">— готовые среды для задач курса</span></li>
-        <li><b>Git</b> <span class="muted">— сдача работ</span></li>
-      </ul>
-
-      <h2 id="tasks">Дополнительные задачи</h2>
-      <p class="muted">
-        К каждой лекции есть набор задач для самопроверки — они открываются на странице темы.
-        Начните с <a href={withBase('students/rl/lectures/02-agent-i-sreda/')}>лекции «Агент и среда»</a>.
-      </p>
-
-      <p class="notice">
-        Материалы наполняются по ходу семестра: слайды добавляются после лекции, техзадания
-        лабораторных — после разбора постановки.
-      </p>
+      <p class="muted">Материалы по темам добавляются по ходу семестра.</p>
     </div>
   </div>
 </BaseLayout>
