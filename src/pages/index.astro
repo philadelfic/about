@@ -1,22 +1,20 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { externalLinks } from '../data/site';
-
-const base = import.meta.env.BASE_URL;
+import { externalLinks, withBase } from '../data/site';
 
 const entries = [
   {
-    href: `${base}projects/`,
+    href: withBase('projects/'),
     title: 'Проекты',
     text: 'Чем занимаюсь сейчас: LLMesenger, LLM Second Brain, блог. Со свежими релизами и активностью.',
   },
   {
-    href: `${base}articles/`,
+    href: withBase('articles/'),
     title: 'Статьи',
     text: 'Заметки и разборы: инструменты, GitHub, инженерия, обучение с подкреплением.',
   },
   {
-    href: `${base}students/`,
+    href: withBase('students/'),
     title: 'Студентам',
     text: 'Материалы курса «Обучение с подкреплением» (МАИ): темы, слайды, дополнительные задачи.',
   },
