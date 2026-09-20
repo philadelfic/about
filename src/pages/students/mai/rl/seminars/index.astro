@@ -2,9 +2,10 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
 import { optionalCollection } from '../../../../../lib/collections';
 
-const seminars = (await optionalCollection('seminars'))
+const items = (await optionalCollection('seminars'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
 const current = Astro.url.pathname;
@@ -19,28 +20,23 @@ const current = Astro.url.pathname;
       <h1>Семинарские занятия</h1>
       <p class="lead">Что разбирали на семинарах и материалы к ним.</p>
 
-      {seminars.length === 0 ? (
+      {items.length === 0 ? (
         <p class="muted">Занятий пока не было — материалы появятся после первого семинара.</p>
       ) : (
-        seminars.map((seminar) => (
-          <article class="panel" id={`seminar-${seminar.id}`}>
-            <p class="muted">
-              Занятие {seminar.data.number}
-              {seminar.data.date ? ` · ${seminar.data.date}` : ''}
-            </p>
-            <h3>{seminar.data.title}</h3>
-            <p>{seminar.data.summary}</p>
-            {seminar.data.materials.length > 0 && (
-              <ul class="links">
-                {seminar.data.materials.map((item) => (
-                  <li>
-                    {item.href ? <a href={item.href}>{item.title}</a> : <span>{item.title}</span>}
-                  </li>
-                ))}
-              </ul>
-            )}
-          </article>
-        ))
+        <ul class="topic-list">
+          {items.map((item) => (
+            <li>
+              <a href={withBase(`students/mai/rl/seminars/${item.id}/`)}>
+                <span class="step">
+                  Занятие {item.data.number}
+                  {item.data.date ? ` · ${item.data.date}` : ''}
+                </span>
+                <h3>{item.data.title}</h3>
+                <p class="muted">{item.data.summary}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
       )}
     </div>
   </div>

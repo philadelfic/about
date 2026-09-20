@@ -25,6 +25,7 @@ const homework = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/homework' }),
   schema: z.object({
     title: z.string(),
+    summary: z.string().default(''),
     due: z.string().optional(),
     topic: z.number().optional(),
   }),

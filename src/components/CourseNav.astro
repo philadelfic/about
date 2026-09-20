@@ -57,14 +57,17 @@ const homeworkLabel = (item: (typeof homework)[number]) =>
     <>
       <h2>Задания</h2>
       <ul>
-        {homework.map((item) => (
-          <li>
-            <a href={`${sections.homework}#hw-${item.id}`}>
-              {homeworkLabel(item)}
-              {item.data.due && <span class="muted"> · до {item.data.due}</span>}
-            </a>
-          </li>
-        ))}
+        {homework.map((item) => {
+          const href = withBase(`students/mai/rl/homework/${item.id}/`);
+          return (
+            <li>
+              <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                {homeworkLabel(item)}
+                {item.data.due && <span class="muted"> · до {item.data.due}</span>}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </>
   )}
@@ -73,14 +76,17 @@ const homeworkLabel = (item: (typeof homework)[number]) =>
     <>
       <h2>Занятия</h2>
       <ul>
-        {seminars.map((item) => (
-          <li>
-            <a href={`${sections.seminars}#seminar-${item.id}`}>
-              Занятие {item.data.number}
-              {item.data.date && <span class="muted"> · {item.data.date}</span>}
-            </a>
-          </li>
-        ))}
+        {seminars.map((item) => {
+          const href = withBase(`students/mai/rl/seminars/${item.id}/`);
+          return (
+            <li>
+              <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+                Занятие {item.data.number}
+                {item.data.date && <span class="muted"> · {item.data.date}</span>}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </>
   )}
