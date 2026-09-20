@@ -46,8 +46,9 @@ const courseNav = [
       <header class="t1-header">
         <div class="wrap">
           <a class="t1-logo" href={withBase('students/mai/')}>
-            <span class="t1-logo-mark">Т1</span>
-            <span>МАИ</span>
+            <img class="t1-logo-t1" src={withBase('img/brand/t1.svg')} alt="Т1" />
+            <span class="t1-logo-plus">+</span>
+            <img class="t1-logo-mai" src={withBase('img/brand/mai.svg')} alt="МАИ" />
           </a>
           <nav class="t1-nav">
             {courseNav.map((item) => (
@@ -115,7 +116,8 @@ const courseNav = [
         <div class="wrap">
           <span>Т1 + МАИ · курс «Обучение с подкреплением»</span>
           <span>
-            <a href={base}>Олег Орловский</a> · <a href={base}>На портал</a>
+            <a href={links.chat} target="_blank" rel="noopener">Чат группы в Телеграме</a> ·
+            <a href={base}>На портал</a>
           </span>
         </div>
       </footer>

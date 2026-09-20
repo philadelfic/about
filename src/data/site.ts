@@ -20,6 +20,8 @@ export const site = {
 export const links = {
   github: 'https://github.com/philadelfic',
   telegram: 'https://t.me/HobbyOdnogoITishnika',
+  /** Чат группы курса «Обучение с подкреплением» (Т1 + МАИ). */
+  chat: 'https://t.me/+7J1lFtldA3o3YWIy',
 };
 
 export const externalLinks = [

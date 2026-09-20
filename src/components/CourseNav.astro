@@ -1,6 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
-import { withBase } from '../data/site';
+import { withBase, links } from '../data/site';
 import { optionalCollection } from '../lib/collections';
 
 interface Props {
@@ -50,6 +50,9 @@ const homeworkLabel = (item: (typeof homework)[number]) =>
       <a href={sections.seminars} aria-current={section === 'seminars' ? 'page' : undefined}>
         Семинарские занятия
       </a>
+    </li>
+    <li>
+      <a href={links.chat} target="_blank" rel="noopener"> Чат группы в Телеграме </a>
     </li>
   </ul>
 

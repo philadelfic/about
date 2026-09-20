@@ -726,16 +726,22 @@ body.theme-t1 {
   color: #008acd;
 }
 
-.t1-logo-mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #1daff7;
-  color: #ffffff;
-  font-size: 11px;
-  font-weight: 700;
-  display: grid;
-  place-items: center;
+.t1-logo-t1 {
+  display: block;
+  height: 22px;
+  width: auto;
+}
+
+.t1-logo-mai {
+  display: block;
+  height: 27px;
+  width: auto;
+}
+
+.t1-logo-plus {
+  font-size: 16px;
+  font-weight: 600;
+  color: #82858e;
 }
 
 .t1-nav {
