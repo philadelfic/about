@@ -706,6 +706,7 @@ body.theme-t1 {
 .t1-header .wrap {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 18px;
   min-height: 64px;
 }
@@ -747,7 +748,6 @@ body.theme-t1 {
 .t1-nav {
   display: flex;
   gap: 4px;
-  margin-left: auto;
 }
 
 .t1-nav a {
@@ -770,11 +770,19 @@ body.theme-t1 {
   font-weight: 600;
 }
 
-.t1-back {
+.t1-chat {
+  padding: 9px 20px;
+  border-radius: 100px;
+  background: #1daff7;
+  color: #ffffff;
   font-size: 15px;
   font-weight: 600;
-  color: #1daff7;
   white-space: nowrap;
+}
+
+.t1-chat:hover {
+  background: #008acd;
+  text-decoration: none;
 }
 
 .t1-footer {
@@ -802,13 +810,8 @@ body.theme-t1 {
   .t1-nav {
     order: 3;
     width: 100%;
-    margin-left: 0;
     overflow-x: auto;
     padding-bottom: 2px;
-  }
-
-  .t1-back {
-    margin-left: auto;
   }
 }
 
