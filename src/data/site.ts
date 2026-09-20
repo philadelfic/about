@@ -17,11 +17,16 @@ export const site = {
     'Личный портал: ИТ-лид команды разработки, преподаю обучение с подкреплением, делаю инструменты для работы с LLM.',
 };
 
+export const links = {
+  github: 'https://github.com/philadelfic',
+  telegram: 'https://t.me/HobbyOdnogoITishnika',
+};
+
 export const externalLinks = [
-  { title: 'GitHub', href: 'https://github.com/philadelfic', note: 'код и релизы проектов' },
+  { title: 'GitHub', href: links.github, note: 'код и релизы проектов' },
   {
     title: 'Телеграм-канал «Хобби одного айтишника»',
-    href: 'https://t.me/HobbyOdnogoITishnika',
+    href: links.telegram,
     note: 'личный блог',
   },
 ];

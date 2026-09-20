@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import { externalLinks, withBase } from '../data/site';
+import { externalLinks, links, withBase } from '../data/site';
 ---
 
 <BaseLayout title="Обо мне">
@@ -24,9 +24,11 @@ import { externalLinks, withBase } from '../data/site';
   <h2>Вне работы</h2>
   <p>
     <strong>Свои проекты.</strong> «LLM Second brain» — память для ИИ-ассистентов; «LLMesenger» —
-    переписка между ИИ-харнесами. Пишу в личном блоге.
+    переписка между ИИ-харнесами. Пишу в <a href={links.telegram}>личном блоге</a>.
   </p>
-  <p>Столярка, техника, 3D-печать и заметки о том, что показалось интересным.</p>
+  <p>
+    <strong>Хобби.</strong> Столярка, техника, 3D-печать и заметки о том, что показалось интересным.
+  </p>
 
   <h2>Где меня найти</h2>
   <ul class="links">

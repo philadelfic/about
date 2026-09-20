@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { site, base, withBase, gate } from '../data/site';
+import { site, base, withBase, gate, links } from '../data/site';
 
 interface Props {
   title?: string;
@@ -82,8 +82,8 @@ const nav = [
       <div class="wrap">
         <span>© {new Date().getFullYear()} Олег Орловский</span>
         <span>
-          <a href="https://github.com/philadelfic">GitHub</a> ·
-          <a href="https://t.me/HobbyOdnogoITishnika">Телеграм</a>
+          <a href={links.github}>GitHub</a> ·
+          <a href={links.telegram}>Телеграм</a>
         </span>
       </div>
     </footer>
