@@ -22,7 +22,8 @@ npm run preview   # предпросмотр собранного сайта
 ```bash
 npm run preview          # предпросмотр сборки на http://localhost:4321/about/
 ./scripts/preview.sh     # сборка + предпросмотр без host-проверок (работает и через туннель)
-./scripts/tunnel.sh      # временный публичный адрес для показа страницы
+./scripts/tunnel-bore.sh # временный публичный адрес (без страницы-предупреждения)
+./scripts/serve-appsrv.sh # опубликовать на appsrv: http://192.168.3.111:3040/about/
 ```
 
 ## Ветки и деплой
