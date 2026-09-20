@@ -532,3 +532,23 @@ article p em {
   color: var(--muted);
   font-size: 14px;
 }
+
+/* ---------- врезка «почему это важно» ---------- */
+
+article blockquote {
+  margin: 16px 0 0;
+  padding: 12px 16px;
+  border-left: 3px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--accent) 6%, var(--card));
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+
+article blockquote p {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text, inherit);
+}
+
+article blockquote strong {
+  color: var(--fg);
+}

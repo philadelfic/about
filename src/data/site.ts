@@ -20,7 +20,7 @@ export const site = {
 export const externalLinks = [
   { title: 'GitHub', href: 'https://github.com/philadelfic', note: 'код и релизы проектов' },
   {
-    title: 'Телеграм-канал «Хобби одного атишника»',
+    title: 'Телеграм-канал «Хобби одного айтишника»',
     href: 'https://t.me/HobbyOdnogoITishnika',
     note: 'личный блог',
   },
