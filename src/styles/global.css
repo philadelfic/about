@@ -671,3 +671,124 @@ article img {
 .materials li {
   border-bottom: none;
 }
+
+/* ---------- раздел «Т1 + МАИ»: оформление в духе Т1 ---------- */
+/* Взято с t1.ru: голубой #1DAFF7 (и тёмный #008ACD на наведении), графит #2A2D30,
+   серые #82858E / #62636B / #AEB1B7, светлые поверхности #F4F4F4 и #EBEBEB,
+   характерные пилюли (border-radius: 100px) для кнопок и плашек.
+   Шрифт Т1 — ALS-Hauss, он проприетарный, поэтому системный. */
+
+.t1 {
+  --accent: #1daff7;
+  --accent-2: #1daff7;
+  --fg: #2a2d30;
+  --muted: #82858e;
+  --border: #ebebeb;
+  --bg-soft: #f4f4f4;
+  --card: #ffffff;
+  --radius: 12px;
+  --radius-sm: 10px;
+}
+
+.t1-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 24px;
+  padding: 5px 18px 5px 6px;
+  background: #f4f4f4;
+  border-radius: 100px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #2a2d30;
+}
+
+.t1-badge-mark {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1daff7;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+}
+
+.t1 .lead {
+  color: #62636b;
+}
+
+.t1 .card,
+.t1 .topic-list a {
+  background: #f4f4f4;
+  border-color: #ebebeb;
+}
+
+.t1 .card:hover,
+.t1 .topic-list a:hover {
+  border-color: #1daff7;
+}
+
+.t1 .more {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 8px 18px;
+  background: #1daff7;
+  color: #ffffff;
+  border-radius: 100px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.t1 .card:hover .more {
+  background: #008acd;
+}
+
+.t1 .course-nav a {
+  border-radius: 100px;
+}
+
+.t1 .course-nav a[aria-current='page'] {
+  background: #1daff7;
+  color: #ffffff;
+}
+
+.t1 .course-nav a[aria-current='page'] .num {
+  color: #ffffff;
+}
+
+.t1 .panel,
+.t1 .qa details {
+  background: #f4f4f4;
+  border-color: #ebebeb;
+}
+
+.t1 .materials {
+  background: #ffffff;
+  border-color: #ebebeb;
+  border-left-color: #1daff7;
+}
+
+.t1 article blockquote {
+  background: #eaf7fe;
+  border-left-color: #1daff7;
+}
+
+.t1 th {
+  color: #82858e;
+}
+
+.t1 .terms-table td:first-child {
+  color: #2a2d30;
+}
+
+.t1 .step,
+.t1 .muted {
+  color: #82858e;
+}
+
+.t1 .notice {
+  background: #eaf7fe;
+  border-color: #a6e4fa;
+}

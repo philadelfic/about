@@ -16,6 +16,9 @@ const nav = [
   { href: withBase('students/'), label: 'Студентам' },
   { href: withBase('me/'), label: 'Обо мне' },
 ];
+
+// Раздел «Т1 + МАИ» — внутри него оформление в духе Т1 (см. стили .t1).
+const isT1 = current.startsWith(withBase('students/mai/'));
 ---
 
 <!doctype html>
@@ -51,7 +54,13 @@ const nav = [
     </header>
 
     <main>
-      <div class="wrap">
+      <div class={isT1 ? 'wrap t1' : 'wrap'}>
+        {isT1 && (
+          <div class="t1-badge">
+            <span class="t1-badge-mark">Т1</span>
+            <span>+ МАИ</span>
+          </div>
+        )}
         <div id="gate" class="gate" hidden>
           <h1>Материалы курса</h1>
           <p class="lead">
