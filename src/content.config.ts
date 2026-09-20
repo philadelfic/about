@@ -37,6 +37,8 @@ const seminars = defineCollection({
     summary: z.string(),
     date: z.string().optional(),
     materials: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
+    /** Заготовка формата — не показывается на сайте. */
+    draft: z.boolean().default(false),
   }),
 });
 

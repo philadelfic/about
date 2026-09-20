@@ -2,8 +2,11 @@
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
+import { optionalCollection } from '../../../../../lib/collections';
 
-const seminars = (await getCollection('seminars')).sort((a, b) => a.data.number - b.data.number);
+const seminars = (await optionalCollection('seminars'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => a.data.number - b.data.number);
 const current = Astro.url.pathname;
 ---
 

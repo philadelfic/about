@@ -3,10 +3,11 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../components/CourseNav.astro';
 import { withBase } from '../../../../data/site';
+import { optionalCollection } from '../../../../lib/collections';
 
 const topics = await getCollection('topics');
-const homework = await getCollection('homework');
-const seminars = await getCollection('seminars');
+const homework = await optionalCollection('homework');
+const seminars = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
 const current = Astro.url.pathname;
 
 const sections = [
