@@ -16,6 +16,9 @@ const nav = [
   { href: withBase('students/'), label: 'Студентам' },
   { href: withBase('me/'), label: 'Обо мне' },
 ];
+
+// Раздел для студентов — в стилистике Т1 (фирменные цвета холдинга).
+const isStudents = current.startsWith(withBase('students/'));
 ---
 
 <!doctype html>
@@ -33,7 +36,7 @@ const nav = [
     <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#0d0f13" media="(prefers-color-scheme: dark)" />
   </head>
-  <body>
+  <body class={isStudents ? 'theme-t1' : undefined}>
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={base}>

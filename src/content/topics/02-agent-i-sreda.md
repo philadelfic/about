@@ -70,7 +70,9 @@ terms:
     definition: "с вероятностью ε случайное действие, иначе лучшее известное"
   - term: "исследование и использование (exploration / exploitation)"
     definition: "пробовать новое или брать проверенное"
-lecture: []
+lecture:
+  - title: "Презентация лекции (PDF)"
+    href: "/files/course/rl/l2-agent-i-sreda.pdf"
 ---
 
 ## Зачем формальный язык

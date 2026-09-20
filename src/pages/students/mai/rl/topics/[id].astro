@@ -16,6 +16,9 @@ const index = all.findIndex((item) => item.id === topic.id);
 const prev = index > 0 ? all[index - 1] : undefined;
 const next = index < all.length - 1 ? all[index + 1] : undefined;
 const current = Astro.url.pathname;
+
+const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
+const isFile = (value: string) => !value.startsWith('http');
 ---
 
 <BaseLayout
@@ -32,6 +35,22 @@ const current = Astro.url.pathname;
       <h1>{topic.data.title}</h1>
       <p class="lead">{topic.data.summary}</p>
 
+      {topic.data.lecture.length > 0 && (
+        <ul class="links materials">
+          {topic.data.lecture.map((item) => (
+            <li>
+              {item.href ? (
+                <a href={href(item.href)} target={isFile(item.href) ? '_blank' : undefined}>
+                  {item.title}
+                </a>
+              ) : (
+                <span>{item.title}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      )}
+
       {topic.data.covered.length > 0 && (
         <div class="panel">
           <b>Что разбирали на лекции</b>
@@ -40,16 +59,6 @@ const current = Astro.url.pathname;
               <li>{line}</li>
             ))}
           </ul>
-          {topic.data.lecture.length > 0 && (
-            <p style="margin:12px 0 0">
-              {topic.data.lecture.map((item, i) => (
-                <>
-                  {i > 0 && ' · '}
-                  {item.href ? <a href={item.href}>{item.title}</a> : <span>{item.title}</span>}
-                </>
-              ))}
-            </p>
-          )}
         </div>
       )}
 
