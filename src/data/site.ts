@@ -18,7 +18,6 @@ export const site = {
 };
 
 export const externalLinks = [
-  { title: 'Резюме', href: 'https://philadelfic.github.io/resume/', note: 'опыт, навыки, проекты' },
   { title: 'GitHub', href: 'https://github.com/philadelfic', note: 'код и релизы проектов' },
   {
     title: 'Телеграм-канал «Хобби одного атишника»',

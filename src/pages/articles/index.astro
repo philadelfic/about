@@ -3,13 +3,23 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Статьи">
-  <h1>Статьи</h1>
-  <p class="lead">
-    Заметки и разборы: инструменты, GitHub, инженерия, обучение с подкреплением и то, что
-    показалось полезным.
+  <div class="hero">
+    <h1>Статьи</h1>
+    <p class="lead">
+      Заметки и разборы: инструменты, GitHub, инженерия, обучение с подкреплением и то, что
+      показалось полезным.
+    </p>
+  </div>
+
+  <p class="notice">
+    Раздел в работе — этап 2. Появятся лента статей, теги и RSS-подписка.
   </p>
-  <p class="notice">Раздел в работе — этап 2. Появятся лента статей, теги и RSS.</p>
-  <p class="muted">
-    Короткие заметки пока выходят в <a href="https://t.me/HobbyOdnogoITishnika">телеграм-канале</a>.
-  </p>
+
+  <h2>Пока пишу здесь</h2>
+  <ul class="links">
+    <li>
+      <a href="https://t.me/HobbyOdnogoITishnika">Телеграм-канал «Хобби одного атишника»</a>
+      <span class="muted"> — короткие заметки выходят тут</span>
+    </li>
+  </ul>
 </BaseLayout>

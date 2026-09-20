@@ -1,0 +1,54 @@
+---
+import { getCollection } from 'astro:content';
+import { withBase } from '../data/site';
+
+interface Props {
+  current: string;
+}
+
+const { current } = Astro.props;
+const lectures = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
+const labs = (await getCollection('labs')).sort((a, b) => a.data.number - b.data.number);
+const isCurrent = (href: string) => current === href;
+---
+
+<nav class="course-nav">
+  <h2>Курс</h2>
+  <ul>
+    <li>
+      <a href={withBase('students/rl/')} aria-current={isCurrent(withBase('students/rl/')) ? 'page' : undefined}>
+        Программа курса
+      </a>
+    </li>
+  </ul>
+
+  <h2>Лекции</h2>
+  <ul>
+    {lectures.map((lecture) => {
+      const href = withBase(`students/rl/lectures/${lecture.id}/`);
+      return (
+        <li>
+          <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+            <span class="num">{lecture.data.number}</span>
+            {lecture.data.title}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+
+  <h2>Лабораторные</h2>
+  <ul>
+    {labs.map((lab) => {
+      const href = withBase(`students/rl/labs/${lab.id}/`);
+      return (
+        <li>
+          <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
+            <span class="num">{lab.data.number}</span>
+            {lab.data.title}
+          </a>
+        </li>
+      );
+    })}
+  </ul>
+</nav>

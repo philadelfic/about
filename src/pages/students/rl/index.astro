@@ -1,0 +1,110 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../components/CourseNav.astro';
+import { withBase } from '../../../data/site';
+
+const lectures = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
+const labs = (await getCollection('labs')).sort((a, b) => a.data.number - b.data.number);
+
+const statusLabel: Record<string, string> = {
+  done: 'проведена',
+  ready: 'готова',
+  planned: 'в плане',
+};
+
+const controls = [
+  { number: 1, topic: 'Область применимости машинного обучения с подкреплением', when: 'после лекции 2' },
+  { number: 2, topic: 'Концепция взаимодействия агента и среды', when: 'после лекции 3' },
+  { number: 3, topic: 'Методы SARSA и Q-обучения', when: 'после лекции 6' },
+];
+
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title="Обучение с подкреплением" description="Программа курса «Обучение с подкреплением»: лекции, лабораторные, рубежные контроли и материалы по темам.">
+  <div class="course">
+    <CourseNav current={current} />
+
+    <div>
+      <h1>Обучение с подкреплением</h1>
+      <p class="lead">
+        Курс магистратуры: от постановки задачи и формализма «агент — среда» до табличных методов и
+        Q-обучения. Всё, что нужно для лекций, практик и лабораторных, — на этой странице.
+      </p>
+
+      <h2 id="lectures">Лекции</h2>
+      <table>
+        <thead>
+          <tr><th>№</th><th>Тема</th><th>Дата</th><th>Статус</th></tr>
+        </thead>
+        <tbody>
+          {lectures.map((lecture) => (
+            <tr>
+              <td>{lecture.data.number}</td>
+              <td>
+                <a href={withBase(`students/rl/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
+              </td>
+              <td>{lecture.data.date ?? '—'}</td>
+              <td class="muted">{statusLabel[lecture.data.status]}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2 id="labs">Лабораторные работы</h2>
+      <table>
+        <thead>
+          <tr><th>№</th><th>Работа</th><th>Когда</th></tr>
+        </thead>
+        <tbody>
+          {labs.map((lab) => (
+            <tr>
+              <td>{lab.data.number}</td>
+              <td>
+                <a href={withBase(`students/rl/labs/${lab.id}/`)}>{lab.data.title}</a>
+              </td>
+              <td class="muted">{lab.data.when ?? '—'}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+
+      <h2 id="controls">Рубежные контроли</h2>
+      <table>
+        <thead>
+          <tr><th>№</th><th>Тема</th><th>Когда</th></tr>
+        </thead>
+        <tbody>
+          {controls.map((control) => (
+            <tr>
+              <td>{control.number}</td>
+              <td>{control.topic}</td>
+              <td class="muted">{control.when}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p class="muted">Экзамен — по списку вопросов курса, с фокусом на разобранные темы.</p>
+
+      <h2 id="tools">Что понадобится</h2>
+      <ul class="links">
+        <li><b>Python и NumPy</b> <span class="muted">— массивы, индексация, базовые операции</span></li>
+        <li><b>Jupyter</b> <span class="muted">— ноутбуки для экспериментов и отчётов</span></li>
+        <li><b>Gymnasium</b> <span class="muted">— готовые среды для задач курса</span></li>
+        <li><b>Git</b> <span class="muted">— сдача работ</span></li>
+      </ul>
+
+      <h2 id="tasks">Дополнительные задачи</h2>
+      <p class="muted">
+        К каждой лекции есть набор задач для самопроверки — они открываются на странице темы.
+        Начните с <a href={withBase('students/rl/lectures/02-agent-i-sreda/')}>лекции «Агент и среда»</a>.
+      </p>
+
+      <p class="notice">
+        Материалы наполняются по ходу семестра: слайды добавляются после лекции, техзадания
+        лабораторных — после разбора постановки.
+      </p>
+    </div>
+  </div>
+</BaseLayout>

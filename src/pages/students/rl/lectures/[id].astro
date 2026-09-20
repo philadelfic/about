@@ -1,0 +1,74 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../components/CourseNav.astro';
+import { withBase } from '../../../../data/site';
+
+export async function getStaticPaths() {
+  const lectures = await getCollection('lectures');
+  return lectures.map((lecture) => ({ params: { id: lecture.id }, props: { lecture } }));
+}
+
+const { lecture } = Astro.props;
+const { Content } = await render(lecture);
+const all = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
+const index = all.findIndex((item) => item.id === lecture.id);
+const prev = index > 0 ? all[index - 1] : undefined;
+const next = index < all.length - 1 ? all[index + 1] : undefined;
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title={`Лекция ${lecture.data.number}. ${lecture.data.title}`} description={lecture.data.summary}>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">Лекция {lecture.data.number} {lecture.data.date ? `· ${lecture.data.date}` : ''}</p>
+      <h1>{lecture.data.title}</h1>
+      <p class="lead">{lecture.data.summary}</p>
+
+      {lecture.data.blocks.length > 0 && (
+        <>
+          <h2>Из чего состоит лекция</h2>
+          <div class="blocks">
+            {lecture.data.blocks.map((block, i) => (
+              <div class="block-item">
+                <b>Блок {i + 1} · {block.name}</b>
+                <span>{block.hint}</span>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      <h2>Конспект</h2>
+      <Content />
+
+      {lecture.data.tasks.length > 0 && (
+        <>
+          <h2>Задачи для самопроверки</h2>
+          <ol class="tasks">
+            {lecture.data.tasks.map((task) => (
+              <li>{task}</li>
+            ))}
+          </ol>
+        </>
+      )}
+
+      <h2>Материалы</h2>
+      <ul class="links">
+        {lecture.data.slides ? (
+          <li><a href={lecture.data.slides}>Слайды лекции (PDF)</a></li>
+        ) : (
+          <li class="muted">Слайды появятся после лекции.</li>
+        )}
+        <li class="muted">Ноутбуки с примерами — по ходу семестра.</li>
+      </ul>
+
+      <div class="row" style="margin-top:28px">
+        {prev && <a href={withBase(`students/rl/lectures/${prev.id}/`)}>← {prev.data.title}</a>}
+        {next && <a href={withBase(`students/rl/lectures/${next.id}/`)}>{next.data.title} →</a>}
+      </div>
+    </article>
+  </div>
+</BaseLayout>

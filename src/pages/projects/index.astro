@@ -3,12 +3,38 @@ import BaseLayout from '../../layouts/BaseLayout.astro';
 ---
 
 <BaseLayout title="Проекты">
-  <h1>Проекты</h1>
-  <p class="lead">
-    Чем занимаюсь: продукты, инструменты и блог. У карточек будут свежие данные — последний релиз,
-    активность, ссылки на код.
+  <div class="hero">
+    <h1>Проекты</h1>
+    <p class="lead">
+      Чем занимаюсь: продукты, инструменты и блог. У карточек будет свежая информация — последний
+      релиз, активность, ссылки на код.
+    </p>
+  </div>
+
+  <h2>Что появится здесь</h2>
+  <ul class="topic-list">
+    <li>
+      <a href="https://github.com/philadelfic">
+        <h3>LLMesenger</h3>
+        <p class="muted">Мессенджер для LLM-харнесов через MCP: треды, доставка, вложения.</p>
+      </a>
+    </li>
+    <li>
+      <a href="https://github.com/philadelfic">
+        <h3>LLM Second Brain</h3>
+        <p class="muted">Долговременная память для ассистентов: заметки, поиск, знания о пользователе.</p>
+      </a>
+    </li>
+    <li>
+      <a href="https://t.me/HobbyOdnogoITishnika">
+        <h3>Блог Philadelfic</h3>
+        <p class="muted">Заметки о GitHub, столярке, технике и мыслях.</p>
+      </a>
+    </li>
+  </ul>
+
+  <p class="notice">
+    Раздел в работе — этап 1. Карточки получат живые данные из GitHub: последний релиз, дату
+    последнего коммита и ссылки на репозитории.
   </p>
-  <p class="notice">Раздел в работе — этап 1. Здесь появятся карточки LLMesenger, LLM Second Brain
-    и блога Philadelfic со свежей информацией из GitHub.</p>
-  <p class="muted">Пока все проекты можно посмотреть на <a href="https://github.com/philadelfic">GitHub</a>.</p>
 </BaseLayout>

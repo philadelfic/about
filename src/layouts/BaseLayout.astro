@@ -31,11 +31,16 @@ const nav = [
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0d0f13" media="(prefers-color-scheme: dark)" />
   </head>
   <body>
     <header class="site-header">
       <div class="wrap">
-        <a class="brand" href={base}>Олег Орловский</a>
+        <a class="brand" href={base}>
+          <span class="mark">О</span>
+          <span>Олег Орловский</span>
+        </a>
         <nav class="site-nav">
           {nav.map((item) => (
             <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
@@ -57,8 +62,7 @@ const nav = [
         <span>© {new Date().getFullYear()} Олег Орловский</span>
         <span>
           <a href="https://github.com/philadelfic">GitHub</a> ·
-          <a href="https://t.me/HobbyOdnogoITishnika">Телеграм</a> ·
-          <a href="https://philadelfic.github.io/resume/">Резюме</a>
+          <a href="https://t.me/HobbyOdnogoITishnika">Телеграм</a>
         </span>
       </div>
     </footer>

@@ -1,0 +1,48 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../components/CourseNav.astro';
+
+export async function getStaticPaths() {
+  const labs = await getCollection('labs');
+  return labs.map((lab) => ({ params: { id: lab.id }, props: { lab } }));
+}
+
+const { lab } = Astro.props;
+const { Content } = await render(lab);
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title={`Лабораторная ${lab.data.number}. ${lab.data.title}`} description={lab.data.summary}>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">Лабораторная работа {lab.data.number}{lab.data.when ? ` · ${lab.data.when}` : ''}</p>
+      <h1>{lab.data.title}</h1>
+      <p class="lead">{lab.data.summary}</p>
+
+      <Content />
+
+      {lab.data.steps.length > 0 && (
+        <>
+          <h2>Как проходят четыре занятия</h2>
+          <ol class="tasks">
+            {lab.data.steps.map((step) => (
+              <li>{step}</li>
+            ))}
+          </ol>
+        </>
+      )}
+
+      <h2>Что сдают</h2>
+      <p>{lab.data.deliverable ?? 'Решение и отчёт.'}</p>
+
+      <h2>Материалы</h2>
+      <ul class="links">
+        <li class="muted">Техзадание и каркас кода появятся к началу блока занятий.</li>
+        <li class="muted">Критерии оценивания — вместе с техзаданием.</li>
+      </ul>
+    </article>
+  </div>
+</BaseLayout>
