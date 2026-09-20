@@ -1,5 +1,5 @@
 ---
-import { getCollection } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
@@ -10,6 +10,7 @@ export async function getStaticPaths() {
 }
 
 const { topic } = Astro.props;
+const { Content } = await render(topic);
 const all = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
 const index = all.findIndex((item) => item.id === topic.id);
 const prev = index > 0 ? all[index - 1] : undefined;
@@ -31,17 +32,35 @@ const current = Astro.url.pathname;
       <h1>{topic.data.title}</h1>
       <p class="lead">{topic.data.summary}</p>
 
-      <h2>Материалы, которые прошли</h2>
       {topic.data.covered.length > 0 && (
-        <>
-          <p class="muted">Что разбирали:</p>
+        <div class="panel">
+          <b>Что разбирали на лекции</b>
           <ul class="tasks">
             {topic.data.covered.map((line) => (
               <li>{line}</li>
             ))}
           </ul>
+        </div>
+      )}
+
+      <h2>Теория</h2>
+      <Content />
+
+      {topic.data.qa.length > 0 && (
+        <>
+          <h2>Вопросы и ответы</h2>
+          <div class="qa">
+            {topic.data.qa.map((item) => (
+              <details>
+                <summary>{item.q}</summary>
+                <p>{item.a}</p>
+              </details>
+            ))}
+          </div>
         </>
       )}
+
+      <h2>Материалы</h2>
       {topic.data.lecture.length > 0 ? (
         <ul class="links">
           {topic.data.lecture.map((item) => (
@@ -51,7 +70,7 @@ const current = Astro.url.pathname;
           ))}
         </ul>
       ) : (
-        <p class="muted">Слайды и конспект появятся здесь.</p>
+        <p class="muted">Слайды лекции появятся здесь.</p>
       )}
 
       <h2>Семинарские материалы</h2>

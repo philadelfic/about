@@ -481,3 +481,35 @@ th {
 .gate button:hover {
   opacity: 0.92;
 }
+
+/* ---------- вопросы и ответы ---------- */
+
+.qa details {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  padding: 12px 16px;
+  margin: 0 0 10px;
+}
+
+.qa summary {
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.qa summary::marker {
+  color: var(--muted);
+}
+
+.qa details[open] summary {
+  margin-bottom: 8px;
+}
+
+.qa p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.panel .tasks {
+  margin-top: 10px;
+}
