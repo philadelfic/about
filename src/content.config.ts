@@ -13,6 +13,8 @@ const topics = defineCollection({
     covered: z.array(z.string()).default([]),
     /** Вопросы и ответы по теме. */
     qa: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
+    /** Терминология темы — списком в конце. */
+    terms: z.array(z.object({ term: z.string(), definition: z.string() })).default([]),
     /** Ссылки на материалы темы (слайды, конспекты) — появляются, когда есть. */
     lecture: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
   }),

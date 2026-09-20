@@ -70,6 +70,20 @@ const current = Astro.url.pathname;
         </>
       )}
 
+      {topic.data.terms.length > 0 && (
+        <>
+          <h2>Терминология</h2>
+          <dl class="terms">
+            {topic.data.terms.map((item) => (
+              <>
+                <dt>{item.term}</dt>
+                <dd>{item.definition}</dd>
+              </>
+            ))}
+          </dl>
+        </>
+      )}
+
       <div class="row" style="margin-top:28px">
         {prev && <a href={withBase(`students/mai/rl/topics/${prev.id}/`)}>← Тема {prev.data.number}</a>}
         {next && <a href={withBase(`students/mai/rl/topics/${next.id}/`)}>Тема {next.data.number} →</a>}
