@@ -32,6 +32,16 @@ const current = Astro.url.pathname;
       <p class="lead">{topic.data.summary}</p>
 
       <h2>Материалы, которые прошли</h2>
+      {topic.data.covered.length > 0 && (
+        <>
+          <p class="muted">Что разбирали:</p>
+          <ul class="tasks">
+            {topic.data.covered.map((line) => (
+              <li>{line}</li>
+            ))}
+          </ul>
+        </>
+      )}
       {topic.data.lecture.length > 0 ? (
         <ul class="links">
           {topic.data.lecture.map((item) => (
@@ -41,7 +51,7 @@ const current = Astro.url.pathname;
           ))}
         </ul>
       ) : (
-        <p class="muted">Материалы лекции появятся здесь.</p>
+        <p class="muted">Слайды и конспект появятся здесь.</p>
       )}
 
       <h2>Семинарские материалы</h2>

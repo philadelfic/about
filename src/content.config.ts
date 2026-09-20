@@ -9,7 +9,11 @@ const topics = defineCollection({
     title: z.string(),
     summary: z.string(),
     date: z.string().optional(),
+    /** Что разбирали на лекции — короткие тезисы. */
+    covered: z.array(z.string()).default([]),
+    /** Файлы и ссылки по лекции. */
     lecture: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
+    /** Файлы и ссылки по семинару. */
     seminar: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
   }),
 });
