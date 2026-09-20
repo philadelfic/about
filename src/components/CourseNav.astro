@@ -7,8 +7,7 @@ interface Props {
 }
 
 const { current } = Astro.props;
-const lectures = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
-const labs = (await getCollection('labs')).sort((a, b) => a.data.number - b.data.number);
+const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
 const isCurrent = (href: string) => current === href;
 ---
 
@@ -20,35 +19,28 @@ const isCurrent = (href: string) => current === href;
         href={withBase('students/mai/rl/')}
         aria-current={isCurrent(withBase('students/mai/rl/')) ? 'page' : undefined}
       >
-        Программа курса
+        Темы
+      </a>
+    </li>
+    <li>
+      <a
+        href={withBase('students/mai/rl/homework/')}
+        aria-current={isCurrent(withBase('students/mai/rl/homework/')) ? 'page' : undefined}
+      >
+        Домашние задания
       </a>
     </li>
   </ul>
 
-  <h2>Лекции</h2>
+  <h2>Пройденные темы</h2>
   <ul>
-    {lectures.map((lecture) => {
-      const href = withBase(`students/mai/rl/lectures/${lecture.id}/`);
+    {topics.map((topic) => {
+      const href = withBase(`students/mai/rl/topics/${topic.id}/`);
       return (
         <li>
           <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-            <span class="num">{lecture.data.number}</span>
-            {lecture.data.title}
-          </a>
-        </li>
-      );
-    })}
-  </ul>
-
-  <h2>Лабораторные</h2>
-  <ul>
-    {labs.map((lab) => {
-      const href = withBase(`students/mai/rl/labs/${lab.id}/`);
-      return (
-        <li>
-          <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-            <span class="num">{lab.data.number}</span>
-            {lab.data.title}
+            <span class="num">{topic.data.number}</span>
+            {topic.data.title}
           </a>
         </li>
       );

@@ -3,8 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 import { withBase } from '../../../data/site';
 
-const lectures = await getCollection('lectures');
-const labs = await getCollection('labs');
+const topics = await getCollection('topics');
 ---
 
 <BaseLayout title="МАИ">
@@ -16,10 +15,10 @@ const labs = await getCollection('labs');
   <div class="cards">
     <a class="card" href={withBase('students/mai/rl/')}>
       <h3>Обучение с подкреплением</h3>
-      <p>{lectures.length} лекции, {labs.length} лабораторные работы, рубежные контроли.</p>
+      <p>Материалы по темам: лекции и семинары. Сейчас открыто тем: {topics.length}.</p>
       <span class="more">Открыть курс →</span>
     </a>
   </div>
 
-  <p class="muted">Материалы по темам добавляются по ходу семестра.</p>
+  <p class="muted">Материалы добавляются по мере прохождения тем.</p>
 </BaseLayout>

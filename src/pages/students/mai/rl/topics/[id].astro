@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
+
+export async function getStaticPaths() {
+  const topics = await getCollection('topics');
+  return topics.map((topic) => ({ params: { id: topic.id }, props: { topic } }));
+}
+
+const { topic } = Astro.props;
+const all = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
+const index = all.findIndex((item) => item.id === topic.id);
+const prev = index > 0 ? all[index - 1] : undefined;
+const next = index < all.length - 1 ? all[index + 1] : undefined;
+const current = Astro.url.pathname;
+---
+
+<BaseLayout
+  title={`Тема ${topic.data.number}. ${topic.data.title}`}
+  description={topic.data.summary}
+>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">
+        Тема {topic.data.number}{topic.data.date ? ` · лекция ${topic.data.date}` : ''}
+      </p>
+      <h1>{topic.data.title}</h1>
+      <p class="lead">{topic.data.summary}</p>
+
+      <h2>Материалы, которые прошли</h2>
+      {topic.data.lecture.length > 0 ? (
+        <ul class="links">
+          {topic.data.lecture.map((item) => (
+            <li>
+              {item.href ? <a href={item.href}>{item.title}</a> : <span>{item.title}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="muted">Материалы лекции появятся здесь.</p>
+      )}
+
+      <h2>Семинарские материалы</h2>
+      {topic.data.seminar.length > 0 ? (
+        <ul class="links">
+          {topic.data.seminar.map((item) => (
+            <li>
+              {item.href ? <a href={item.href}>{item.title}</a> : <span>{item.title}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p class="muted">Материалы семинара появятся здесь.</p>
+      )}
+
+      <div class="row" style="margin-top:28px">
+        {prev && <a href={withBase(`students/mai/rl/topics/${prev.id}/`)}>← Тема {prev.data.number}</a>}
+        {next && <a href={withBase(`students/mai/rl/topics/${next.id}/`)}>Тема {next.data.number} →</a>}
+      </div>
+    </article>
+  </div>
+</BaseLayout>

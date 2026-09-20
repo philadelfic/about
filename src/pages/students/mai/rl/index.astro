@@ -4,80 +4,39 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../components/CourseNav.astro';
 import { withBase } from '../../../../data/site';
 
-const lectures = (await getCollection('lectures')).sort((a, b) => a.data.number - b.data.number);
-const labs = (await getCollection('labs')).sort((a, b) => a.data.number - b.data.number);
-
-const controls = [
-  { number: 1, topic: 'Область применимости машинного обучения с подкреплением', when: 'после лекции 2' },
-  { number: 2, topic: 'Концепция взаимодействия агента и среды', when: 'после лекции 3' },
-  { number: 3, topic: 'Методы SARSA и Q-обучения', when: 'после лекции 6' },
-];
-
+const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
 const current = Astro.url.pathname;
 ---
 
-<BaseLayout title="Обучение с подкреплением" description="Программа курса «Обучение с подкреплением»: лекции, лабораторные работы и рубежные контроли.">
+<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, лекции и семинары.">
   <div class="course">
     <CourseNav current={current} />
 
     <div>
       <p class="muted">МАИ · магистратура</p>
       <h1>Обучение с подкреплением</h1>
-      <p class="lead">Программа курса: темы лекций, лабораторные работы и рубежные контроли.</p>
+      <p class="lead">
+        Материалы по темам курса: что прошли на лекции и что разбирали на семинаре. Темы
+        добавляются по мере прохождения.
+      </p>
 
-      <h2 id="lectures">Лекции</h2>
-      <table>
-        <thead>
-          <tr><th>№</th><th>Тема</th><th>Дата</th></tr>
-        </thead>
-        <tbody>
-          {lectures.map((lecture) => (
-            <tr>
-              <td>{lecture.data.number}</td>
-              <td>
-                <a href={withBase(`students/mai/rl/lectures/${lecture.id}/`)}>{lecture.data.title}</a>
-              </td>
-              <td class="muted">{lecture.data.date ?? '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <h2 id="topics">Темы</h2>
+      <ul class="topic-list">
+        {topics.map((topic) => (
+          <li>
+            <a href={withBase(`students/mai/rl/topics/${topic.id}/`)}>
+              <span class="step">Тема {topic.data.number}{topic.data.date ? ` · ${topic.data.date}` : ''}</span>
+              <h3>{topic.data.title}</h3>
+              <p class="muted">{topic.data.summary}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
 
-      <h2 id="labs">Лабораторные работы</h2>
-      <table>
-        <thead>
-          <tr><th>№</th><th>Работа</th><th>Когда</th></tr>
-        </thead>
-        <tbody>
-          {labs.map((lab) => (
-            <tr>
-              <td>{lab.data.number}</td>
-              <td>
-                <a href={withBase(`students/mai/rl/labs/${lab.id}/`)}>{lab.data.title}</a>
-              </td>
-              <td class="muted">{lab.data.when ?? '—'}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <h2 id="controls">Рубежные контроли</h2>
-      <table>
-        <thead>
-          <tr><th>№</th><th>Тема</th><th>Когда</th></tr>
-        </thead>
-        <tbody>
-          {controls.map((control) => (
-            <tr>
-              <td>{control.number}</td>
-              <td>{control.topic}</td>
-              <td class="muted">{control.when}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      <p class="muted">Материалы по темам добавляются по ходу семестра.</p>
+      <h2 id="homework">Домашние задания</h2>
+      <p class="muted">
+        Задания вынесены отдельно: <a href={withBase('students/mai/rl/homework/')}>домашние задания →</a>
+      </p>
     </div>
   </div>
 </BaseLayout>
