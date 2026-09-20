@@ -17,8 +17,14 @@ const nav = [
   { href: withBase('me/'), label: 'Обо мне' },
 ];
 
-// Раздел «Т1 + МАИ» — внутри него оформление в духе Т1 (см. стили .t1).
+// Внутри «Т1 + МАИ» — свой мини-сайт: своя шапка, навигация и подвал, без шапки портала.
 const isT1 = current.startsWith(withBase('students/mai/'));
+
+const courseNav = [
+  { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
+  { href: withBase('students/mai/rl/homework/'), label: 'Домашние задания' },
+  { href: withBase('students/mai/rl/seminars/'), label: 'Семинары' },
+];
 ---
 
 <!doctype html>
@@ -36,27 +42,45 @@ const isT1 = current.startsWith(withBase('students/mai/'));
     <meta name="theme-color" content="#ffffff" />
   </head>
   <body class={isT1 ? 'theme-t1' : undefined}>
-    <header class="site-header">
-      <div class="wrap">
-        <a class="brand" href={base}>
-          <span class="mark">О</span>
-          <span>Олег Орловский</span>
-        </a>
-        {isT1 && (
-          <div class="t1-badge">
-            <span class="t1-badge-mark">Т1</span>
-            <span>+ МАИ</span>
-          </div>
-        )}
-        <nav class="site-nav">
-          {nav.map((item) => (
-            <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
-              {item.label}
-            </a>
-          ))}
-        </nav>
-      </div>
-    </header>
+    {isT1 ? (
+      <header class="t1-header">
+        <div class="wrap">
+          <a class="t1-logo" href={withBase('students/mai/')}>
+            <span class="t1-logo-mark">Т1</span>
+            <span>МАИ</span>
+          </a>
+          <nav class="t1-nav">
+            {courseNav.map((item) => (
+              <a
+                href={item.href}
+                aria-current={current.startsWith(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            ))}
+          </nav>
+          <a class="t1-back" href={base}>
+            ← На портал
+          </a>
+        </div>
+      </header>
+    ) : (
+      <header class="site-header">
+        <div class="wrap">
+          <a class="brand" href={base}>
+            <span class="mark">О</span>
+            <span>Олег Орловский</span>
+          </a>
+          <nav class="site-nav">
+            {nav.map((item) => (
+              <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ))}
+          </nav>
+        </div>
+      </header>
+    )}
 
     <main>
       <div class="wrap">
@@ -86,58 +110,27 @@ const isT1 = current.startsWith(withBase('students/mai/'));
       </div>
     </main>
 
-    <footer class="site-footer">
-      <div class="wrap">
-        <span>© {new Date().getFullYear()} Олег Орловский</span>
-        <span>
-          <a href={links.github}>GitHub</a> ·
-          <a href={links.telegram}>Телеграм</a>
-        </span>
-      </div>
-    </footer>
+    {isT1 ? (
+      <footer class="t1-footer">
+        <div class="wrap">
+          <span>Т1 + МАИ · курс «Обучение с подкреплением»</span>
+          <span>
+            <a href={base}>Олег Орловский</a> · <a href={base}>На портал</a>
+          </span>
+        </div>
+      </footer>
+    ) : (
+      <footer class="site-footer">
+        <div class="wrap">
+          <span>© {new Date().getFullYear()} Олег Орловский</span>
+          <span>
+            <a href={links.github}>GitHub</a> ·
+            <a href={links.telegram}>Телеграм</a>
+          </span>
+        </div>
+      </footer>
+    )}
 
-    <script is:inline define:vars={{ gate, base }}>
-      (function () {
-        const cfg = { scope: gate.scope, hash: gate.hash, key: gate.key, base: base };
-        const path = location.pathname;
-        const rel = path.startsWith(cfg.base) ? path.slice(cfg.base.length) : path;
-        const isProtected = cfg.scope.some((s) => rel === s || rel.startsWith(s) || rel.startsWith(s + '/'));
-        if (!isProtected) return;
-        if (localStorage.getItem(cfg.key) === 'ok') return;
-
-        function fnv1a(str) {
-          let h = 0x811c9dc5;
-          const bytes = new TextEncoder().encode(str);
-          for (const b of bytes) {
-            h ^= b;
-            h = Math.imul(h, 0x01000193) >>> 0;
-          }
-          return h.toString(16).padStart(8, '0');
-        }
-
-        const content = document.getElementById('page-content');
-        const box = document.getElementById('gate');
-        const form = document.getElementById('gate-form');
-        const input = document.getElementById('gate-code');
-        const error = document.getElementById('gate-error');
-        if (!content || !box || !form || !input || !error) return;
-
-        content.hidden = true;
-        box.hidden = false;
-        input.focus();
-
-        form.addEventListener('submit', (event) => {
-          event.preventDefault();
-          if (fnv1a(input.value.trim().toLowerCase()) === cfg.hash) {
-            localStorage.setItem(cfg.key, 'ok');
-            location.reload();
-            return;
-          }
-          error.hidden = false;
-          input.select();
-        });
-      })();
-    </script>
     <script is:inline>
       // Увеличиваем картинки по клику: оверлей на весь экран, закрытие — клик или Esc
       (function () {
@@ -178,6 +171,49 @@ const isT1 = current.startsWith(withBase('students/mai/'));
               open(img.currentSrc || img.src, img.alt);
             }
           });
+        });
+      })();
+    </script>
+
+    <script is:inline define:vars={{ gate, base }}>
+      (function () {
+        const cfg = { scope: gate.scope, hash: gate.hash, key: gate.key, base: base };
+        const path = location.pathname;
+        const rel = path.startsWith(cfg.base) ? path.slice(cfg.base.length) : path;
+        const isProtected = cfg.scope.some((s) => rel === s || rel.startsWith(s) || rel.startsWith(s + '/'));
+        if (!isProtected) return;
+        if (localStorage.getItem(cfg.key) === 'ok') return;
+
+        function fnv1a(str) {
+          let h = 0x811c9dc5;
+          const bytes = new TextEncoder().encode(str);
+          for (const b of bytes) {
+            h ^= b;
+            h = Math.imul(h, 0x01000193) >>> 0;
+          }
+          return h.toString(16).padStart(8, '0');
+        }
+
+        const content = document.getElementById('page-content');
+        const box = document.getElementById('gate');
+        const form = document.getElementById('gate-form');
+        const input = document.getElementById('gate-code');
+        const error = document.getElementById('gate-error');
+        if (!content || !box || !form || !input || !error) return;
+
+        content.hidden = true;
+        box.hidden = false;
+        input.focus();
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          if (fnv1a(input.value.trim().toLowerCase()) === cfg.hash) {
+            localStorage.setItem(cfg.key, 'ok');
+            location.reload();
+            return;
+          }
+          error.hidden = false;
+          input.select();
         });
       })();
     </script>
