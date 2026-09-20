@@ -13,20 +13,6 @@
   --maxw: 1120px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d0f13;
-    --bg-soft: #14171d;
-    --fg: #f2f4f8;
-    --muted: #9aa3b2;
-    --border: #232833;
-    --card: #14171d;
-    --accent: #7f9bff;
-    --accent-2: #b98cff;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.35);
-  }
-}
-
 * {
   box-sizing: border-box;
 }
@@ -671,12 +657,11 @@ article img {
 .materials li {
   border-bottom: none;
 }
-
-/* ---------- раздел «Т1 + МАИ»: оформление в духе Т1 ---------- */
-/* Взято с t1.ru: голубой #1DAFF7 (и тёмный #008ACD на наведении), графит #2A2D30,
+/* ---------- раздел «Т1 + МАИ»: белая тема в стиле Т1 ---------- */
+/* Значения с t1.ru: голубой #1DAFF7 (наведение #008ACD), графит #2A2D30,
    серые #82858E / #62636B / #AEB1B7, светлые поверхности #F4F4F4 и #EBEBEB,
-   характерные пилюли (border-radius: 100px) для кнопок и плашек.
-   Шрифт Т1 — ALS-Hauss, он проприетарный, поэтому системный. */
+   характерные пилюли (border-radius: 100px). Шрифт Т1 — ALS-Hauss (проприетарный),
+   поэтому системный. */
 
 .t1 {
   --accent: #1daff7;
@@ -688,6 +673,20 @@ article img {
   --card: #ffffff;
   --radius: 12px;
   --radius-sm: 10px;
+}
+
+.t1 h1 {
+  font-size: clamp(32px, 4.6vw, 46px);
+  font-weight: 700;
+  color: #2a2d30;
+}
+
+.t1 h2 {
+  font-weight: 600;
+}
+
+.t1 .lead {
+  color: #62636b;
 }
 
 .t1-badge {
@@ -715,14 +714,12 @@ article img {
   place-items: center;
 }
 
-.t1 .lead {
-  color: #62636b;
-}
-
+/* карточки: белые, светлая граница, мягкая тень */
 .t1 .card,
 .t1 .topic-list a {
-  background: #f4f4f4;
+  background: #ffffff;
   border-color: #ebebeb;
+  box-shadow: 0 1px 2px rgba(42, 45, 48, 0.04), 0 6px 20px rgba(42, 45, 48, 0.05);
 }
 
 .t1 .card:hover,
@@ -745,29 +742,41 @@ article img {
   background: #008acd;
 }
 
+/* левое меню — пилюли */
 .t1 .course-nav a {
   border-radius: 100px;
+  color: #62636b;
+}
+
+.t1 .course-nav a:hover {
+  background: #f4f4f4;
+  color: #2a2d30;
 }
 
 .t1 .course-nav a[aria-current='page'] {
   background: #1daff7;
   color: #ffffff;
+  font-weight: 600;
 }
 
 .t1 .course-nav a[aria-current='page'] .num {
-  color: #ffffff;
+  color: rgba(255, 255, 255, 0.75);
 }
 
+/* блоки внутри страниц */
 .t1 .panel,
 .t1 .qa details {
   background: #f4f4f4;
   border-color: #ebebeb;
 }
 
+.t1 .qa summary {
+  color: #2a2d30;
+}
+
 .t1 .materials {
   background: #ffffff;
   border-color: #ebebeb;
-  border-left-color: #1daff7;
 }
 
 .t1 article blockquote {
@@ -781,6 +790,7 @@ article img {
 
 .t1 .terms-table td:first-child {
   color: #2a2d30;
+  font-weight: 600;
 }
 
 .t1 .step,
@@ -791,4 +801,37 @@ article img {
 .t1 .notice {
   background: #eaf7fe;
   border-color: #a6e4fa;
+}
+
+.t1 .gate button {
+  background: #1daff7;
+}
+
+/* ---------- общая вылизанность по сайту ---------- */
+
+:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+h2 {
+  font-weight: 600;
+}
+
+article h2 {
+  margin-top: 48px;
+}
+
+article h2:first-of-type {
+  margin-top: 36px;
+}
+
+.links li a,
+article a {
+  text-underline-offset: 3px;
+}
+
+.topic-list h3 {
+  margin-bottom: 8px;
 }
