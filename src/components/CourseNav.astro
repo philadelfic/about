@@ -3,18 +3,11 @@ import { getCollection } from 'astro:content';
 import { withBase } from '../data/site';
 import { optionalCollection } from '../lib/collections';
 
-interface TocItem {
-  text: string;
-  id: string;
-  level: number;
-}
-
 interface Props {
   current: string;
-  toc?: TocItem[];
 }
 
-const { current, toc } = Astro.props;
+const { current } = Astro.props;
 
 const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
 const homework = (await optionalCollection('homework')).sort(
@@ -59,19 +52,6 @@ const homeworkLabel = (item: (typeof homework)[number]) =>
       </a>
     </li>
   </ul>
-
-  {toc && toc.length > 0 && (
-    <>
-      <h2>Содержание темы</h2>
-      <ul class="toc">
-        {toc.map((item) => (
-          <li class={item.level > 0 ? 'lvl-1' : undefined}>
-            <a href={`#${item.id}`}>{item.text}</a>
-          </li>
-        ))}
-      </ul>
-    </>
-  )}
 
   {section === 'homework' && homework.length > 0 && (
     <>

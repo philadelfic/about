@@ -10,7 +10,7 @@
   --shadow: 0 1px 2px rgba(16, 18, 22, 0.04), 0 8px 24px rgba(16, 18, 22, 0.06);
   --radius: 16px;
   --radius-sm: 10px;
-  --maxw: 1120px;
+  --maxw: 1280px;
 }
 
 * {
@@ -1026,4 +1026,71 @@ article h2,
 article h3,
 article .panel {
   scroll-margin-top: 92px;
+}
+
+/* ---------- страница темы: слева курс, справа содержание ---------- */
+
+@media (min-width: 1180px) {
+  .course--toc {
+    grid-template-columns: 250px minmax(0, 1fr) 210px;
+  }
+
+  body.theme-t1 .course--toc {
+    grid-template-columns: 270px minmax(0, 1fr) 220px;
+  }
+}
+
+.topic-toc {
+  display: none;
+  font-size: 14px;
+}
+
+@media (min-width: 1180px) {
+  .topic-toc {
+    display: block;
+    position: sticky;
+    top: 96px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
+  }
+}
+
+.topic-toc h2 {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin: 0 0 10px;
+}
+
+.topic-toc ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.topic-toc li {
+  margin: 0 0 1px;
+}
+
+.topic-toc a {
+  display: block;
+  padding: 5px 0;
+  color: var(--muted);
+  line-height: 1.35;
+}
+
+.topic-toc a:hover {
+  color: var(--fg);
+  text-decoration: none;
+}
+
+.topic-toc .lvl-1 a {
+  padding-left: 12px;
+  font-size: 13.5px;
+}
+
+.topic-toc .lvl-2 a {
+  padding-left: 22px;
+  font-size: 13.5px;
 }

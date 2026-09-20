@@ -2,6 +2,7 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
+import TopicToc from '../../../../../components/TopicToc.astro';
 import { withBase } from '../../../../../data/site';
 import { slugify } from '../../../../../lib/slug.mjs';
 
@@ -21,7 +22,7 @@ const current = Astro.url.pathname;
 const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
 const isFile = (value: string) => !value.startsWith('http');
 
-// Оглавление темы: разделы страницы + заголовки теории (id расставляет rehype-плагин).
+// Содержание темы (правая колонка): разделы страницы + заголовки теории.
 const used = new Map();
 const theoryHeadings = [];
 for (const raw of (topic.body ?? '').split('\n')) {
@@ -48,8 +49,8 @@ const toc = [
   title={`Тема ${topic.data.number}. ${topic.data.title}`}
   description={topic.data.summary}
 >
-  <div class="course">
-    <CourseNav current={current} toc={toc} />
+  <div class="course course--toc">
+    <CourseNav current={current} />
 
     <article>
       <p class="muted">
@@ -129,5 +130,7 @@ const toc = [
         {next && <a href={withBase(`students/mai/rl/topics/${next.id}/`)}>Тема {next.data.number} →</a>}
       </div>
     </article>
+
+    <TopicToc items={toc} />
   </div>
 </BaseLayout>
