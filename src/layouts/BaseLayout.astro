@@ -10,9 +10,12 @@ interface Props {
 }
 
 const current = Astro.url.pathname;
+// Путь без базового префикса и без ведущего слэша: '' | 'projects/' | 'en/projects/'
+const root = base.replace(/\/$/, '');
+const rel = (current.startsWith(root) ? current.slice(root.length) : current).replace(/^\//, '');
 
 // Язык страницы: русский в корне, английский — под /en/.
-const lang: Lang = Astro.props.lang ?? (current.startsWith(withBase('en/')) ? 'en' : 'ru');
+const lang: Lang = Astro.props.lang ?? (rel === 'en' || rel.startsWith('en/') ? 'en' : 'ru');
 const t = dict[lang];
 
 // Внутри «Т1 + МАИ» — только русский: без переключателей языка и темы.
@@ -29,9 +32,8 @@ const nav = [
 ];
 
 // Та же страница на другом языке.
-const rest = current.startsWith(base) ? current.slice(base.length) : current;
 const altHref =
-  lang === 'en' ? withBase(rest.replace(/^en\//, '')) : withBase(`en/${rest}`);
+  lang === 'en' ? withBase(rel.replace(/^en\/?/, '')) : withBase(`en/${rel}`);
 
 const courseNav = [
   { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
@@ -67,17 +69,20 @@ const courseNav = [
         } catch (e) {}
 
         try {
+          var root = base.replace(/\/$/, '');
           var path = location.pathname;
-          // Раздел курса «Т1 + МАИ» — только по-русски.
-          if (path.indexOf(base + 'students/mai') === 0) return;
+          var rel = (path.indexOf(root) === 0 ? path.slice(root.length) : path).replace(/^\//, '');
 
-          var isEn = path.indexOf(base + 'en/') === 0;
+          // Раздел курса «Т1 + МАИ» — только по-русски.
+          if (rel.indexOf('students/mai') === 0) return;
+
+          var isEn = rel === 'en' || rel.indexOf('en/') === 0;
           var saved = localStorage.getItem('about.lang');
           var browserRu = (navigator.language || 'ru').toLowerCase().indexOf('ru') === 0;
           var want = saved || (browserRu ? 'ru' : 'en');
 
-          if (want === 'en' && !isEn) location.replace(base + 'en/' + path.slice(base.length));
-          if (want === 'ru' && isEn) location.replace(base + path.slice(base.length + 3));
+          if (want === 'en' && !isEn) location.replace(root + '/en/' + rel);
+          if (want === 'ru' && isEn) location.replace(root + '/' + rel.replace(/^en\/?/, ''));
         } catch (e) {}
       })();
     </script>
