@@ -1,7 +1,7 @@
 import { defineCollection, z } from 'astro:content';
 import { glob } from 'astro/loaders';
 
-/** Темы курса: теория, вопросы-ответы и материалы прошедших занятий. */
+/** Темы курса: теория и вопросы-ответы. Добавляем по мере прохождения. */
 const topics = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/topics' }),
   schema: z.object({
@@ -13,10 +13,8 @@ const topics = defineCollection({
     covered: z.array(z.string()).default([]),
     /** Вопросы и ответы по теме. */
     qa: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
-    /** Файлы и ссылки по лекции (слайды, конспекты). */
+    /** Ссылки на материалы темы (слайды, конспекты) — появляются, когда есть. */
     lecture: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
-    /** Файлы и ссылки по семинару. */
-    seminar: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
   }),
 });
 
@@ -30,4 +28,16 @@ const homework = defineCollection({
   }),
 });
 
-export const collections = { topics, homework };
+/** Семинарские занятия. */
+const seminars = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/seminars' }),
+  schema: z.object({
+    number: z.number(),
+    title: z.string(),
+    summary: z.string(),
+    date: z.string().optional(),
+    materials: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
+  }),
+});
+
+export const collections = { topics, homework, seminars };

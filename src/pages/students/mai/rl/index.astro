@@ -4,39 +4,50 @@ import BaseLayout from '../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../components/CourseNav.astro';
 import { withBase } from '../../../../data/site';
 
-const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
+const topics = await getCollection('topics');
+const homework = await getCollection('homework');
+const seminars = await getCollection('seminars');
 const current = Astro.url.pathname;
+
+const sections = [
+  {
+    href: withBase('students/mai/rl/topics/'),
+    title: 'Темы',
+    text: `Пройденные темы: что разбирали, теория и вопросы-ответы. Сейчас открыто: ${topics.length}.`,
+  },
+  {
+    href: withBase('students/mai/rl/homework/'),
+    title: 'Домашние задания',
+    text: homework.length > 0 ? `Задания: ${homework.length}.` : 'Задания к темам курса.',
+  },
+  {
+    href: withBase('students/mai/rl/seminars/'),
+    title: 'Семинарские занятия',
+    text: seminars.length > 0 ? `Проведено занятий: ${seminars.length}.` : 'Материалы семинаров.',
+  },
+];
 ---
 
-<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, лекции и семинары.">
+<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, семинарские занятия.">
   <div class="course">
     <CourseNav current={current} />
 
     <div>
       <p class="muted">МАИ · магистратура</p>
       <h1>Обучение с подкреплением</h1>
-      <p class="lead">
-        Материалы по темам курса: что прошли на лекции и что разбирали на семинаре. Темы
-        добавляются по мере прохождения.
-      </p>
+      <p class="lead">Материалы курса: темы, домашние задания и семинарские занятия.</p>
 
-      <h2 id="topics">Темы</h2>
-      <ul class="topic-list">
-        {topics.map((topic) => (
-          <li>
-            <a href={withBase(`students/mai/rl/topics/${topic.id}/`)}>
-              <span class="step">Тема {topic.data.number}{topic.data.date ? ` · ${topic.data.date}` : ''}</span>
-              <h3>{topic.data.title}</h3>
-              <p class="muted">{topic.data.summary}</p>
-            </a>
-          </li>
+      <div class="cards">
+        {sections.map((section) => (
+          <a class="card" href={section.href}>
+            <h3>{section.title}</h3>
+            <p>{section.text}</p>
+            <span class="more">Открыть →</span>
+          </a>
         ))}
-      </ul>
+      </div>
 
-      <h2 id="homework">Домашние задания</h2>
-      <p class="muted">
-        Задания вынесены отдельно: <a href={withBase('students/mai/rl/homework/')}>домашние задания →</a>
-      </p>
+      <p class="muted">Материалы добавляются по мере прохождения занятий.</p>
     </div>
   </div>
 </BaseLayout>

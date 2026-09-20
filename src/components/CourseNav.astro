@@ -16,8 +16,8 @@ const isCurrent = (href: string) => current === href;
   <ul>
     <li>
       <a
-        href={withBase('students/mai/rl/')}
-        aria-current={isCurrent(withBase('students/mai/rl/')) ? 'page' : undefined}
+        href={withBase('students/mai/rl/topics/')}
+        aria-current={isCurrent(withBase('students/mai/rl/topics/')) ? 'page' : undefined}
       >
         Темы
       </a>
@@ -28,6 +28,14 @@ const isCurrent = (href: string) => current === href;
         aria-current={isCurrent(withBase('students/mai/rl/homework/')) ? 'page' : undefined}
       >
         Домашние задания
+      </a>
+    </li>
+    <li>
+      <a
+        href={withBase('students/mai/rl/seminars/')}
+        aria-current={isCurrent(withBase('students/mai/rl/seminars/')) ? 'page' : undefined}
+      >
+        Семинарские занятия
       </a>
     </li>
   </ul>

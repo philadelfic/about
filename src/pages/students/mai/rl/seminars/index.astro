@@ -1,0 +1,44 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+
+const seminars = (await getCollection('seminars')).sort((a, b) => a.data.number - b.data.number);
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title="Семинарские занятия" description="Материалы семинарских занятий курса «Обучение с подкреплением».">
+  <div class="course">
+    <CourseNav current={current} />
+
+    <div>
+      <p class="muted">МАИ · Обучение с подкреплением</p>
+      <h1>Семинарские занятия</h1>
+      <p class="lead">Что разбирали на семинарах и материалы к ним.</p>
+
+      {seminars.length === 0 ? (
+        <p class="muted">Занятий пока не было — материалы появятся после первого семинара.</p>
+      ) : (
+        seminars.map((seminar) => (
+          <article class="panel">
+            <p class="muted">
+              Занятие {seminar.data.number}
+              {seminar.data.date ? ` · ${seminar.data.date}` : ''}
+            </p>
+            <h3>{seminar.data.title}</h3>
+            <p>{seminar.data.summary}</p>
+            {seminar.data.materials.length > 0 && (
+              <ul class="links">
+                {seminar.data.materials.map((item) => (
+                  <li>
+                    {item.href ? <a href={item.href}>{item.title}</a> : <span>{item.title}</span>}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </article>
+        ))
+      )}
+    </div>
+  </div>
+</BaseLayout>
