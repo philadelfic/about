@@ -657,77 +657,142 @@ article img {
 .materials li {
   border-bottom: none;
 }
-/* ---------- раздел «Т1 + МАИ»: белая тема в стиле Т1 ---------- */
-/* Значения с t1.ru: голубой #1DAFF7 (наведение #008ACD), графит #2A2D30,
-   серые #82858E / #62636B / #AEB1B7, светлые поверхности #F4F4F4 и #EBEBEB,
-   характерные пилюли (border-radius: 100px). Шрифт Т1 — ALS-Hauss (проприетарный),
-   поэтому системный. */
+/* ---------- автоматическая тёмная тема (кроме раздела Т1) ---------- */
 
-.t1 {
-  --accent: #1daff7;
-  --accent-2: #1daff7;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0f13;
+    --bg-soft: #14171d;
+    --fg: #f2f4f8;
+    --muted: #9aa3b2;
+    --border: #232833;
+    --card: #14171d;
+    --accent: #7f9bff;
+    --accent-2: #b98cff;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.35);
+  }
+}
+
+/* ---------- раздел «Т1 + МАИ»: всегда белая тема в стиле Т1 ---------- */
+/* Значения с t1.ru: голубой #1DAFF7 (наведение #008ACD), графит #2A2D30,
+   серые #82858E / #62636B / #AEB1B7, светлые #F4F4F4 и #EBEBEB, пилюли 100px.
+   Шрифт Т1 — ALS-Hauss (проприетарный), поэтому системный. */
+
+body.theme-t1 {
+  color-scheme: light;
+  --bg: #ffffff;
+  --bg-soft: #f4f4f4;
   --fg: #2a2d30;
   --muted: #82858e;
   --border: #ebebeb;
-  --bg-soft: #f4f4f4;
   --card: #ffffff;
+  --accent: #1daff7;
+  --accent-2: #1daff7;
   --radius: 12px;
   --radius-sm: 10px;
+  --shadow: 0 1px 2px rgba(42, 45, 48, 0.04), 0 8px 24px rgba(42, 45, 48, 0.06);
 }
 
-.t1 h1 {
-  font-size: clamp(32px, 4.6vw, 46px);
-  font-weight: 700;
-  color: #2a2d30;
-}
-
-.t1 h2 {
-  font-weight: 600;
-}
-
-.t1 .lead {
-  color: #62636b;
+/* своя шапка: голубая линия сверху, плашка раздела рядом с именем, меню-пилюли */
+body.theme-t1 .site-header {
+  border-bottom-color: #ebebeb;
+  box-shadow: inset 0 3px 0 0 #1daff7;
 }
 
 .t1-badge {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  margin: 0 0 24px;
-  padding: 5px 18px 5px 6px;
+  gap: 9px;
+  padding: 4px 16px 4px 5px;
   background: #f4f4f4;
   border-radius: 100px;
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 600;
   color: #2a2d30;
+  white-space: nowrap;
 }
 
 .t1-badge-mark {
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   border-radius: 50%;
   background: #1daff7;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 700;
   display: grid;
   place-items: center;
 }
 
-/* карточки: белые, светлая граница, мягкая тень */
-.t1 .card,
-.t1 .topic-list a {
-  background: #ffffff;
-  border-color: #ebebeb;
-  box-shadow: 0 1px 2px rgba(42, 45, 48, 0.04), 0 6px 20px rgba(42, 45, 48, 0.05);
+body.theme-t1 .site-nav a {
+  border-radius: 100px;
+  padding: 8px 14px;
+  color: #62636b;
 }
 
-.t1 .card:hover,
-.t1 .topic-list a:hover {
+body.theme-t1 .site-nav a:hover {
+  background: #f4f4f4;
+  color: #2a2d30;
+}
+
+body.theme-t1 .site-nav a[aria-current='page'] {
+  background: #1daff7;
+  color: #ffffff;
+}
+
+/* крупная типографика и свой ритм */
+body.theme-t1 h1 {
+  font-size: clamp(34px, 5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+  color: #2a2d30;
+}
+
+body.theme-t1 h2 {
+  font-size: 26px;
+  margin-top: 56px;
+  color: #2a2d30;
+}
+
+body.theme-t1 .lead {
+  font-size: 19px;
+  color: #62636b;
+  max-width: 60ch;
+}
+
+body.theme-t1 main {
+  padding-top: 56px;
+}
+
+body.theme-t1 .course {
+  gap: 40px;
+}
+
+@media (min-width: 900px) {
+  body.theme-t1 .course {
+    grid-template-columns: 270px 1fr;
+  }
+}
+
+/* карточки: белые, светлая граница, мягкая тень */
+body.theme-t1 .card,
+body.theme-t1 .topic-list a {
+  background: #ffffff;
+  border-color: #ebebeb;
+  box-shadow: var(--shadow);
+}
+
+body.theme-t1 .card:hover,
+body.theme-t1 .topic-list a:hover {
   border-color: #1daff7;
 }
 
-.t1 .more {
+body.theme-t1 .topic-list {
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+}
+
+body.theme-t1 .more {
   display: inline-block;
   margin-top: 14px;
   padding: 8px 18px;
@@ -738,100 +803,77 @@ article img {
   font-weight: 600;
 }
 
-.t1 .card:hover .more {
+body.theme-t1 .card:hover .more {
   background: #008acd;
 }
 
 /* левое меню — пилюли */
-.t1 .course-nav a {
+body.theme-t1 .course-nav a {
   border-radius: 100px;
   color: #62636b;
+  padding: 9px 14px;
 }
 
-.t1 .course-nav a:hover {
+body.theme-t1 .course-nav a:hover {
   background: #f4f4f4;
   color: #2a2d30;
 }
 
-.t1 .course-nav a[aria-current='page'] {
+body.theme-t1 .course-nav a[aria-current='page'] {
   background: #1daff7;
   color: #ffffff;
   font-weight: 600;
 }
 
-.t1 .course-nav a[aria-current='page'] .num {
+body.theme-t1 .course-nav a[aria-current='page'] .num {
   color: rgba(255, 255, 255, 0.75);
 }
 
+body.theme-t1 .course-nav h2 {
+  font-weight: 600;
+  letter-spacing: 0.1em;
+}
+
 /* блоки внутри страниц */
-.t1 .panel,
-.t1 .qa details {
+body.theme-t1 .panel,
+body.theme-t1 .qa details {
   background: #f4f4f4;
   border-color: #ebebeb;
 }
 
-.t1 .qa summary {
+body.theme-t1 .qa summary {
   color: #2a2d30;
 }
 
-.t1 .materials {
+body.theme-t1 .materials {
   background: #ffffff;
   border-color: #ebebeb;
 }
 
-.t1 article blockquote {
+body.theme-t1 article blockquote {
   background: #eaf7fe;
   border-left-color: #1daff7;
 }
 
-.t1 th {
+body.theme-t1 th {
   color: #82858e;
 }
 
-.t1 .terms-table td:first-child {
+body.theme-t1 .terms-table td:first-child {
   color: #2a2d30;
   font-weight: 600;
 }
 
-.t1 .step,
-.t1 .muted {
+body.theme-t1 .step,
+body.theme-t1 .muted {
   color: #82858e;
 }
 
-.t1 .notice {
+body.theme-t1 .notice {
   background: #eaf7fe;
   border-color: #a6e4fa;
 }
 
-.t1 .gate button {
+body.theme-t1 .gate button {
   background: #1daff7;
-}
-
-/* ---------- общая вылизанность по сайту ---------- */
-
-:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--accent) 55%, transparent);
-  outline-offset: 2px;
-  border-radius: 6px;
-}
-
-h2 {
-  font-weight: 600;
-}
-
-article h2 {
-  margin-top: 48px;
-}
-
-article h2:first-of-type {
-  margin-top: 36px;
-}
-
-.links li a,
-article a {
-  text-underline-offset: 3px;
-}
-
-.topic-list h3 {
-  margin-bottom: 8px;
 }

@@ -35,13 +35,19 @@ const isT1 = current.startsWith(withBase('students/mai/'));
     <meta property="og:type" content="website" />
     <meta name="theme-color" content="#ffffff" />
   </head>
-  <body>
+  <body class={isT1 ? 'theme-t1' : undefined}>
     <header class="site-header">
       <div class="wrap">
         <a class="brand" href={base}>
           <span class="mark">О</span>
           <span>Олег Орловский</span>
         </a>
+        {isT1 && (
+          <div class="t1-badge">
+            <span class="t1-badge-mark">Т1</span>
+            <span>+ МАИ</span>
+          </div>
+        )}
         <nav class="site-nav">
           {nav.map((item) => (
             <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
@@ -53,13 +59,7 @@ const isT1 = current.startsWith(withBase('students/mai/'));
     </header>
 
     <main>
-      <div class={isT1 ? 'wrap t1' : 'wrap'}>
-        {isT1 && (
-          <div class="t1-badge">
-            <span class="t1-badge-mark">Т1</span>
-            <span>+ МАИ</span>
-          </div>
-        )}
+      <div class="wrap">
         <div id="gate" class="gate" hidden>
           <h1>Материалы курса</h1>
           <p class="lead">
