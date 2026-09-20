@@ -1,0 +1,70 @@
+---
+import '../styles/global.css';
+import { site } from '../data/site';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const pageTitle = title ? `${title} — ${site.name}` : site.title;
+const current = Astro.url.pathname;
+
+const nav = [
+  { href: `${base}projects/`, label: 'Проекты' },
+  { href: `${base}articles/`, label: 'Статьи' },
+  { href: `${base}students/`, label: 'Студентам' },
+  { href: `${base}me/`, label: 'Обо мне' },
+];
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={new URL(Astro.url.pathname, Astro.site)} />
+    <link rel="icon" href={`${base}favicon.svg`} type="image/svg+xml" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="wrap">
+        <a class="brand" href={base}>Олег Орловский</a>
+        <nav class="site-nav">
+          {nav.map((item) => (
+            <a
+              href={item.href}
+              aria-current={current.startsWith(item.href) ? 'page' : undefined}
+            >
+              {item.label}
+            </a>
+          ))}
+        </nav>
+      </div>
+    </header>
+
+    <main>
+      <div class="wrap">
+        <slot />
+      </div>
+    </main>
+
+    <footer class="site-footer">
+      <div class="wrap">
+        <span>© {new Date().getFullYear()} Олег Орловский</span>
+        <span>
+          <a href="https://github.com/philadelfic">GitHub</a> ·
+          <a href="https://t.me/HobbyOdnogoITishnika">Телеграм</a> ·
+          <a href="https://philadelfic.github.io/resume/">Резюме</a>
+        </span>
+      </div>
+    </footer>
+  </body>
+</html>
