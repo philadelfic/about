@@ -130,5 +130,48 @@ const nav = [
         });
       })();
     </script>
+    <script is:inline>
+      // Увеличиваем картинки по клику: оверлей на весь экран, закрытие — клик или Esc
+      (function () {
+        const images = document.querySelectorAll('article img');
+        if (!images.length) return;
+
+        function close(box) {
+          box.remove();
+          document.body.style.overflow = '';
+        }
+
+        function open(src, alt) {
+          const box = document.createElement('div');
+          box.className = 'lightbox';
+          const big = document.createElement('img');
+          big.src = src;
+          big.alt = alt || '';
+          box.appendChild(big);
+          box.addEventListener('click', () => close(box));
+          document.addEventListener('keydown', function onKey(event) {
+            if (event.key === 'Escape') {
+              close(box);
+              document.removeEventListener('keydown', onKey);
+            }
+          });
+          document.body.style.overflow = 'hidden';
+          document.body.appendChild(box);
+        }
+
+        images.forEach((img) => {
+          img.setAttribute('tabindex', '0');
+          img.setAttribute('role', 'button');
+          img.setAttribute('title', 'Нажмите, чтобы увеличить');
+          img.addEventListener('click', () => open(img.currentSrc || img.src, img.alt));
+          img.addEventListener('keydown', (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault();
+              open(img.currentSrc || img.src, img.alt);
+            }
+          });
+        });
+      })();
+    </script>
   </body>
 </html>

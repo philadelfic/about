@@ -573,3 +573,31 @@ article ol,
 article blockquote {
   max-width: 82ch;
 }
+
+/* ---------- увеличение картинок по клику ---------- */
+
+article img {
+  cursor: zoom-in;
+}
+
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: color-mix(in srgb, #000 82%, transparent);
+  cursor: zoom-out;
+  overflow: auto;
+}
+
+.lightbox img {
+  max-width: 95vw;
+  max-height: 92vh;
+  width: auto;
+  height: auto;
+  background: #ffffff;
+  border-radius: var(--radius-sm);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
