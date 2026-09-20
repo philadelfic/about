@@ -56,7 +56,7 @@ const nav = [
           <h1>Материалы курса</h1>
           <p class="lead">
             Это раздел для студентов курса. Введите код, который я дал на занятии, — откроются
-            программа, темы и лабораторные.
+            материалы.
           </p>
           <form id="gate-form">
             <input
@@ -120,7 +120,7 @@ const nav = [
 
         form.addEventListener('submit', (event) => {
           event.preventDefault();
-          if (fnv1a(input.value.trim()) === cfg.hash) {
+          if (fnv1a(input.value.trim().toLowerCase()) === cfg.hash) {
             localStorage.setItem(cfg.key, 'ok');
             location.reload();
             return;
