@@ -513,3 +513,22 @@ th {
 .panel .tasks {
   margin-top: 10px;
 }
+
+/* ---------- картинки и схемы в материалах ---------- */
+
+article img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  margin: 20px auto 8px;
+  background: #ffffff;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+}
+
+article p em {
+  display: block;
+  text-align: center;
+  color: var(--muted);
+  font-size: 14px;
+}
