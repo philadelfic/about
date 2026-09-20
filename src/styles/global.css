@@ -439,3 +439,45 @@ th {
   gap: 8px 20px;
   justify-content: space-between;
 }
+
+/* ---------- код доступа к материалам курса ---------- */
+
+.gate {
+  max-width: 460px;
+  margin: 36px auto 0;
+}
+
+.gate form {
+  display: flex;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+
+.gate input {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 16px;
+}
+
+.gate input:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.gate button {
+  padding: 11px 18px;
+  border: none;
+  border-radius: var(--radius-sm);
+  background: linear-gradient(120deg, var(--accent), var(--accent-2));
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.gate button:hover {
+  opacity: 0.92;
+}

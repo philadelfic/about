@@ -1,6 +1,6 @@
 ---
 import '../styles/global.css';
-import { site, base, withBase } from '../data/site';
+import { site, base, withBase, gate } from '../data/site';
 
 interface Props {
   title?: string;
@@ -52,7 +52,29 @@ const nav = [
 
     <main>
       <div class="wrap">
-        <slot />
+        <div id="gate" class="gate" hidden>
+          <h1>Материалы курса</h1>
+          <p class="lead">
+            Это раздел для студентов курса. Введите код, который я дал на занятии, — откроются
+            программа, темы и лабораторные.
+          </p>
+          <form id="gate-form">
+            <input
+              id="gate-code"
+              type="password"
+              name="code"
+              placeholder="Код доступа"
+              autocomplete="off"
+              aria-label="Код доступа"
+            />
+            <button type="submit">Открыть</button>
+          </form>
+          <p id="gate-error" class="muted" hidden>Код не подошёл. Проверьте раскладку и попробуйте ещё раз.</p>
+        </div>
+
+        <div id="page-content">
+          <slot />
+        </div>
       </div>
     </main>
 
@@ -65,5 +87,48 @@ const nav = [
         </span>
       </div>
     </footer>
+
+    <script is:inline define:vars={{ gate, base }}>
+      (function () {
+        const cfg = { scope: gate.scope, hash: gate.hash, key: gate.key, base: base };
+        const path = location.pathname;
+        const rel = path.startsWith(cfg.base) ? path.slice(cfg.base.length) : path;
+        const isProtected = cfg.scope.some((s) => rel === s || rel.startsWith(s) || rel.startsWith(s + '/'));
+        if (!isProtected) return;
+        if (localStorage.getItem(cfg.key) === 'ok') return;
+
+        function fnv1a(str) {
+          let h = 0x811c9dc5;
+          const bytes = new TextEncoder().encode(str);
+          for (const b of bytes) {
+            h ^= b;
+            h = Math.imul(h, 0x01000193) >>> 0;
+          }
+          return h.toString(16).padStart(8, '0');
+        }
+
+        const content = document.getElementById('page-content');
+        const box = document.getElementById('gate');
+        const form = document.getElementById('gate-form');
+        const input = document.getElementById('gate-code');
+        const error = document.getElementById('gate-error');
+        if (!content || !box || !form || !input || !error) return;
+
+        content.hidden = true;
+        box.hidden = false;
+        input.focus();
+
+        form.addEventListener('submit', (event) => {
+          event.preventDefault();
+          if (fnv1a(input.value.trim()) === cfg.hash) {
+            localStorage.setItem(cfg.key, 'ok');
+            location.reload();
+            return;
+          }
+          error.hidden = false;
+          input.select();
+        });
+      })();
+    </script>
   </body>
 </html>
