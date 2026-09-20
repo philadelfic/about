@@ -1,0 +1,27 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { withBase } from '../../../data/site';
+---
+
+<BaseLayout title="Students">
+  <div class="hero">
+    <h1>Students</h1>
+    <p class="lead">
+      The “Reinforcement Learning” course I teach: from task formulation and the agent–environment
+      loop to tabular methods and Q-learning.
+    </p>
+  </div>
+
+  <div class="cards">
+    <a class="card" href={withBase('students/mai/')}>
+      <h3>Reinforcement Learning (MAI)</h3>
+      <p>Syllabus, topics with theory and Q&amp;A, homework and seminar notes.</p>
+      <span class="more">Open the course →</span>
+    </a>
+  </div>
+
+  <p class="notice">
+    Course materials are in Russian. Access to the course section is open to my students — the
+    section asks for the code I give in class.
+  </p>
+</BaseLayout>

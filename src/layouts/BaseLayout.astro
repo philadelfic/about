@@ -1,24 +1,37 @@
 ---
 import '../styles/global.css';
-import { site, base, withBase, gate, links } from '../data/site';
+import { base, withBase, gate, links } from '../data/site';
+import { dict, type Lang } from '../data/i18n';
 
 interface Props {
   title?: string;
   description?: string;
+  lang?: Lang;
 }
 
-const { title, description = site.description } = Astro.props;
-const pageTitle = title ? `${title} — ${site.name}` : site.title;
 const current = Astro.url.pathname;
 
+// Язык страницы: русский в корне, английский — под /en/.
+const lang: Lang = Astro.props.lang ?? (current.startsWith(withBase('en/')) ? 'en' : 'ru');
+const t = dict[lang];
+
+// Внутри «Т1 + МАИ» — только русский: без переключателей языка и темы.
+const isT1 = current.startsWith(withBase('students/mai/'));
+const showTools = !isT1;
+
+const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t.siteName}` : t.title;
+const description = Astro.props.description ?? t.description;
+
 const nav = [
-  { href: withBase('projects/'), label: 'Проекты' },
-  { href: withBase('students/'), label: 'Студентам' },
-  { href: withBase('me/'), label: 'Обо мне' },
+  { href: withBase(lang === 'en' ? 'en/projects/' : 'projects/'), label: t.nav.projects },
+  { href: withBase(lang === 'en' ? 'en/students/' : 'students/'), label: t.nav.students },
+  { href: withBase(lang === 'en' ? 'en/me/' : 'me/'), label: t.nav.me },
 ];
 
-// Внутри «Т1 + МАИ» — свой мини-сайт: своя шапка, навигация и подвал, без шапки портала.
-const isT1 = current.startsWith(withBase('students/mai/'));
+// Та же страница на другом языке.
+const rest = current.startsWith(base) ? current.slice(base.length) : current;
+const altHref =
+  lang === 'en' ? withBase(rest.replace(/^en\//, '')) : withBase(`en/${rest}`);
 
 const courseNav = [
   { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
@@ -28,7 +41,7 @@ const courseNav = [
 ---
 
 <!doctype html>
-<html lang="ru">
+<html lang={lang}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -40,6 +53,34 @@ const courseNav = [
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
     <meta name="theme-color" content="#ffffff" />
+    <link rel="alternate" hreflang="ru" href={new URL(lang === 'en' ? altHref : current, Astro.site)} />
+    <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? current : altHref, Astro.site)} />
+
+    <script is:inline define:vars={{ base }}>
+      // Тема и язык до первой отрисовки: без мигания и прыжков.
+      (function () {
+        try {
+          var theme = localStorage.getItem('about.theme');
+          if (theme === 'dark' || theme === 'light') {
+            document.documentElement.dataset.theme = theme;
+          }
+        } catch (e) {}
+
+        try {
+          var path = location.pathname;
+          // Раздел курса «Т1 + МАИ» — только по-русски.
+          if (path.indexOf(base + 'students/mai') === 0) return;
+
+          var isEn = path.indexOf(base + 'en/') === 0;
+          var saved = localStorage.getItem('about.lang');
+          var browserRu = (navigator.language || 'ru').toLowerCase().indexOf('ru') === 0;
+          var want = saved || (browserRu ? 'ru' : 'en');
+
+          if (want === 'en' && !isEn) location.replace(base + 'en/' + path.slice(base.length));
+          if (want === 'ru' && isEn) location.replace(base + path.slice(base.length + 3));
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body class={isT1 ? 'theme-t1' : undefined}>
     {isT1 ? (
@@ -52,10 +93,7 @@ const courseNav = [
           </a>
           <nav class="t1-nav">
             {courseNav.map((item) => (
-              <a
-                href={item.href}
-                aria-current={current.startsWith(item.href) ? 'page' : undefined}
-              >
+              <a href={item.href} aria-current={current.startsWith(item.href) ? 'page' : undefined}>
                 {item.label}
               </a>
             ))}
@@ -68,9 +106,9 @@ const courseNav = [
     ) : (
       <header class="site-header">
         <div class="wrap">
-          <a class="brand" href={base}>
+          <a class="brand" href={lang === 'en' ? withBase('en/') : base}>
             <span class="mark">О</span>
-            <span>Олег Орловский</span>
+            <span>{t.siteName}</span>
           </a>
           <nav class="site-nav">
             {nav.map((item) => (
@@ -79,6 +117,37 @@ const courseNav = [
               </a>
             ))}
           </nav>
+          {showTools && (
+            <div class="header-tools">
+              <div class="lang-switch" aria-label={t.langLabel}>
+                <a
+                  href={lang === 'en' ? altHref : current}
+                  data-lang="ru"
+                  aria-current={lang === 'ru' ? 'true' : undefined}
+                  title="Русский"
+                >
+                  ru
+                </a>
+                <a
+                  href={lang === 'ru' ? altHref : current}
+                  data-lang="en"
+                  aria-current={lang === 'en' ? 'true' : undefined}
+                  title="English"
+                >
+                  en
+                </a>
+              </div>
+              <button class="tool-btn" type="button" data-theme-toggle aria-label={t.theme.toDark}>
+                <svg data-icon="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="4"></circle>
+                  <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+                </svg>
+                <svg data-icon="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" hidden>
+                  <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+                </svg>
+              </button>
+            </div>
+          )}
         </div>
       </header>
     )}
@@ -123,18 +192,58 @@ const courseNav = [
     ) : (
       <footer class="site-footer">
         <div class="wrap">
-          <span>© {new Date().getFullYear()} Олег Орловский</span>
+          <span>© {new Date().getFullYear()} {t.siteName}</span>
           <span>
             <a href={links.github}>GitHub</a> ·
-            <a href={links.telegram}>Телеграм</a>
+            <a href={links.telegram}>{lang === 'en' ? 'Blog (RU)' : 'Телеграм'}</a>
           </span>
         </div>
       </footer>
     )}
 
     <script is:inline>
-      // Увеличиваем картинки по клику: оверлей на весь экран, закрытие — клик или Esc
+      // Переключатели: тема и язык (запоминаем выбор в localStorage).
       (function () {
+        var root = document.documentElement;
+
+        function currentTheme() {
+          if (root.dataset.theme) return root.dataset.theme;
+          return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+
+        function paintTheme() {
+          var theme = currentTheme();
+          document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+            var sun = btn.querySelector('[data-icon="sun"]');
+            var moon = btn.querySelector('[data-icon="moon"]');
+            if (sun) sun.hidden = theme === 'dark';
+            if (moon) moon.hidden = theme !== 'dark';
+            btn.setAttribute('aria-label', theme === 'dark' ? 'Light theme' : 'Dark theme');
+          });
+        }
+
+        document.querySelectorAll('[data-theme-toggle]').forEach(function (btn) {
+          btn.addEventListener('click', function () {
+            var next = currentTheme() === 'dark' ? 'light' : 'dark';
+            root.dataset.theme = next;
+            try {
+              localStorage.setItem('about.theme', next);
+            } catch (e) {}
+            paintTheme();
+          });
+        });
+
+        document.querySelectorAll('[data-lang]').forEach(function (link) {
+          link.addEventListener('click', function () {
+            try {
+              localStorage.setItem('about.lang', link.dataset.lang);
+            } catch (e) {}
+          });
+        });
+
+        paintTheme();
+
+        // Увеличиваем картинки по клику: оверлей на весь экран, закрытие — клик или Esc
         const images = document.querySelectorAll('article img');
         if (!images.length) return;
 

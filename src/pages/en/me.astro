@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { externalLinks, withBase } from '../../data/site';
+---
+
+<BaseLayout title="About me">
+  <div class="hero">
+    <h1>About me</h1>
+    <p class="lead">
+      IT lead of a development team, I teach reinforcement learning and build my own tools for
+      working with LLMs.
+    </p>
+  </div>
+
+  <h2>What I do</h2>
+  <p>
+    <strong>Work.</strong> IT lead of a development team: I build HR self-service services with my
+    team. I work at InnoTech (T1 Holding).
+  </p>
+  <p>
+    <strong>Teaching.</strong> I teach the “Reinforcement Learning” course in a master’s programme
+    (MAI). Course materials live in the <a href={withBase('en/students/')}>Students</a> section —
+    they are in Russian.
+  </p>
+  <p>
+    <strong>My projects.</strong> “LLM Second brain” — memory for AI assistants; “LLMesenger” —
+    messaging between AI harnesses. I write in a personal blog (in Russian).
+  </p>
+
+  <h2>Outside work</h2>
+  <p>
+    <strong>Projects.</strong> See the <a href={withBase('en/projects/')}>Projects</a> page.
+  </p>
+  <p>
+    <strong>Hobbies.</strong> Woodworking, hardware, 3D printing and notes about whatever seems
+    interesting.
+  </p>
+
+  <h2>Where to find me</h2>
+  <ul class="links">
+    <li>
+      <a href={externalLinks[0].href}>GitHub</a>
+      <span class="muted"> — code and releases</span>
+    </li>
+    <li>
+      <a href={externalLinks[1].href}>Telegram channel “Hobby of an IT guy”</a>
+      <span class="muted"> — personal blog (in Russian)</span>
+    </li>
+  </ul>
+</BaseLayout>
