@@ -25,7 +25,7 @@ const rendered = await Promise.all(
         <p class="muted">Пока заданий нет — появятся после занятий.</p>
       ) : (
         rendered.map(({ item, Content }) => (
-          <article class="panel">
+          <article class="panel" id={`hw-${item.id}`}>
             <h3>{item.data.title}</h3>
             {item.data.due && <p class="muted">Сдать: {item.data.due}</p>}
             <Content />

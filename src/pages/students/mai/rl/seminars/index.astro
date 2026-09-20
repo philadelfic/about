@@ -23,7 +23,7 @@ const current = Astro.url.pathname;
         <p class="muted">Занятий пока не было — материалы появятся после первого семинара.</p>
       ) : (
         seminars.map((seminar) => (
-          <article class="panel">
+          <article class="panel" id={`seminar-${seminar.id}`}>
             <p class="muted">
               Занятие {seminar.data.number}
               {seminar.data.date ? ` · ${seminar.data.date}` : ''}
