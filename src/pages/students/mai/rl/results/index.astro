@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
+import { optionalCollection } from '../../../../../lib/collections';
+
+const items = (await optionalCollection('results'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => a.data.number - b.data.number);
+const current = Astro.url.pathname;
+
+const passedCount = (item: (typeof items)[number]) =>
+  item.data.rows.filter((row) => row.status === 'зачёт').length;
+---
+
+<BaseLayout
+  title="Результаты"
+  description="Результаты проверок на семинарских занятиях курса «Обучение с подкреплением»: зачёты, незачёты и что подтянуть."
+>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <div>
+      <p class="muted">Т1 + МАИ · Обучение с подкреплением</p>
+      <h1>Результаты</h1>
+      <p class="lead">Проверки по занятиям: зачёт или незачёт по заданию и что стоит подтянуть.</p>
+
+      {items.length === 0 ? (
+        <p class="muted">Результатов пока нет — появятся после проверки заданий первого занятия.</p>
+      ) : (
+        <ul class="topic-list">
+          {items.map((item) => (
+            <li>
+              <a href={withBase(`students/mai/rl/results/${item.id}/`)}>
+                <span class="step">
+                  Семинар {item.data.number}
+                  {item.data.date ? ` · ${item.data.date}` : ''}
+                  {item.data.group ? ` · группа ${item.data.group}` : ''}
+                </span>
+                <h3>{item.data.title}</h3>
+                <p class="muted">
+                  Зачёт: {passedCount(item)} из {item.data.rows.length}.
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</BaseLayout>

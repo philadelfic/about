@@ -1,0 +1,24 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import { withBase } from '../../../data/site';
+
+const topics = await getCollection('topics');
+---
+
+<BaseLayout title="Т1 + МАИ">
+  <div class="hero">
+    <h1>Т1 + МАИ</h1>
+    <p class="lead">Курсы, которые я веду в магистратуре.</p>
+  </div>
+
+  <div class="cards">
+    <a class="card" href={withBase('students/mai/rl/')}>
+      <h3>Обучение с подкреплением</h3>
+      <p>Материалы по темам: лекции и семинары. Сейчас открыто тем: {topics.length}.</p>
+      <span class="more">Открыть курс →</span>
+    </a>
+  </div>
+
+  <p class="muted">Материалы добавляются по мере прохождения тем.</p>
+</BaseLayout>

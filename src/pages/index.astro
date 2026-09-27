@@ -1,0 +1,48 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { externalLinks, withBase } from '../data/site';
+
+const entries = [
+  {
+    href: withBase('projects/'),
+    title: 'Проекты',
+    text: 'Два продукта — LLM Second brain и LLMesenger: зачем они нужны и как помогают.',
+  },
+  {
+    href: withBase('students/'),
+    title: 'Студентам',
+    text: 'Материалы курса «Обучение с подкреплением»: темы, лекции и семинары.',
+  },
+];
+---
+
+<BaseLayout>
+  <div class="hero">
+    <h1>Привет, я Олег Орловский.<br /><span class="grad">ИТ-лид команды разработки и преподаватель</span></h1>
+    <p class="lead">
+      Разрабатываю с командой кадровые сервисы самообслуживания. Преподаю «Обучение с подкреплением»
+      в магистратуре и делаю инструменты для работы с LLM-харнесами. Здесь — проекты и материалы
+      для студентов и тех, кому интересны мои проекты.
+    </p>
+  </div>
+
+  <div class="cards">
+    {entries.map((entry) => (
+      <a class="card" href={entry.href}>
+        <h3>{entry.title}</h3>
+        <p>{entry.text}</p>
+        <span class="more">Открыть →</span>
+      </a>
+    ))}
+  </div>
+
+  <h2>Ссылки</h2>
+  <ul class="links">
+    {externalLinks.map((link) => (
+      <li>
+        <a href={link.href}>{link.title}</a>
+        <span class="muted"> — {link.note}</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

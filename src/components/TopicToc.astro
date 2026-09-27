@@ -1,0 +1,134 @@
+---
+interface TocItem {
+  text: string;
+  id: string;
+  level: number;
+}
+
+interface Props {
+  items: TocItem[];
+  /** Заголовок колонки: у темы «Содержание темы», у занятия — «Содержание занятия». */
+  title?: string;
+}
+
+const { items, title = 'Содержание темы' } = Astro.props;
+---
+
+<aside class="topic-toc">
+  <h2>{title}</h2>
+  <ul class="toc">
+    {items.map((item) => (
+      <li class={item.level > 0 ? `lvl-${item.level}` : undefined}>
+        <a href={`#${item.id}`}>{item.text}</a>
+      </li>
+    ))}
+  </ul>
+</aside>
+
+<script is:inline>
+  // «Где я на длинной странице»: подсветка текущего раздела в содержании.
+  // Наблюдаем заголовки статьи, названные в ссылках, через IntersectionObserver —
+  // без слушателя scroll на каждое событие. Без JS содержание работает как раньше:
+  // обычные ссылки-анкоры, никаких атрибутов и классов.
+  (function () {
+    try {
+      var toc = document.querySelector('.topic-toc');
+      if (!toc || !('IntersectionObserver' in window)) return;
+
+      var items = [];
+      var bySection = new Map();
+      Array.prototype.slice.call(toc.querySelectorAll('a[href^="#"]')).forEach(function (link) {
+        var id = link.getAttribute('href').slice(1);
+        try {
+          id = decodeURIComponent(id);
+        } catch (e) {}
+        var section = document.getElementById(id);
+        if (!section) return;
+        var item = { link: link, section: section, on: false };
+        items.push(item);
+        bySection.set(section, item);
+      });
+      if (!items.length) return;
+
+      var current = null;
+      var ticking = false;
+
+      function activate(item) {
+        if (item === current) return;
+        if (current) {
+          current.link.classList.remove('is-current');
+          current.link.removeAttribute('aria-current');
+        }
+        current = item;
+        if (item) {
+          item.link.classList.add('is-current');
+          item.link.setAttribute('aria-current', 'true');
+        }
+      }
+
+      // Полоса наблюдения стоит сразу под липкой шапкой: rootMargin '-92px 0px -70% 0px'.
+      // Здесь -92px — высота отступа под липкую шапку (ровно как scroll-margin-top: 92px
+      // у заголовков статьи и у .qa details), снизу отсекаем 70% окна, чтобы полоса
+      // ловила начало раздела. Подходящая секция — та, что попала в полосу. Если в полосе
+      // никого нет (между заголовками) — активна последняя секция, чей заголовок уже прошёл
+      // шапку; если и такой нет (мы выше первой секции) — первая. Отсюда никаких прыжков
+      // туда-обратно ни при быстрой прокрутке, ни в самом низу страницы.
+      function pick() {
+        ticking = false;
+        // Самый низ страницы — отдельное состояние: заголовок последнего раздела может
+        // не попасть ни в полосу, ни в условие «прошёл шапку» (страница кончается сразу
+        // после него). У низа активным становится последний пункт содержания.
+        // Проверяем только у страницы, которая реально прокручивается: если весь текст
+        // влезает в окно, «низа» как позиции прокрутки нет и поведение прежнее.
+        var doc = document.documentElement;
+        if (
+          doc.scrollHeight - window.innerHeight > 2 &&
+          window.innerHeight + window.scrollY >= doc.scrollHeight - 2
+        ) {
+          activate(items[items.length - 1]);
+          return;
+        }
+        var visible = null;
+        var passed = null;
+        for (var i = 0; i < items.length; i++) {
+          if (items[i].on && !visible) visible = items[i];
+          // порог top <= 93 — те же 92px отступа под шапку + 1px запаса на округление
+          if (items[i].section.getBoundingClientRect().top <= 93) passed = items[i];
+        }
+        activate(visible || passed || items[0]);
+      }
+
+      function schedule() {
+        if (ticking) return;
+        ticking = true;
+        window.requestAnimationFrame(pick);
+      }
+
+      var observer = new IntersectionObserver(
+        function (entries) {
+          entries.forEach(function (entry) {
+            var item = bySection.get(entry.target);
+            if (item) item.on = entry.isIntersecting;
+          });
+          schedule();
+        },
+        { rootMargin: '-92px 0px -70% 0px' }
+      );
+
+      items.forEach(function (item) {
+        observer.observe(item.section);
+      });
+
+      // Страховка для мгновенных «прыжков» (Home/End, восстановление позиции при
+      // перезагрузке, программный scrollTo): если полоса между заголовками пуста и до,
+      // и после прыжка, ни одно пересечение не изменилось — IO промолчит и подсветка
+      // осталась бы от прежнего места. scrollend случается один раз на прокрутку (не на
+      // каждое событие scroll) и просто заново выбирает активный раздел.
+      if ('onscrollend' in window) {
+        window.addEventListener('scrollend', schedule, { passive: true });
+      }
+
+      schedule();
+    } catch (e) {}
+  })();
+</script>

@@ -1,0 +1,42 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { externalLinks, links, withBase } from '../data/site';
+---
+
+<BaseLayout title="Обо мне">
+  <div class="hero">
+    <h1>Обо мне</h1>
+    <p class="lead">
+      ИТ-лидер команды разработки, читаю курс по обучению с подкреплением и делаю свои инструменты
+      для работы с LLM.
+    </p>
+  </div>
+
+  <h2>Чем занимаюсь</h2>
+  <p>
+    <strong>Работа.</strong> ИТ-лидер команды разработки: разрабатываю с командой кадровые сервисы
+    самообслуживания. Тружусь в ИнноТехе (Холдинг Т1).
+  </p>
+  <p>
+    <strong>Преподавание.</strong> Читаю курс «Обучение с подкреплением» в магистратуре МАИ.
+    Материалы курса — в разделе <a href={withBase('students/')}>«Студентам»</a>.
+  </p>
+  <h2>Вне работы</h2>
+  <p>
+    <strong>Свои проекты.</strong> «LLM Second brain» — память для ИИ-ассистентов; «LLMesenger» —
+    переписка между ИИ-харнесами. Пишу в <a href={links.telegram}>личном блоге</a>.
+  </p>
+  <p>
+    <strong>Хобби.</strong> Столярка, техника, 3D-печать и заметки о том, что показалось интересным.
+  </p>
+
+  <h2>Где меня найти</h2>
+  <ul class="links">
+    {externalLinks.map((link) => (
+      <li>
+        <a href={link.href}>{link.title}</a>
+        <span class="muted"> — {link.note}</span>
+      </li>
+    ))}
+  </ul>
+</BaseLayout>

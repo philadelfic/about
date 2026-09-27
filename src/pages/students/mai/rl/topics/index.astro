@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
+
+const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title="Темы" description="Пройденные темы курса «Обучение с подкреплением».">
+  <div class="course">
+    <CourseNav current={current} />
+
+    <div>
+      <p class="muted">Т1 + МАИ · Обучение с подкреплением</p>
+      <h1>Темы</h1>
+      <p class="lead">Пройденные темы: что разбирали, теория и вопросы-ответы.</p>
+
+      {topics.length === 0 ? (
+        <p class="muted">Пока тем нет.</p>
+      ) : (
+        <ul class="topic-list">
+          {topics.map((topic) => (
+            <li>
+              <a href={withBase(`students/mai/rl/topics/${topic.id}/`)}>
+                <span class="step">
+                  Тема {topic.data.number}{topic.data.date ? ` · ${topic.data.date}` : ''}
+                </span>
+                <h3>{topic.data.title}</h3>
+                <p class="muted">{topic.data.summary}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </div>
+</BaseLayout>

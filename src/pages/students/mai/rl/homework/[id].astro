@@ -1,0 +1,31 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { optionalCollection } from '../../../../../lib/collections';
+
+export async function getStaticPaths() {
+  const items = await optionalCollection('homework');
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const current = Astro.url.pathname;
+---
+
+<BaseLayout title={item.data.title} description={item.data.summary}>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">
+        Домашнее задание{item.data.topic ? ` · к теме ${item.data.topic}` : ''}
+      </p>
+      <h1>{item.data.title}</h1>
+      <p class="lead">{item.data.due ? `Сдать: ${item.data.due}` : ''}</p>
+
+      <Content />
+    </article>
+  </div>
+</BaseLayout>
