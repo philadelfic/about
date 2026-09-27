@@ -1,0 +1,812 @@
+---
+/**
+ * Мини-симулятор с пресетом по теме.
+ * preset 'l2' (тема 2): две независимые панели — детерминированный лабиринт (сносов нет)
+ *   и холодильник (непрерывная задача).
+ * preset 'l3' (тема 3): одна панель — лабиринт 3 × 4 со сносами 0,8 / 0,1 / 0,1.
+ * Переключателя нет; общего состояния панели не делят, у каждой свои ручки и выводы.
+ */
+interface Props {
+  preset?: 'l2' | 'l3';
+}
+const { preset = 'l2' } = Astro.props;
+---
+
+<div class="panel sim sim-intro">
+  <b>Покрутить руками: γ, ε и вознаграждение</b>
+  {preset === 'l3' ? (
+    <p class="sim-lead">
+      Одна задача — лабиринт 3 × 4, но команда срабатывает не всегда:{' '}
+      <a href="#simulyator-maze">к лабиринту</a>.
+    </p>
+  ) : (
+    <p class="sim-lead">
+      Две задачи: у лабиринта — эпизодическая, у холодильника — непрерывная. У каждой свои ручки и
+      свои выводы: <a href="#simulyator-maze">к лабиринту</a> ·{' '}
+      <a href="#simulyator-fridge">к холодильнику</a>.
+    </p>
+  )}
+</div>
+
+<section class="panel sim" id="simulyator-maze" data-sim="maze" data-preset={preset}>
+  {preset === 'l3' ? (
+    <b>Лабиринт 3 × 4 — среда со сносами</b>
+  ) : (
+    <b>Лабиринт — эпизодическая задача</b>
+  )}
+  {preset === 'l3' ? (
+    <p class="sim-lead">
+      Поле 3 × 4, выход S12. Среда стохастическая: команда срабатывает с вероятностью p, а по
+      (1 − p) / 2 снос уводит вбок — вверх/вниз или влево/вправо, смотря куда шли; если шаг
+      упирается в стену, остаёмся на месте. Вероятности переходов p(s′, r | s, a) — это модель
+      среды: с какой вероятностью после действия в клетке s агент окажется в s′ и получит r; сама
+      вероятность задаётся ползунком p — при p = 0,8 это среда лекции 3, при p = 1 сносов нет и
+      среда становится детерминированной (частный случай модели, когда вероятность исхода равна
+      единице). Каждый шаг стоит «награду за шаг», а вход в выход завершает эпизод: «награда за
+      выход» входит в доход отдельным терминальным членом — с весом γ в степени числа шагов до
+      выхода (в теме 3 это три награды −1 с весами 1; 0,9; 0,81 и +10 с весом 0,729). Стартом может
+      быть любая клетка, кроме самого выхода. В клетках мелким шрифтом — ценность «по расстоянию до
+      выхода»: та же цепочка, что в
+      теории, — выход стоит +10, а каждый шаг до него даёт «−1 плюс обесцененное следующее»,
+      v = −1 + γ · v(следующей); при γ = 0,9 и наградах −1/+10 это
+      10,00 → 8,00 → 6,20 → 4,58 → 3,12 → 1,81 (двинешь γ или награды — числа пересчитаются).
+      Под сеткой один шаг разобран руками на числах.
+    </p>
+  ) : (
+    <p class="sim-lead">
+      Поле 3 × 4, выход S12. Стратегия задана: агент идёт к выходу, ε управляет долей случайных
+      проб. Если шаг упирается в стену, остаёмся на месте. Каждый шаг стоит «награду за шаг», а вход
+      в выход завершает эпизод: «награда за выход» входит в доход отдельным терминальным членом — с
+      весом γ в степени числа шагов до выхода. Стартом может быть любая клетка, кроме самого выхода.
+    </p>
+  )}
+
+  <div class="sim-body">
+    <div class="sim-scene">
+      <div class="sim-grid" data-maze-grid></div>
+      <p class="sim-note">
+        S12 — выход: стартом он не выбирается. Нажми на любую клетку, чтобы начать из неё. В клетке —
+        номера всех шагов, когда агент в ней был, включая возвраты: «старт · 1 · 4» значит старт и
+        заходы на шагах 1 и 4; если посещений больше восьми, показаны последние восемь с «…», а полный
+        список — в подсказке при наведении.
+      </p>
+
+      <div class="group-switch sim-actions">
+        <button type="button" data-act="step">Шаг</button>
+        <button type="button" data-act="run">Прогнать</button>
+        <button type="button" data-act="reset">Заново</button>
+        <button type="button" data-act="random">Случайный старт</button>
+      </div>
+
+      {preset === 'l3' && (
+        <div class="sim-calc" data-maze-calc>
+          <b class="sim-calc-title">Шаг на числах</b>
+          <p class="sim-calc-hint">нажми «Шаг» — покажем переходы и счёт</p>
+        </div>
+      )}
+    </div>
+
+    <div class="sim-side">
+      <label class="sim-knob">
+        <span>γ <output data-out="gamma">0,90</output></span>
+        <input type="range" data-knob="gamma" min="0" max="1" step="0.01" value="0.9" />
+      </label>
+      <label class="sim-knob">
+        <span>ε <output data-out="epsilon">0,10</output></span>
+        <input type="range" data-knob="epsilon" min="0" max="1" step="0.05" value="0.1" />
+      </label>
+      {preset === 'l3' && (
+        <label class="sim-knob">
+          <span>Вероятность срабатывания команды p <output data-out="slip">0,80</output></span>
+          <input type="range" data-knob="slip" min="0.5" max="1" step="0.05" value="0.8" />
+          <span class="sim-knob-note">
+            p — вероятность, что команда сработает как задумано; на каждый снос вбок приходится
+            (1 − p) / 2. p = 0,8 — среда лекции 3; p = 1 — детерминированная среда, сносов нет.
+          </span>
+        </label>
+      )}
+      <label class="sim-knob">
+        <span>Награда за шаг <output data-out="stepReward">−1</output></span>
+        <input type="range" data-knob="stepReward" min="-3" max="0" step="0.5" value="-1" />
+      </label>
+      <label class="sim-knob">
+        <span>Награда за выход <output data-out="exitReward">+10</output></span>
+        <input type="range" data-knob="exitReward" min="0" max="20" step="1" value="10" />
+      </label>
+
+      <div class="sim-read">
+        <span>горизонт ≈ <b data-read="horizon">—</b></span>
+        <span>доход G = <b data-read="g">—</b></span>
+        <span><b data-read="start">S1 → выход S12</b></span>
+      </div>
+      <p class="sim-verdict" data-read="verdict"></p>
+      <div class="sim-bars" data-read="bars" aria-hidden="true"></div>
+      <div class="sim-eps" data-read="eps" aria-hidden="true"></div>
+      <p class="sim-note">
+        Столбики — сколько весит в доходе каждый следующий шаг (γ<sup>0</sup>, γ<sup>1</sup>, …): чем
+        дальше награда, тем меньше её вклад. Полоса — как агент выбирает действие: ε — доля
+        случайных шагов, 1 − ε — доля «лучшего известного».
+      </p>
+    </div>
+  </div>
+
+  <b class="sim-trace-title">Трасса эпизода</b>
+  <div class="sim-traces" data-maze-trace>
+    <table class="sim-trace-table">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>из</th>
+          <th>действие</th>
+          <th>куда</th>
+          <th>r</th>
+          <th>G</th>
+        </tr>
+      </thead>
+      <tbody data-maze-rows></tbody>
+    </table>
+  </div>
+
+  {preset === 'l3' ? (
+    <p class="sim-note">
+      строки добавляются по мере показа: «Шаг» — по одной, «Прогнать» — сразу все. «снос» рядом с
+      клеткой значит, что команда сработала не как задумано и увела вбок. Числа в клетке — номера
+      всех шагов, когда агент в ней был, включая возвраты.
+    </p>
+  ) : (
+    <p class="sim-note">
+      строки добавляются по мере показа: «Шаг» — по одной, «Прогнать» — сразу все. Числа в клетке —
+      номера всех шагов, когда агент в ней был, включая возвраты.
+    </p>
+  )}
+
+  {preset === 'l3' && (
+    <p class="sim-note sim-same">
+      тот же лабиринт, что в теме 2, но теперь среда стохастическая.
+    </p>
+  )}
+</section>
+
+{preset === 'l2' && (
+  <section class="panel sim" id="simulyator-fridge" data-sim="fridge">
+  <b>Холодильник — непрерывная задача</b>
+  <p class="sim-lead">
+    Цель +4 °C, в комнате +22 °C; один шаг — одна минута, конца у задачи нет. Действия: сильнее,
+    слабее, ничего; вознаграждение — штраф за градус отклонения от цели. Стратегия задана: агент
+    держится у цели, поэтому считаем только доход G, горизонт и веса γ<sup>k</sup>.
+  </p>
+
+  <div class="sim-body">
+    <div class="sim-scene">
+      <svg
+        class="sim-trace"
+        viewBox="0 0 340 130"
+        data-fridge-trace
+        role="img"
+        aria-label="Температура по шагам"></svg>
+      <p class="sim-note">
+        штриховая линия — цель +4 °C, старт — комнатные +22 °C; один шаг — одна минута.
+      </p>
+
+      <div class="sim-hint">
+        <b>что смотреть</b>
+        <ul>
+          <li>держится ли линия у штриховой цели +4 °C: агент должен выйти на неё и не уходить;</li>
+          <li>
+            <span class="sim-hint-mark"></span> красные точки — шаги, где сработало случайное
+            действие: чем больше ε, тем их больше и тем сильнее прыгает температура;
+          </li>
+          <li>вознаграждение за шаг = −|T − цель|, поэтому провалы сразу бьют по доходу G.</li>
+        </ul>
+        <p class="sim-hint-legend" data-read="legend"></p>
+      </div>
+
+      <div class="group-switch sim-actions">
+        <button type="button" data-act="step">Шаг</button>
+        <button type="button" data-act="run">Прогнать</button>
+        <button type="button" data-act="reset">Заново</button>
+      </div>
+    </div>
+
+    <div class="sim-side">
+      <label class="sim-knob">
+        <span>γ <output data-out="gamma">0,90</output></span>
+        <input type="range" data-knob="gamma" min="0" max="1" step="0.01" value="0.9" />
+      </label>
+      <label class="sim-knob">
+        <span>ε <output data-out="epsilon">0,10</output></span>
+        <input type="range" data-knob="epsilon" min="0" max="1" step="0.05" value="0.1" />
+      </label>
+      <label class="sim-knob">
+        <span>Штраф за градус <output data-out="penalty">1,00</output></span>
+        <input type="range" data-knob="penalty" min="0" max="3" step="0.25" value="1" />
+      </label>
+
+      <div class="sim-read">
+        <span>горизонт ≈ <b data-read="horizon">—</b></span>
+        <span>доход G = <b data-read="g">—</b></span>
+        <span>сейчас <b data-read="temp">+22,00 °C</b></span>
+      </div>
+      <p class="sim-verdict" data-read="verdict"></p>
+      <div class="sim-bars" data-read="bars" aria-hidden="true"></div>
+      <div class="sim-eps" data-read="eps" aria-hidden="true"></div>
+      <p class="sim-note">
+        Столбики — сколько весит в доходе каждый следующий шаг (γ<sup>0</sup>, γ<sup>1</sup>, …): чем
+        дальше шаг, тем меньше его вклад. Полоса — как агент выбирает действие: ε — доля случайных
+        шагов (это они красными точками на графике), 1 − ε — доля «лучшего известного».
+      </p>
+    </div>
+  </div>
+
+  <b class="sim-trace-title">Трасса эпизода</b>
+  <div class="sim-traces" data-fridge-trace-box>
+    <table class="sim-trace-table">
+      <thead>
+        <tr>
+          <th>№</th>
+          <th>действие</th>
+          <th>температура</th>
+          <th>r</th>
+          <th>G</th>
+        </tr>
+      </thead>
+      <tbody data-fridge-rows></tbody>
+    </table>
+  </div>
+
+  <p class="sim-note">
+    строки добавляются по мере показа: «Шаг» — по одной, «Прогнать» — сразу все. «наугад» рядом с
+    действием значит, что действие выбрано случайно из-за ε — это они красными точками на графике;
+    при ε = 0 таких меток нет.
+  </p>
+  </section>
+)}
+
+<script>
+  import {
+    horizon,
+    weights,
+    runMaze,
+    runFridge,
+    makePrng,
+    MAZE,
+    FRIDGE,
+    SLIP_LECTURE3,
+    SLIP_DETERMINISTIC,
+    mazeOutcomes,
+    mazeDistanceValues,
+  } from '../lib/sim.mjs';
+
+  /* ---------- общие хелперы: принимают root, общего состояния не держат ---------- */
+
+  const num = (value, digits = 2) =>
+    (Number.isFinite(value) ? value.toFixed(digits) : '∞').replace('.', ',').replace('-', '−');
+
+  const readEl = (root, name) => root.querySelector(`[data-read="${name}"]`);
+  const outEl = (root, name) => root.querySelector(`[data-out="${name}"]`);
+
+  /** Проценты для строки переходов: 0,8 → «80»; 0,125 → «12,5». */
+  const pct = (p) => String(Math.round(p * 10000) / 100).replace('.', ',');
+
+  /** Вероятность в формуле: обычные два знака (0,80), третий — только когда он не ноль (0,125). */
+  const numP = (p) => (num(p, 3).endsWith('0') ? num(p, 2) : num(p, 3));
+
+  /** Награда шага: целую показываем без десятых (−1), дробную — с одной (−0,5). */
+  const numR = (r) => num(r, Number.isInteger(r) ? 0 : 1);
+
+  /** Сколько номеров шагов показывать в клетке: больше — только последние с ведущим «…». */
+  const MAX_CELL_STEPS = 8;
+
+  /** Столбики весов γ^k — сколько «весит» каждый следующий шаг. */
+  function drawWeights(root, gamma) {
+    const bars = weights(gamma, 12);
+    readEl(root, 'bars').innerHTML = bars
+      .map(
+        (w, k) =>
+          `<span class="sim-bar" style="height:${Math.max(2, w * 34).toFixed(1)}px" title="γ^${k} = ${num(w, 2)}"></span>`
+      )
+      .join('');
+  }
+
+  /** Полоса ε-жадного выбора: доля случайных действий и доля «лучшего известного». */
+  function drawEps(root, epsilon) {
+    const eps = Math.round(epsilon * 100);
+    readEl(root, 'eps').innerHTML =
+      `<span class="sim-eps-random" style="width:${eps}%"></span>` +
+      `<span class="sim-eps-best" style="width:${100 - eps}%"></span>`;
+  }
+
+  /**
+   * Показ «по шагам» / «целиком» — механика одинаковая, поэтому вынесена из панелей.
+   * compute — функция пересчёта своей панели (замыкание на её state).
+   */
+  function bindShowButtons(root, state, compute, draw) {
+    root.querySelector('[data-act="step"]').addEventListener('click', () => {
+      if (state.index >= state.run.steps.length) state.index = 0;
+      state.index = Math.min(state.index + 1, state.run.steps.length);
+      draw();
+    });
+    root.querySelector('[data-act="run"]').addEventListener('click', () => {
+      state.index = state.run.steps.length;
+      draw();
+    });
+    root.querySelector('[data-act="reset"]').addEventListener('click', () => {
+      state.seed = (state.seed % 999) + 1;
+      // свой поток старта пересоздаём вместе с seed — последовательность остаётся воспроизводимой
+      if (state.startRnd !== undefined) state.startRnd = makePrng(state.seed + 1000);
+      compute({ restart: true });
+    });
+  }
+
+  /* ---------- лабиринт (эпизодическая задача) ---------- */
+
+  function initMaze(root) {
+    // пресет панели: 'l3' — среда со сносами (ползунок p); иначе — детерминированная (сносов нет)
+    const stochastic = root.dataset.preset === 'l3';
+    const slip = stochastic ? SLIP_LECTURE3 : SLIP_DETERMINISTIC;
+    const state = {
+      slip,
+      // ценности «по расстоянию» показываем только в панели темы 3
+      showValues: stochastic,
+      gamma: 0.9,
+      epsilon: 0.1,
+      stepReward: -1,
+      exitReward: 10,
+      seed: 7,
+      start: 1,
+      // отдельный поток для «Случайного старта»: свои броски, сносы он не трогает
+      startRnd: makePrng(7 + 1000),
+      index: 0,
+      run: null,
+      // «Шаг на числах» до первого показа — пустой стейт с подсказкой (см. drawCalc)
+      calcOn: false,
+    };
+
+    const grid = root.querySelector('[data-maze-grid]');
+    const cells = [];
+    for (let id = 1; id <= MAZE.cells; id += 1) {
+      const cell = document.createElement('button');
+      cell.type = 'button';
+      cell.className = 'sim-cell' + (id === MAZE.exit ? ' sim-cell--exit' : '');
+      cell.dataset.cell = String(id);
+      cell.dataset.label = id === MAZE.exit ? 'S12 · выход' : `S${id}`;
+      cell.textContent = cell.dataset.label;
+      cell.setAttribute('aria-pressed', 'false');
+      if (id === MAZE.exit) cell.setAttribute('aria-label', 'S12 — выход, стартом не выбирается');
+      cell.addEventListener('click', () => {
+        if (id === MAZE.exit) return; // старт совпал бы с выходом — клик игнорируем
+        state.start = id;
+        compute({ restart: true });
+      });
+      grid.appendChild(cell);
+      cells.push(cell);
+    }
+
+    /** Пересчёт прогона: restart — показ начинается заново, с выбранного старта. */
+    function compute({ restart = false } = {}) {
+      state.run = runMaze({
+        gamma: state.gamma,
+        epsilon: state.epsilon,
+        stepReward: state.stepReward,
+        exitReward: state.exitReward,
+        seed: state.seed,
+        start: state.start,
+        slip: state.slip,
+      });
+      state.index = restart ? 0 : state.run.steps.length;
+      // при старте заново «Шаг на числах» снова прячется в подсказку
+      if (restart) state.calcOn = false;
+      draw();
+    }
+
+    /** Посещения клеток: номера ВСЕХ шагов, на которых агент в них попадал, в порядке посещения. */
+    function visitsByCell(shown) {
+      const visits = new Map();
+      shown.forEach((step, i) => {
+        const list = visits.get(step.to);
+        if (list) list.push(i + 1);
+        else visits.set(step.to, [i + 1]);
+      });
+      return visits;
+    }
+
+    /** Таблица шагов: строки заполняются по мере показа (state.index). */
+    function drawTrace() {
+      const rows = root.querySelector('[data-maze-rows]');
+      const box = root.querySelector('[data-maze-trace]');
+      rows.innerHTML = state.run.steps
+        .slice(0, state.index)
+        .map(
+          (step) =>
+            `<tr${step.slipped ? ' class="is-slip"' : ''}>` +
+            `<td>${step.t + 1}</td>` +
+            `<td>S${step.from}</td>` +
+            `<td>«${step.action}»</td>` +
+            `<td>S${step.to}${
+              step.slipped && state.slip < 1 ? '<span class="sim-slip">снос</span>' : ''
+            }</td>` +
+            `<td>${num(step.reward, 1)}</td>` +
+            `<td>${num(step.g)}</td>` +
+            '</tr>'
+        )
+        .join('');
+      box.scrollTop = box.scrollHeight; // свежие шаги держим в поле зрения
+    }
+
+    function drawMaze() {
+      const shown = state.run.steps.slice(0, state.index);
+      const visited = new Set([state.start, ...shown.map((step) => step.to)]);
+      const here = shown.length > 0 ? shown[shown.length - 1].to : state.start;
+      const visits = visitsByCell(shown);
+      // ценность «по расстоянию до выхода»: зависит только от расстояния до выхода, пересчитываем
+      // при каждом изменении γ и наград; в панели темы 2 строки с ценностями нет
+      const values = state.showValues
+        ? mazeDistanceValues({
+            gamma: state.gamma,
+            stepReward: state.stepReward,
+            exitReward: state.exitReward,
+          })
+        : null;
+
+      cells.forEach((cell) => {
+        const id = Number(cell.dataset.cell);
+        const isStart = id === state.start;
+        const list = visits.get(id) ?? [];
+        // длинный список подрезаем: последние MAX_CELL_STEPS номеров, полный уходит в title
+        const trimmed = list.length > MAX_CELL_STEPS;
+        const tail = trimmed ? list.slice(-MAX_CELL_STEPS) : list;
+
+        // в клетке — номера всех шагов, когда агент в ней был, включая возвраты; у стартовой клетки
+        // первым идёт слово «старт»: пребывание до первого шага тоже считается
+        const parts = isStart ? ['старт'] : [];
+        if (trimmed) parts.push('…');
+        parts.push(...tail.map((n) => String(n)));
+        const stepsText = parts.join(' · ');
+
+        // подсказка: полный перечень посещений клетки
+        const name = `S${id}`;
+        const full = list.length > 0 ? `шаги ${list.join(', ')}` : '';
+        if (full) cell.setAttribute('title', isStart ? `${name} · старт, ${full}` : `${name}: ${full}`);
+        else if (typeof cell.removeAttribute === 'function') cell.removeAttribute('title');
+
+        // для глаза: «S2: шаги 1, 4, 9»; у подрезанного списка — ещё и общее число посещений
+        const visitsCount = list.length + (isStart ? 1 : 0);
+        const total = trimmed ? ` — всего ${visitsCount} посещений` : '';
+        let aria;
+        if (id === MAZE.exit) {
+          aria = full ? `S12 — выход, ${full}${total}` : 'S12 — выход, стартом не выбирается';
+        } else if (isStart) {
+          aria = `S1: старт${full ? ', ' + full : ''}${total}`;
+        } else {
+          aria = full ? `${name}: ${full}${total}` : name;
+        }
+        cell.setAttribute('aria-label', aria);
+
+        cell.innerHTML =
+          `<span class="sim-cell-name">${cell.dataset.label}</span>` +
+          (stepsText ? `<span class="sim-cell-steps">${stepsText}</span>` : '') +
+          (values === null ? '' : `<span class="sim-cell-v">v ${num(values[id], 2)}</span>`);
+        cell.classList.toggle('is-visited', visited.has(id) && id !== here);
+        cell.classList.toggle('is-here', id === here);
+        cell.classList.toggle('is-done', id === MAZE.exit && here === MAZE.exit);
+        cell.classList.toggle('is-start', id === state.start);
+        cell.setAttribute('aria-pressed', String(id === state.start));
+      });
+    }
+
+    /**
+     * «Шаг на числах»: для последнего показанного шага — вероятности перехода и счёт.
+     * Нетерминальный шаг: r + γ·Σ p·v — как в теме 3. Терминальный (шаг, который завершил эпизод,
+     * т. е. вход в выход): сам шаг стоит только «награду за шаг», а «+ за выход» входит отдельным
+     * терминальным членом с весом γ^N (N — число шагов до выхода) — так +10 не считается дважды.
+     * Ценности берём «по расстоянию до выхода» из mazeDistanceValues; это не истинные ценности
+     * задачи — те считаются на лекции 5.
+     */
+    function drawCalc() {
+      const box = root.querySelector('[data-maze-calc]');
+      if (!box) return; // панель темы 2 блок не показывает
+      const title = '<b class="sim-calc-title">Шаг на числах</b>';
+      const note =
+        '<p class="sim-calc-note">ценности здесь — «по расстоянию до выхода»; в ручном счёте их ' +
+        'округлили до 6 и 3, поэтому вышло 4,13; точные ценности со сносом — на лекции 5.</p>';
+      // до первого «Шага» — пустой стейт с подсказкой (state.calcOn поднимают кнопки «Шаг»/«Прогнать»)
+      const last = state.calcOn ? state.run.steps.slice(0, state.index).pop() : null;
+      if (!last) {
+        box.innerHTML = title + '<p class="sim-calc-hint">нажми «Шаг» — покажем переходы и счёт</p>';
+        return;
+      }
+      const values = mazeDistanceValues({
+        gamma: state.gamma,
+        stepReward: state.stepReward,
+        exitReward: state.exitReward,
+      });
+      const outcomes = mazeOutcomes(last.from, last.action, state.slip);
+      const trans = outcomes
+        .map((o) => `${pct(o.prob)} % → ${o.stay ? 'остаётся на месте' : `S${o.to}`}`)
+        .join('; ');
+      if (last.done) {
+        // терминальный шаг: в шаге только stepReward, а «+ за выход» — отдельным членом с весом γ^N
+        const n = last.t + 1; // N — число шагов до выхода
+        const exitPart = state.exitReward * Math.pow(state.gamma, n);
+        box.innerHTML =
+          title +
+          `<p class="sim-calc-row">${last.action.toLowerCase()}: ${trans}</p>` +
+          `<p class="sim-calc-row">пришли в выход — эпизод закончен: шаг ${numR(last.reward)}; ` +
+          `+${num(state.exitReward, 0)} за выход с весом γ<sup>${n}</sup> = +${num(exitPart, 2)}</p>` +
+          `<p class="sim-calc-row">итоговый доход G = ${num(last.g)}</p>` +
+          note;
+        return;
+      }
+      const parts = outcomes.map((o) => `${numP(o.prob)}·${num(values[o.to], 2)}`);
+      const sum = outcomes.reduce((acc, o) => acc + o.prob * values[o.to], 0);
+      const total = last.reward + state.gamma * sum;
+      box.innerHTML =
+        title +
+        `<p class="sim-calc-row">${last.action.toLowerCase()}: ${trans}</p>` +
+        `<p class="sim-calc-row">r + γ·(${parts.join(' + ')}) = ${numR(last.reward)} + ` +
+        `${num(state.gamma, 2)}·${num(sum, 2)} = ${num(total, 2)}</p>` +
+        note;
+    }
+
+    function drawReadouts() {
+      const steps = state.run.steps;
+      const shown = steps.slice(0, state.index);
+      const last = shown[shown.length - 1];
+
+      readEl(root, 'horizon').textContent = Number.isFinite(horizon(state.gamma))
+        ? num(horizon(state.gamma), 1)
+        : '∞';
+      readEl(root, 'g').textContent = last ? num(last.g) : '—';
+      readEl(root, 'start').textContent = `S${state.start} → выход S${MAZE.exit}`;
+
+      outEl(root, 'gamma').textContent = num(state.gamma, 2);
+      outEl(root, 'epsilon').textContent = num(state.epsilon, 2);
+      outEl(root, 'stepReward').textContent =
+        (state.stepReward < 0 ? '−' : '') + num(Math.abs(state.stepReward), 1);
+      outEl(root, 'exitReward').textContent = '+' + num(state.exitReward, 0);
+      const slipOut = outEl(root, 'slip');
+      if (slipOut) slipOut.textContent = num(state.slip, 2);
+
+      drawWeights(root, state.gamma);
+      drawEps(root, state.epsilon);
+
+      // вердикт: сходится или нет (число шагов берём из результата прогона)
+      if (state.start === MAZE.exit) {
+        readEl(root, 'verdict').textContent = 'старт совпал с выходом — возьми другую клетку';
+      } else if (!state.run.done) {
+        readEl(root, 'verdict').textContent =
+          `эпизод не закончился за ${state.run.stepsCount} шагов: при большом ε агент почти не идёт ` +
+          'к выходу — доход копится в минус';
+      } else if (state.gamma >= 1) {
+        readEl(root, 'verdict').textContent =
+          `γ = 1 законна: эпизод заканчивается, сумма конечная — доход ${num(state.run.g)}`;
+      } else {
+        readEl(root, 'verdict').textContent =
+          `эпизод из ${state.run.stepsCount} шагов, доход ${num(state.run.g)} — дальние награды весят меньше`;
+      }
+    }
+
+    function draw() {
+      drawMaze();
+      drawTrace();
+      drawReadouts();
+      drawCalc();
+    }
+
+    root.querySelectorAll('[data-knob]').forEach((input) => {
+      input.addEventListener('input', () => {
+        state[input.dataset.knob] = Number(input.value);
+        compute();
+      });
+    });
+
+    // «Шаг на числах» поднимаем до первого показа: обработчики ниже срабатывают первыми и
+    // включают расчёт, а сам показ делает обработчик из bindShowButtons
+    root.querySelector('[data-act="step"]').addEventListener('click', () => {
+      state.calcOn = true;
+    });
+    root.querySelector('[data-act="run"]').addEventListener('click', () => {
+      state.calcOn = true;
+    });
+
+    bindShowButtons(root, state, compute, draw);
+
+    root.querySelector('[data-act="random"]').addEventListener('click', () => {
+      // клетка из отдельного воспроизводимого потока: только старт, сносы не перетасовываем
+      state.start = 1 + Math.floor(state.startRnd() * (MAZE.cells - 1)); // 1..11, S12 исключён
+      compute({ restart: true });
+    });
+
+    compute();
+  }
+
+  /* ---------- холодильник (непрерывная задача) ---------- */
+
+  function initFridge(root) {
+    const state = {
+      gamma: 0.9,
+      epsilon: 0.1,
+      penalty: 1,
+      seed: 7,
+      index: 0,
+      run: null,
+    };
+
+    const trace = root.querySelector('[data-fridge-trace]');
+    const ns = 'http://www.w3.org/2000/svg';
+
+    /** Пересчёт прогона: restart — показ начинается заново. */
+    function compute({ restart = false } = {}) {
+      state.run = runFridge({
+        gamma: state.gamma,
+        epsilon: state.epsilon,
+        penalty: state.penalty,
+        seed: state.seed,
+      });
+      state.index = restart ? 0 : state.run.steps.length;
+      draw();
+    }
+
+    /** Таблица шагов: строки заполняются по мере показа (state.index). */
+    function drawTrace() {
+      const rows = root.querySelector('[data-fridge-rows]');
+      const box = root.querySelector('[data-fridge-trace-box]');
+      rows.innerHTML = state.run.steps
+        .slice(0, state.index)
+        .map(
+          (step) =>
+            `<tr${step.explored ? ' class="is-random"' : ''}>` +
+            `<td>${step.t + 1}</td>` +
+            `<td>«${step.action}»${
+              step.explored ? '<span class="sim-random">наугад</span>' : ''
+            }</td>` +
+            `<td>${num(step.temp, 2)} °C</td>` +
+            `<td>${num(step.reward)}</td>` +
+            `<td>${num(step.g)}</td>` +
+            '</tr>'
+        )
+        .join('');
+      box.scrollTop = box.scrollHeight; // свежие шаги держим в поле зрения
+    }
+
+    function drawFridge() {
+      const steps = state.run.steps;
+      const shown = steps.slice(0, state.index);
+      trace.innerHTML = '';
+
+      const W = 340;
+      const H = 130;
+      const pad = { l: 26, r: 8, t: 8, b: 18 };
+      const x = (i) => pad.l + (i / Math.max(1, steps.length - 1)) * (W - pad.l - pad.r);
+      const y = (t) => pad.t + ((FRIDGE.max - t) / (FRIDGE.max - FRIDGE.min)) * (H - pad.t - pad.b);
+
+      const line = (x1, y1, x2, y2, cls, dash) => {
+        const l = document.createElementNS(ns, 'line');
+        l.setAttribute('x1', x1);
+        l.setAttribute('y1', y1);
+        l.setAttribute('x2', x2);
+        l.setAttribute('y2', y2);
+        if (dash) l.setAttribute('stroke-dasharray', dash);
+        l.setAttribute('class', cls);
+        trace.appendChild(l);
+      };
+
+      line(pad.l, y(FRIDGE.target), W - pad.r, y(FRIDGE.target), 'sim-target', '5 4');
+      line(pad.l, y(FRIDGE.min), pad.l, y(FRIDGE.max), 'sim-axis');
+
+      const label = (text, cx, cy) => {
+        const t = document.createElementNS(ns, 'text');
+        t.setAttribute('x', cx);
+        t.setAttribute('y', cy);
+        t.setAttribute('class', 'sim-label');
+        t.textContent = text;
+        trace.appendChild(t);
+      };
+      label('+4', 6, y(FRIDGE.target) + 4);
+      label('+22', 2, y(FRIDGE.ambient) + 4);
+
+      if (shown.length === 0) return;
+      const points = [
+        { t: FRIDGE.ambient, i: -1 },
+        ...shown.map((step, i) => ({ t: step.temp, i })),
+      ];
+      const path = document.createElementNS(ns, 'polyline');
+      path.setAttribute('points', points.map((p) => `${x(p.i + 1)},${y(p.t)}`).join(' '));
+      path.setAttribute('class', 'sim-line');
+      trace.appendChild(path);
+
+      // красные точки — шаги, где сработало случайное действие (ε); при ε = 0 их нет вообще
+      shown.forEach((step, i) => {
+        if (!step.explored) return;
+        const mark = document.createElementNS(ns, 'circle');
+        mark.setAttribute('cx', x(i + 1));
+        mark.setAttribute('cy', y(step.temp));
+        mark.setAttribute('r', 2.6);
+        mark.setAttribute('class', 'sim-dot-random');
+        mark.appendChild(document.createElementNS(ns, 'title')).textContent =
+          `шаг ${i + 1}: случайное действие «${step.action}», ${num(step.temp, 2)} °C`;
+        trace.appendChild(mark);
+      });
+
+      const dot = document.createElementNS(ns, 'circle');
+      const last = shown[shown.length - 1];
+      dot.setAttribute('cx', x(shown.length));
+      dot.setAttribute('cy', y(last.temp));
+      dot.setAttribute('r', 3.5);
+      dot.setAttribute('class', 'sim-dot');
+      trace.appendChild(dot);
+    }
+
+    function drawReadouts() {
+      const shown = state.run.steps.slice(0, state.index);
+      const last = shown[shown.length - 1];
+
+      readEl(root, 'horizon').textContent = Number.isFinite(horizon(state.gamma))
+        ? num(horizon(state.gamma), 1)
+        : '∞';
+      readEl(root, 'g').textContent = last ? num(last.g) : '—';
+      readEl(root, 'temp').textContent = num(last ? last.temp : FRIDGE.ambient, 2) + ' °C';
+
+      outEl(root, 'gamma').textContent = num(state.gamma, 2);
+      outEl(root, 'epsilon').textContent = num(state.epsilon, 2);
+      outEl(root, 'penalty').textContent = num(state.penalty, 2);
+
+      drawWeights(root, state.gamma);
+      drawEps(root, state.epsilon);
+
+      // условные обозначения к графику: показываем только то, что есть на самом деле
+      const explored = shown.filter((step) => step.explored).length;
+      if (state.epsilon === 0) {
+        readEl(root, 'legend').textContent =
+          'случайных действий нет: ε = 0 — красных точек на графике не будет';
+      } else if (shown.length === 0) {
+        readEl(root, 'legend').textContent =
+          'нажми «Шаг» или «Прогнать» — красные точки появятся по мере показа';
+      } else {
+        readEl(root, 'legend').textContent =
+          `красных точек — ${explored} из ${shown.length} показанных шагов: столько раз сработало ` +
+          `случайное действие при ε = ${num(state.epsilon, 2)}`;
+      }
+
+      // вердикт: сходится ли сумма (при γ = 1 предел не появится)
+      if (state.gamma >= 1) {
+        readEl(root, 'verdict').textContent =
+          'γ = 1: сумма не сходится — за последние 20 шагов доход «уехал» на ' +
+          num(state.run.growth) +
+          ' и предел не появится, сколько ни считай';
+      } else if (state.run.converged) {
+        readEl(root, 'verdict').textContent = `сумма сошлась: доход вышел на предел ≈ ${num(state.run.g)}`;
+      } else {
+        readEl(root, 'verdict').textContent =
+          `сумма ещё растёт (прирост за 20 шагов ${num(state.run.growth)}): горизонт ≈ ` +
+          Math.round(horizon(state.gamma)) +
+          ' шагов — такого прогона мало';
+      }
+    }
+
+    function draw() {
+      drawFridge();
+      drawTrace();
+      drawReadouts();
+    }
+
+    root.querySelectorAll('[data-knob]').forEach((input) => {
+      input.addEventListener('input', () => {
+        state[input.dataset.knob] = Number(input.value);
+        compute();
+      });
+    });
+
+    bindShowButtons(root, state, compute, draw);
+
+    compute();
+  }
+
+  /* ---------- запуск: панели независимы, каждая стартует сама по себе ---------- */
+
+  const mazeRoot = document.querySelector('[data-sim="maze"]');
+  if (mazeRoot) initMaze(mazeRoot);
+
+  const fridgeRoot = document.querySelector('[data-sim="fridge"]');
+  if (fridgeRoot) initFridge(fridgeRoot);
+</script>

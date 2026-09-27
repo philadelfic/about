@@ -1,0 +1,80 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { optionalCollection } from '../../../../../lib/collections';
+import { withBase } from '../../../../../data/site';
+
+export async function getStaticPaths() {
+  const items = (await optionalCollection('results')).filter((item) => !item.data.draft);
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const current = Astro.url.pathname;
+
+// Список читают студенты: порядок — по алфавиту, а не по баллам.
+const rows = [...item.data.rows].sort((a, b) => a.student.localeCompare(b.student, 'ru'));
+const passedCount = rows.filter((row) => row.status === 'зачёт').length;
+const failedCount = rows.length - passedCount;
+---
+
+<BaseLayout
+  title={`Семинар ${item.data.number}. ${item.data.title} — результаты проверки`}
+  description={item.data.summary}
+>
+  <div class="course">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">
+        Результаты проверки · семинар {item.data.number}
+        {item.data.date ? ` · ${item.data.date}` : ''}
+        {item.data.group ? ` · группа ${item.data.group}` : ''}
+      </p>
+      <h1>Семинар {item.data.number}. {item.data.title}</h1>
+      <p class="lead">{item.data.summary}</p>
+
+      <p class="results-summary">
+        Зачёт: {passedCount}
+        {failedCount > 0 ? ` · Незачёт: ${failedCount}` : ''} · Всего: {rows.length}
+      </p>
+
+      <table class="results-table">
+        <thead>
+          <tr>
+            <th>№</th>
+            <th>Студент</th>
+            <th>Семинар {item.data.number}</th>
+            <th>Что подтянуть</th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, index) => (
+            <tr>
+              <td>{index + 1}</td>
+              <td>{row.student}</td>
+              <td>
+                <span class:list={['status', row.status === 'зачёт' ? 'status--pass' : 'status--fail']}>
+                  {row.status}
+                </span>
+              </td>
+              <td>
+                {row.links.length > 0 ? (
+                  <ul class="results-links">
+                    {row.links.map((link) => (
+                      <li>
+                        <a href={withBase(link.href)}>{link.title}</a>
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <span class="muted">—</span>
+                )}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </article>
+  </div>
+</BaseLayout>

@@ -1,5 +1,6 @@
 ---
 import '../styles/global.css';
+import 'katex/dist/katex.min.css';
 import { base, withBase, gate, links } from '../data/site';
 import { dict, type Lang } from '../data/i18n';
 
@@ -107,6 +108,9 @@ const courseNav = [
             Чат группы →
           </a>
         </div>
+        <span class="read-progress" aria-hidden="true" hidden>
+          <span class="read-progress-fill"></span>
+        </span>
       </header>
     ) : (
       <header class="site-header">
@@ -154,6 +158,9 @@ const courseNav = [
             </div>
           )}
         </div>
+        <span class="read-progress" aria-hidden="true" hidden>
+          <span class="read-progress-fill"></span>
+        </span>
       </header>
     )}
 
@@ -205,6 +212,128 @@ const courseNav = [
         </div>
       </footer>
     )}
+
+    <button class="to-top" type="button" aria-label="Наверх">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M12 19V5M5 12l7-7 7 7"></path>
+      </svg>
+    </button>
+
+    <script is:inline>
+      // «Где я на длинной странице»: полоса прогресса чтения и кнопка «наверх».
+      // Без JS ничего не появляется: полоса скрыта атрибутом hidden, кнопка — opacity/visibility.
+      (function () {
+        try {
+          var doc = document.documentElement;
+          var bar = document.querySelector('.read-progress');
+          var fill = bar ? bar.querySelector('.read-progress-fill') : null;
+          var up = document.querySelector('.to-top');
+          var ticking = false;
+
+          // Прокручиваемая часть страницы: сколько осталось до низа.
+          function room() {
+            var left = doc.scrollHeight - window.innerHeight;
+            return left > 0 ? left : 0;
+          }
+
+          function render() {
+            ticking = false;
+            var left = room();
+            if (fill) {
+              var done = left > 0 ? (window.scrollY / left) * 100 : 0;
+              fill.style.width = (done > 100 ? 100 : done < 0 ? 0 : done) + '%';
+            }
+            if (up) up.classList.toggle('is-visible', window.scrollY > window.innerHeight);
+          }
+
+          function schedule() {
+            if (ticking) return;
+            ticking = true;
+            window.requestAnimationFrame(render);
+          }
+
+          // Полоса нужна только на длинной странице (больше ~1,5 экрана).
+          function measure() {
+            if (bar) bar.hidden = room() < window.innerHeight * 0.5;
+            render();
+          }
+
+          // Замер отложен в кадр: на resize важна не каждая промежуточная геометрия.
+          function scheduleMeasure() {
+            if (ticking) return;
+            ticking = true;
+            window.requestAnimationFrame(measure);
+          }
+
+          if (up) {
+            up.addEventListener('click', function () {
+              // Предпочтение «меньше движения» читаем в момент клика: пользователь мог
+              // сменить настройку уже после загрузки страницы.
+              var reduced = false;
+              try {
+                reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+              } catch (e) {}
+              window.scrollTo({ top: 0, behavior: reduced ? 'instant' : 'smooth' });
+            });
+          }
+
+          window.addEventListener('scroll', schedule, { passive: true });
+          // resize идёт через тот же rAF: при перетаскивании окна scrollHeight не читается
+          // синхронно на каждое событие. Первый замер — сразу, чтобы полоса появилась без кадра.
+          window.addEventListener('resize', scheduleMeasure);
+          measure();
+        } catch (e) {}
+      })();
+    </script>
+
+    <script is:inline>
+      // Прямая ссылка на вопрос: если хэш указывает на вопрос-ответ (сам <details> из .qa
+      // или любой элемент внутри него) — раскрываем этот ответ. Без JS ссылка просто
+      // перематывает к свёрнутому вопросу: страница работает как раньше.
+      (function () {
+        try {
+          // Ближайший <details> из блока «вопросы-ответы», содержащий этот элемент.
+          function question(target) {
+            var el = target;
+            while (el && el !== document.body) {
+              if (el.tagName === 'DETAILS' && el.parentNode && el.parentNode.classList &&
+                  el.parentNode.classList.contains('qa')) {
+                return el;
+              }
+              el = el.parentElement;
+            }
+            return null;
+          }
+
+          function reveal() {
+            var hash = location.hash;
+            if (!hash || hash.length < 2) return;
+            var id = hash.slice(1);
+            try {
+              id = decodeURIComponent(id);
+            } catch (e) {}
+            var target = document.getElementById(id);
+            var box = target ? question(target) : null;
+            if (!box || box.open) return;
+            box.open = true;
+            // Ответ раскрылся — возвращаемся к вопросу: у .qa details есть
+            // scroll-margin-top, поэтому вопрос встаёт под липкой шапкой, а не под ней.
+            window.requestAnimationFrame(function () {
+              try {
+                box.scrollIntoView({ block: 'start' });
+              } catch (e) {
+                try {
+                  box.scrollIntoView();
+                } catch (e2) {}
+              }
+            });
+          }
+
+          window.addEventListener('hashchange', reveal);
+          reveal();
+        } catch (e) {}
+      })();
+    </script>
 
     <script is:inline>
       // Переключатели: тема и язык (запоминаем выбор в localStorage).
@@ -292,6 +421,36 @@ const courseNav = [
 
     <script is:inline define:vars={{ gate, base }}>
       (function () {
+        // Печать: перед печатью раскрываем вопросы-ответы (.qa details), после —
+        // возвращаем прежнее состояние. Другие details (если появятся) не трогаем.
+        // Событий печати нет — страница читается как есть.
+        (function () {
+          var restore = null;
+          try {
+            window.addEventListener('beforeprint', function () {
+              try {
+                var closed = [];
+                document.querySelectorAll('.qa details:not([open])').forEach(function (item) {
+                  closed.push(item);
+                  item.open = true;
+                });
+                restore = closed;
+              } catch (e) {}
+            });
+
+            window.addEventListener('afterprint', function () {
+              try {
+                if (restore) {
+                  restore.forEach(function (item) {
+                    item.open = false;
+                  });
+                }
+              } catch (e) {}
+              restore = null;
+            });
+          } catch (e) {}
+        })();
+
         const cfg = { scope: gate.scope, hash: gate.hash, key: gate.key, base: base };
         const path = location.pathname;
         const rel = path.startsWith(cfg.base) ? path.slice(cfg.base.length) : path;

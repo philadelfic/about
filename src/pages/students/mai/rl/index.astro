@@ -8,6 +8,7 @@ import { optionalCollection } from '../../../../lib/collections';
 const topics = await getCollection('topics');
 const homework = await optionalCollection('homework');
 const seminars = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
+const results = (await optionalCollection('results')).filter((item) => !item.data.draft);
 const current = Astro.url.pathname;
 
 const sections = [
@@ -26,17 +27,25 @@ const sections = [
     title: 'Семинарские занятия',
     text: seminars.length > 0 ? `Проведено занятий: ${seminars.length}.` : 'Материалы семинаров.',
   },
+  {
+    href: withBase('students/mai/rl/results/'),
+    title: 'Результаты',
+    text:
+      results.length > 0
+        ? `Зачёты по заданиям занятий: ${results.length}.`
+        : 'Зачёты и незачёты по заданиям занятий.',
+  },
 ];
 ---
 
-<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, семинарские занятия.">
+<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, семинарские занятия, результаты заданий.">
   <div class="course">
     <CourseNav current={current} />
 
     <div>
       <p class="muted">Т1 + МАИ · магистратура</p>
       <h1>Обучение с подкреплением</h1>
-      <p class="lead">Материалы курса: темы, домашние задания и семинарские занятия.</p>
+      <p class="lead">Материалы курса: темы, домашние задания, семинарские занятия и результаты заданий.</p>
 
       <div class="cards">
         {sections.map((section) => (

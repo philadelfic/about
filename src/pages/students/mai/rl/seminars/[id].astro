@@ -1,8 +1,10 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
+import TopicToc from '../../../../../components/TopicToc.astro';
 import { optionalCollection } from '../../../../../lib/collections';
+import { slugify } from '../../../../../lib/slug.mjs';
 
 export async function getStaticPaths() {
   const items = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
@@ -12,10 +14,63 @@ export async function getStaticPaths() {
 const { item } = Astro.props;
 const { Content } = await render(item);
 const current = Astro.url.pathname;
+
+// Подпись ссылки-якоря: в скринридере список ссылок должен читаться осмысленно,
+// поэтому в подписи — название задачи (первые 60 символов, пробелы сжаты в один).
+const qaLabel = (text: string) => {
+  const line = text.replace(/\s+/g, ' ').trim();
+  return `Ссылка на вопрос: ${line.length > 60 ? `${line.slice(0, 60)}…` : line}`;
+};
+
+// Группы занятия: задачи раскладываем по группам, переключатель — внизу блока.
+const groupNames = ['А', 'Б'];
+// Якоря ответов: у семинара вопрос-ответ живёт внутри задачи, а подпись всегда «Ответ»,
+// поэтому id берём из названия задачи (slugify + нумерация повторов, как у заголовков).
+const usedQa = new Map();
+const taskGroups = groupNames.map((group) => ({
+  group,
+  items: item.data.tasks
+    .filter((task) => (task.group ?? 'А') === group)
+    .map((task) => {
+      if (!task.answer) return { ...task, qaId: null };
+      const base = slugify(task.title) || 'otvet';
+      const count = usedQa.get(base) ?? 0;
+      usedQa.set(base, count + 1);
+      return { ...task, qaId: count > 0 ? `${base}-${count}` : base };
+    }),
+}));
+
+// Содержание занятия (правая колонка): блоки страницы + заголовки теории.
+const used = new Map();
+const theoryHeadings = [];
+for (const raw of (item.body ?? '').split('\n')) {
+  const match = /^(##|###)\s+(.*)$/.exec(raw.trim());
+  if (!match) continue;
+  const text = match[2].replace(/\*\*/g, '').trim();
+  let id = slugify(text) || 'section';
+  const count = used.get(id) ?? 0;
+  used.set(id, count + 1);
+  if (count > 0) id = `${id}-${count}`;
+  theoryHeadings.push({ text, id, level: match[1] === '###' ? 2 : 1 });
+}
+
+const toc = [
+  ...(item.data.covered.length > 0
+    ? [{ text: 'Что было на занятии', id: 'chto-bylo', level: 0 }]
+    : []),
+  { text: 'Теория', id: 'teoriya', level: 0 },
+  ...theoryHeadings,
+  ...(item.data.tasks.length > 0
+    ? [{ text: 'Задачи для проверки понимания', id: 'zadachi', level: 0 }]
+    : []),
+  ...(item.data.materials.length > 0
+    ? [{ text: 'Материалы', id: 'materialy', level: 0 }]
+    : []),
+];
 ---
 
 <BaseLayout title={`Занятие ${item.data.number}. ${item.data.title}`} description={item.data.summary}>
-  <div class="course">
+  <div class="course course--toc">
     <CourseNav current={current} />
 
     <article>
@@ -26,11 +81,68 @@ const current = Astro.url.pathname;
       <h1>{item.data.title}</h1>
       <p class="lead">{item.data.summary}</p>
 
+      {item.data.covered.length > 0 && (
+        <div class="panel" id="chto-bylo">
+          <b>Что было на занятии</b>
+          <ul class="tasks">
+            {item.data.covered.map((line) => (
+              <li>{line}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <h2 id="teoriya">Теория</h2>
       <Content />
+
+      {item.data.tasks.length > 0 && (
+        <div class="panel" id="zadachi" data-task-switch>
+          <b>Задачи для проверки понимания материала</b>
+
+          {taskGroups.map((group) => (
+            <ol class="tasks task-group" data-task-group={group.group} hidden={group.group !== 'А'}>
+              {group.items.length > 0 ? (
+                group.items.map((task) => (
+                  <li>
+                    <b>{task.title}</b>
+                    <p>{task.text}</p>
+                    {task.answer && (
+                      <div class="qa">
+                        <details id={task.qaId}>
+                          <summary>
+                            Ответ
+                            <a class="qa-link" href={`#${task.qaId}`} aria-label={qaLabel(task.title)}>#</a>
+                          </summary>
+                          <p>{task.answer}</p>
+                        </details>
+                      </div>
+                    )}
+                  </li>
+                ))
+              ) : (
+                <li class="muted">Задачи для группы {group.group} появятся позже.</li>
+              )}
+            </ol>
+          ))}
+
+          <div class="group-switch" role="tablist" aria-label="Группа занятия">
+            {taskGroups.map((group) => (
+              <button
+                type="button"
+                role="tab"
+                data-group={group.group}
+                aria-selected={group.group === 'А' ? 'true' : 'false'}
+              >
+                Группа {group.group}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {item.data.materials.length > 0 && (
         <>
-          <h2>Материалы</h2>
+          <h2 id="materialy">Материалы</h2>
           <ul class="links">
             {item.data.materials.map((material) => (
               <li>
@@ -45,5 +157,22 @@ const current = Astro.url.pathname;
         </>
       )}
     </article>
+
+    <TopicToc items={toc} title="Содержание занятия" />
   </div>
+
+  <script>
+    document.querySelectorAll('[data-task-switch]').forEach((block) => {
+      const buttons = Array.from(block.querySelectorAll('.group-switch button'));
+      const lists = Array.from(block.querySelectorAll('[data-task-group]'));
+      const show = (group) => {
+        buttons.forEach((button) =>
+          button.setAttribute('aria-selected', String(button.dataset.group === group))
+        );
+        lists.forEach((list) => (list.hidden = list.dataset.taskGroup !== group));
+      };
+      buttons.forEach((button) => button.addEventListener('click', () => show(button.dataset.group)));
+      if (buttons.length > 0) show(buttons[0].dataset.group);
+    });
+  </script>
 </BaseLayout>

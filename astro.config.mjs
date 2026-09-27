@@ -1,5 +1,7 @@
 import { defineConfig } from 'astro/config';
 import { slugify } from './src/lib/slug.mjs';
+import remarkMath from 'remark-math';
+import rehypeKatex from 'rehype-katex';
 
 const base = '/about';
 
@@ -57,5 +59,8 @@ export default defineConfig({
   base,
   trailingSlash: 'ignore',
   build: { format: 'directory' },
-  markdown: { rehypePlugins: [rehypeBaseImages, rehypeHeadingIds] },
+  markdown: {
+    remarkPlugins: [remarkMath],
+    rehypePlugins: [rehypeBaseImages, rehypeKatex, rehypeHeadingIds],
+  },
 });

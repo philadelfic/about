@@ -3,6 +3,7 @@ import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import TopicToc from '../../../../../components/TopicToc.astro';
+import Simulator from '../../../../../components/Simulator.astro';
 import { withBase } from '../../../../../data/site';
 import { slugify } from '../../../../../lib/slug.mjs';
 
@@ -22,6 +23,13 @@ const current = Astro.url.pathname;
 const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
 const isFile = (value: string) => !value.startsWith('http');
 
+// Подпись ссылки-якоря: в скринридере список ссылок должен читаться осмысленно,
+// поэтому в подписи — сам вопрос (первые 60 символов, пробелы сжаты в один).
+const qaLabel = (text: string) => {
+  const line = text.replace(/\s+/g, ' ').trim();
+  return `Ссылка на вопрос: ${line.length > 60 ? `${line.slice(0, 60)}…` : line}`;
+};
+
 // Содержание темы (правая колонка): разделы страницы + заголовки теории.
 const used = new Map();
 const theoryHeadings = [];
@@ -36,12 +44,22 @@ for (const raw of (topic.body ?? '').split('\n')) {
   theoryHeadings.push({ text, id, level: match[1] === '###' ? 2 : 1 });
 }
 
+// Якоря вопросов: id из текста вопроса, тем же slugify и той же нумерацией повторов,
+// что и у заголовков теории (used общий — id уникальны на всей странице).
+const qaItems = topic.data.qa.map((item) => {
+  const base = slugify(item.q) || 'vopros';
+  const count = used.get(base) ?? 0;
+  used.set(base, count + 1);
+  return { ...item, id: count > 0 ? `${base}-${count}` : base };
+});
+
 const toc = [
   ...(topic.data.covered.length > 0 ? [{ text: 'Что разбирали', id: 'chto-razbirali', level: 0 }] : []),
   { text: 'Теория', id: 'teoriya', level: 0 },
   ...theoryHeadings,
   ...(topic.data.qa.length > 0 ? [{ text: 'Вопросы и ответы', id: 'voprosy-i-otvety', level: 0 }] : []),
   ...(topic.data.terms.length > 0 ? [{ text: 'Терминология', id: 'terminologiya', level: 0 }] : []),
+  ...(topic.data.simulator ? [{ text: 'Покрутить руками', id: 'simulyator', level: 0 }] : []),
 ];
 ---
 
@@ -93,9 +111,12 @@ const toc = [
         <>
           <h2 id="voprosy-i-otvety">Вопросы и ответы</h2>
           <div class="qa">
-            {topic.data.qa.map((item) => (
-              <details>
-                <summary>{item.q}</summary>
+            {qaItems.map((item) => (
+              <details id={item.id}>
+                <summary>
+                  {item.q}
+                  <a class="qa-link" href={`#${item.id}`} aria-label={qaLabel(item.q)}>#</a>
+                </summary>
                 <p>{item.a}</p>
               </details>
             ))}
@@ -123,6 +144,12 @@ const toc = [
             </tbody>
           </table>
         </>
+      )}
+
+      {topic.data.simulator && (
+        <div id="simulyator" class="sim-wrap">
+          <Simulator preset={topic.data.simulator} />
+        </div>
       )}
 
       <div class="row" style="margin-top:28px">
