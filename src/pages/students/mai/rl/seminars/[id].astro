@@ -5,6 +5,7 @@ import CourseNav from '../../../../../components/CourseNav.astro';
 import TopicToc from '../../../../../components/TopicToc.astro';
 import { optionalCollection } from '../../../../../lib/collections';
 import { slugify } from '../../../../../lib/slug.mjs';
+import { withBase } from '../../../../../data/site';
 
 export async function getStaticPaths() {
   const items = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
@@ -14,6 +15,11 @@ export async function getStaticPaths() {
 const { item } = Astro.props;
 const { Content } = await render(item);
 const current = Astro.url.pathname;
+
+// Ссылки на материалы: свой файл сайта — через базовый путь, внешний — как есть;
+// файлы открываем в новой вкладке, как на странице темы.
+const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
+const isFile = (value: string) => !value.startsWith('http');
 
 // Подпись ссылки-якоря: в скринридере список ссылок должен читаться осмысленно,
 // поэтому в подписи — название задачи (первые 60 символов, пробелы сжаты в один).
@@ -27,16 +33,36 @@ const groupNames = ['А', 'Б'];
 // Якоря ответов: у семинара вопрос-ответ живёт внутри задачи, а подпись всегда «Ответ»,
 // поэтому id берём из названия задачи (slugify + нумерация повторов, как у заголовков).
 const usedQa = new Map();
+// Задача без группы — общая: её видит и группа А, и группа Б (так помечены задачи 1–4 семинара 1).
+const belongsTo = (task, group) => {
+  const value = (task.group ?? '').trim();
+  return value === '' || value === group;
+};
 const taskGroups = groupNames.map((group) => ({
   group,
   items: item.data.tasks
-    .filter((task) => (task.group ?? 'А') === group)
+    .filter((task) => belongsTo(task, group))
     .map((task) => {
       if (!task.answer) return { ...task, qaId: null };
       const base = slugify(task.title) || 'otvet';
       const count = usedQa.get(base) ?? 0;
       usedQa.set(base, count + 1);
       return { ...task, qaId: count > 0 ? `${base}-${count}` : base };
+    }),
+}));
+
+// Рубежный контроль: вопросы по вариантам, нумерация своя в каждом варианте.
+const usedQuizQa = new Map();
+const quizGroups = groupNames.map((group) => ({
+  group,
+  items: item.data.quiz
+    .filter((question) => belongsTo(question, group))
+    .map((question) => {
+      const base = slugify(question.title) || 'vopros';
+      const count = usedQuizQa.get(base) ?? 0;
+      usedQuizQa.set(base, count + 1);
+      const qaId = count > 0 ? `${base}-${count}` : base;
+      return { ...question, qaId: question.answer ? qaId : null };
     }),
 }));
 
@@ -62,6 +88,9 @@ const toc = [
   ...theoryHeadings,
   ...(item.data.tasks.length > 0
     ? [{ text: 'Задачи для проверки понимания', id: 'zadachi', level: 0 }]
+    : []),
+  ...(item.data.quiz.length > 0
+    ? [{ text: 'Рубежный контроль №1', id: 'rk', level: 0 }]
     : []),
   ...(item.data.materials.length > 0
     ? [{ text: 'Материалы', id: 'materialy', level: 0 }]
@@ -140,6 +169,58 @@ const toc = [
         </div>
       )}
 
+      {item.data.quiz.length > 0 && (
+        <div class="panel" id="rk" data-task-switch>
+          <b>Рубежный контроль №1</b>
+          <p class="muted">
+            Двенадцать вопросов, 12 баллов, 12 минут: десять с выбором ответа и два — своими словами.
+            Вариант — по вашей группе. Ответы спрятаны: сначала отвечаете сами, потом сверяетесь.
+          </p>
+
+          {quizGroups.map((group) => (
+            <ol class="tasks task-group" data-task-group={group.group} hidden={group.group !== 'А'}>
+              {group.items.map((question) => (
+                <li>
+                  <b>{question.title}</b>
+                  <p>{question.text}</p>
+                  {question.options.length > 0 && (
+                    <ul class="quiz-options">
+                      {question.options.map((option) => (
+                        <li>{option}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {question.answer && (
+                    <div class="qa">
+                      <details id={question.qaId}>
+                        <summary>
+                          Ответ
+                          <a class="qa-link" href={`#${question.qaId}`} aria-label={qaLabel(question.title)}>#</a>
+                        </summary>
+                        <p>{question.answer}</p>
+                      </details>
+                    </div>
+                  )}
+                </li>
+              ))}
+            </ol>
+          ))}
+
+          <div class="group-switch" role="tablist" aria-label="Вариант рубежного контроля">
+            {quizGroups.map((group) => (
+              <button
+                type="button"
+                role="tab"
+                data-group={group.group}
+                aria-selected={group.group === 'А' ? 'true' : 'false'}
+              >
+                Вариант {group.group}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
       {item.data.materials.length > 0 && (
         <>
           <h2 id="materialy">Материалы</h2>
@@ -147,7 +228,9 @@ const toc = [
             {item.data.materials.map((material) => (
               <li>
                 {material.href ? (
-                  <a href={material.href}>{material.title}</a>
+                  <a href={href(material.href)} target={isFile(material.href) ? '_blank' : undefined}>
+                    {material.title}
+                  </a>
                 ) : (
                   <span>{material.title}</span>
                 )}

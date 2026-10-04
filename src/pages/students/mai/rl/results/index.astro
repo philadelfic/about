@@ -10,7 +10,22 @@ const items = (await optionalCollection('results'))
 const current = Astro.url.pathname;
 
 const passedCount = (item: (typeof items)[number]) =>
-  item.data.rows.filter((row) => row.status === 'зачёт').length;
+  item.data.groups.reduce(
+    (sum, group) => sum + group.rows.filter((row) => row.status === 'зачёт').length,
+    0
+  );
+const totalCount = (item: (typeof items)[number]) =>
+  item.data.groups.reduce((sum, group) => sum + group.rows.length, 0);
+const datesLabel = (item: (typeof items)[number]) =>
+  item.data.groups
+    .map((group) => group.date)
+    .filter(Boolean)
+    .join(' · ');
+const groupsLabel = (item: (typeof items)[number]) => {
+  const names = item.data.groups.map((group) => group.name);
+  if (names.length === 0) return '';
+  return names.length === 1 ? `Группа ${names[0]}. ` : `Группы: ${names.join(' · ')}. `;
+};
 ---
 
 <BaseLayout
@@ -34,12 +49,12 @@ const passedCount = (item: (typeof items)[number]) =>
               <a href={withBase(`students/mai/rl/results/${item.id}/`)}>
                 <span class="step">
                   Семинар {item.data.number}
-                  {item.data.date ? ` · ${item.data.date}` : ''}
-                  {item.data.group ? ` · группа ${item.data.group}` : ''}
+                  {datesLabel(item) ? ` · ${datesLabel(item)}` : ''}
                 </span>
                 <h3>{item.data.title}</h3>
                 <p class="muted">
-                  Зачёт: {passedCount(item)} из {item.data.rows.length}.
+                  {groupsLabel(item)}Зачёт: {passedCount(item)} из {totalCount(item)}.
+                  {item.data.groups.length > 1 ? ' Группа — на странице переключателем.' : ''}
                 </p>
               </a>
             </li>

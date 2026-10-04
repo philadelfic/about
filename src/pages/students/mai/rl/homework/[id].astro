@@ -20,7 +20,7 @@ const current = Astro.url.pathname;
 
     <article>
       <p class="muted">
-        Домашнее задание{item.data.topic ? ` · к теме ${item.data.topic}` : ''}
+        Домашнее задание{item.data.lecture ? ` · лекция ${item.data.lecture}` : ''}{item.data.topic ? ` · тема ${item.data.topic}` : ''}
       </p>
       <h1>{item.data.title}</h1>
       <p class="lead">{item.data.due ? `Сдать: ${item.data.due}` : ''}</p>

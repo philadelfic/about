@@ -534,6 +534,20 @@ th {
   margin-top: 10px;
 }
 
+/* ---------- варианты ответов в вопросах рубежного контроля ---------- */
+
+.quiz-options {
+  margin: 8px 0 4px;
+  padding-left: 20px;
+  color: var(--muted);
+  /* буквы вариантов уже стоят в тексте — маркеры списка не нужны */
+  list-style: none;
+}
+
+.quiz-options li {
+  margin-bottom: 2px;
+}
+
 /* ---------- переключатель групп в блоке задач ---------- */
 
 .group-switch {
@@ -572,6 +586,13 @@ th {
 body.theme-t1 .group-switch button[aria-selected='true'] {
   background: #1daff7;
   border-color: #1daff7;
+}
+
+/* Переключатель в начале блока (страница результатов): без верхней линии, с отступом снизу */
+.group-switch--top {
+  margin: 0 0 18px;
+  padding-top: 0;
+  border-top: 0;
 }
 
 /* ---------- картинки и схемы в материалах ---------- */
@@ -671,6 +692,16 @@ article h1,
 article h2,
 article h3 {
   max-width: var(--measure);
+}
+
+/* подзаголовки внутри теории (тема с подразделами) — не путать с подписями карточек,
+   там h3 живёт в своём контексте; здесь задаём только то, что нужно статье */
+article h3 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  margin: 30px 0 10px;
+  color: #2a2d30;
 }
 
 /* тренажёр — на всю ширину колонки: его панели и таблицу трассы мерой не ограничиваем */
@@ -2136,4 +2167,34 @@ article .results-table {
 
 .status--fail {
   color: #c2410c;
+}
+
+/* Видео с YouTube в теории (ролики из лекции 4) */
+.video {
+  max-width: var(--measure);
+  margin: 22px 0;
+}
+
+.video iframe {
+  display: block;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+}
+
+.video .muted {
+  margin: 6px 0 0;
+  font-size: 14px;
+}
+
+/* Группы «что разбирали» по лекциям внутри темы */
+.covered-group {
+  margin-top: 10px;
+}
+
+.covered-group-title {
+  margin: 10px 0 4px;
+  font-weight: 600;
 }

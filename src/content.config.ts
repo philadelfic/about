@@ -11,6 +11,16 @@ const topics = defineCollection({
     date: z.string().optional(),
     /** Что разбирали на лекции — короткие тезисы-ориентиры. */
     covered: z.array(z.string()).default([]),
+    /** Лекции, которые закрывает тема: номер, дата и что разбирали. */
+    lectures: z
+      .array(
+        z.object({
+          number: z.number(),
+          date: z.string().optional(),
+          covered: z.array(z.string()).default([]),
+        })
+      )
+      .default([]),
     /** Вопросы и ответы по теме. */
     qa: z.array(z.object({ q: z.string(), a: z.string() })).default([]),
     /** Терминология темы — списком в конце. */
@@ -33,6 +43,8 @@ const homework = defineCollection({
     summary: z.string().default(''),
     due: z.string().optional(),
     topic: z.number().optional(),
+    /** Номер лекции, к которой относится задание (может отличаться от номера темы). */
+    lecture: z.number().optional(),
   }),
 });
 
@@ -46,13 +58,25 @@ const seminars = defineCollection({
     date: z.string().optional(),
     /** Что разбирали на занятии — короткие тезисы-ориентиры. */
     covered: z.array(z.string()).default([]),
-    /** Задачи для проверки понимания; group — группа занятия (А / Б), ответ показываем, когда он есть. */
+    /** Задачи для проверки понимания; group — группа занятия (А / Б), пусто — задача общая для обеих групп; ответ показываем, когда он есть. */
     tasks: z
       .array(
         z.object({
-          group: z.string().default('А'),
+          group: z.string().default(''),
           title: z.string(),
           text: z.string(),
+          answer: z.string().optional(),
+        })
+      )
+      .default([]),
+    /** Рубежный контроль: вопросы по вариантам занятия; группа А / Б, пусто — вопрос общий. */
+    quiz: z
+      .array(
+        z.object({
+          group: z.string().default(''),
+          title: z.string(),
+          text: z.string(),
+          options: z.array(z.string()).default([]),
           answer: z.string().optional(),
         })
       )
@@ -63,24 +87,31 @@ const seminars = defineCollection({
   }),
 });
 
-/** Результаты заданий занятий: зачёт или незачёт по каждому студенту группы. */
+/** Одна строка результатов: студент, зачёт/незачёт и темы, которые стоит повторить. */
+const resultRow = z.object({
+  student: z.string(),
+  status: z.enum(['зачёт', 'незачёт']),
+  /** Разделы портала, где это разобрано подробнее (путь без base, можно с якорем). */
+  links: z.array(z.object({ title: z.string(), href: z.string() })).default([]),
+});
+
+/** Результаты заданий занятий: проверка одна на занятие, группы — на странице переключателем. */
 const results = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/results' }),
   schema: z.object({
     number: z.number(),
     title: z.string(),
-    date: z.string().optional(),
-    /** Группа, у которой прошёл семинар, — как в расписании. */
-    group: z.string().optional(),
     summary: z.string().default(''),
-    /** Студент, результат по заданию семинара и темы, которые стоит повторить; порядок на странице — по алфавиту. */
-    rows: z
+    /** Группы, у которых прошла проверка; порядок — как в файле (сначала гр.1). */
+    groups: z
       .array(
         z.object({
-          student: z.string(),
-          status: z.enum(['зачёт', 'незачёт']),
-          /** Разделы портала, где это разобрано подробнее (путь без base, можно с якорем). */
-          links: z.array(z.object({ title: z.string(), href: z.string() })).default([]),
+          /** Название группы, как в расписании; оно же на кнопке переключателя. */
+          name: z.string(),
+          /** Дата занятия этой группы. */
+          date: z.string().optional(),
+          /** Строки читают по алфавиту, а не по баллам. */
+          rows: z.array(resultRow).default([]),
         })
       )
       .default([]),

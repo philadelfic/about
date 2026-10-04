@@ -12,10 +12,13 @@ export async function getStaticPaths() {
 const { item } = Astro.props;
 const current = Astro.url.pathname;
 
-// Список читают студенты: порядок — по алфавиту, а не по баллам.
-const rows = [...item.data.rows].sort((a, b) => a.student.localeCompare(b.student, 'ru'));
-const passedCount = rows.filter((row) => row.status === 'зачёт').length;
-const failedCount = rows.length - passedCount;
+// Группы идут как заданы в файле (гр.1, затем гр.2); студентов читают по алфавиту, а не по баллам.
+const groups = item.data.groups.map((group) => {
+  const rows = [...group.rows].sort((a, b) => a.student.localeCompare(b.student, 'ru'));
+  const passed = rows.filter((row) => row.status === 'зачёт').length;
+  return { ...group, rows, passed, failed: rows.length - passed };
+});
+const firstGroup = groups[0]?.name;
 ---
 
 <BaseLayout
@@ -26,55 +29,92 @@ const failedCount = rows.length - passedCount;
     <CourseNav current={current} />
 
     <article>
-      <p class="muted">
-        Результаты проверки · семинар {item.data.number}
-        {item.data.date ? ` · ${item.data.date}` : ''}
-        {item.data.group ? ` · группа ${item.data.group}` : ''}
-      </p>
+      <p class="muted">Результаты проверки · семинар {item.data.number}</p>
       <h1>Семинар {item.data.number}. {item.data.title}</h1>
       <p class="lead">{item.data.summary}</p>
 
-      <p class="results-summary">
-        Зачёт: {passedCount}
-        {failedCount > 0 ? ` · Незачёт: ${failedCount}` : ''} · Всего: {rows.length}
-      </p>
+      {groups.length === 0 ? (
+        <p class="muted">Результатов пока нет.</p>
+      ) : (
+        <div data-task-switch>
+          <div class="group-switch group-switch--top" role="tablist" aria-label="Группа">
+            {groups.map((group) => (
+              <button
+                type="button"
+                role="tab"
+                data-group={group.name}
+                aria-selected={group.name === firstGroup ? 'true' : 'false'}
+              >
+                {group.name}
+              </button>
+            ))}
+          </div>
 
-      <table class="results-table">
-        <thead>
-          <tr>
-            <th>№</th>
-            <th>Студент</th>
-            <th>Семинар {item.data.number}</th>
-            <th>Что подтянуть</th>
-          </tr>
-        </thead>
-        <tbody>
-          {rows.map((row, index) => (
-            <tr>
-              <td>{index + 1}</td>
-              <td>{row.student}</td>
-              <td>
-                <span class:list={['status', row.status === 'зачёт' ? 'status--pass' : 'status--fail']}>
-                  {row.status}
-                </span>
-              </td>
-              <td>
-                {row.links.length > 0 ? (
-                  <ul class="results-links">
-                    {row.links.map((link) => (
-                      <li>
-                        <a href={withBase(link.href)}>{link.title}</a>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <span class="muted">—</span>
-                )}
-              </td>
-            </tr>
+          {groups.map((group) => (
+            <div data-task-group={group.name} hidden={group.name !== firstGroup}>
+              <p class="results-summary">
+                Группа {group.name}
+                {group.date ? ` · занятие ${group.date}` : ''} · Зачёт: {group.passed}
+                {group.failed > 0 ? ` · Незачёт: ${group.failed}` : ''} · Всего: {group.rows.length}
+              </p>
+
+              <table class="results-table">
+                <thead>
+                  <tr>
+                    <th>№</th>
+                    <th>Студент</th>
+                    <th>Семинар {item.data.number}</th>
+                    <th>Что подтянуть</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.rows.map((row, index) => (
+                    <tr>
+                      <td>{index + 1}</td>
+                      <td>{row.student}</td>
+                      <td>
+                        <span
+                          class:list={['status', row.status === 'зачёт' ? 'status--pass' : 'status--fail']}
+                        >
+                          {row.status}
+                        </span>
+                      </td>
+                      <td>
+                        {row.links.length > 0 ? (
+                          <ul class="results-links">
+                            {row.links.map((link) => (
+                              <li>
+                                <a href={withBase(link.href)}>{link.title}</a>
+                              </li>
+                            ))}
+                          </ul>
+                        ) : (
+                          <span class="muted">—</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           ))}
-        </tbody>
-      </table>
+        </div>
+      )}
     </article>
   </div>
+
+  <script>
+    document.querySelectorAll('[data-task-switch]').forEach((block) => {
+      const buttons = Array.from(block.querySelectorAll('.group-switch button'));
+      const lists = Array.from(block.querySelectorAll('[data-task-group]'));
+      const show = (group) => {
+        buttons.forEach((button) =>
+          button.setAttribute('aria-selected', String(button.dataset.group === group))
+        );
+        lists.forEach((list) => (list.hidden = list.dataset.taskGroup !== group));
+      };
+      buttons.forEach((button) => button.addEventListener('click', () => show(button.dataset.group)));
+      if (buttons.length > 0) show(buttons[0].dataset.group);
+    });
+  </script>
 </BaseLayout>

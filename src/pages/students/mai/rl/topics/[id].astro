@@ -6,6 +6,7 @@ import TopicToc from '../../../../../components/TopicToc.astro';
 import Simulator from '../../../../../components/Simulator.astro';
 import { withBase } from '../../../../../data/site';
 import { slugify } from '../../../../../lib/slug.mjs';
+import { optionalCollection } from '../../../../../lib/collections';
 
 export async function getStaticPaths() {
   const topics = await getCollection('topics');
@@ -19,6 +20,33 @@ const index = all.findIndex((item) => item.id === topic.id);
 const prev = index > 0 ? all[index - 1] : undefined;
 const next = index < all.length - 1 ? all[index + 1] : undefined;
 const current = Astro.url.pathname;
+
+// Задания, привязанные к этой теме (обратная ссылка «тема → задания»).
+const topicHomework = (await optionalCollection('homework'))
+  .filter((item) => item.data.topic === topic.data.number)
+  .sort((a, b) => (a.data.lecture ?? 0) - (b.data.lecture ?? 0));
+
+// Связь темы с лекциями: тема может закрывать несколько лекций.
+const lectures = topic.data.lectures;
+const lectureNumbers = lectures.map((item) => item.number).join(' и ');
+const lectureDates = lectures.map((item) => item.date).filter(Boolean).join(', ');
+const lectureHeadline = lectures.length
+  ? ` · ${lectures.length > 1 ? 'лекции' : 'лекция'} ${lectureNumbers}`
+  : topic.data.date
+    ? ` · лекция ${topic.data.date}`
+    : '';
+const coveredTitle =
+  lectures.length > 1
+    ? 'Что разбирали'
+    : lectures.length === 1
+      ? `Что разбирали на лекции ${lectures[0].number}${lectures[0].date ? ` · ${lectures[0].date}` : ''}`
+      : 'Что разбирали на лекции';
+const coveredGroups = lectures
+  .map((item) => ({
+    title: `Лекция ${item.number}${item.date ? ` · ${item.date}` : ''}`,
+    items: item.covered,
+  }))
+  .filter((group) => group.items.length > 0);
 
 const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
 const isFile = (value: string) => !value.startsWith('http');
@@ -59,6 +87,7 @@ const toc = [
   ...theoryHeadings,
   ...(topic.data.qa.length > 0 ? [{ text: 'Вопросы и ответы', id: 'voprosy-i-otvety', level: 0 }] : []),
   ...(topic.data.terms.length > 0 ? [{ text: 'Терминология', id: 'terminologiya', level: 0 }] : []),
+  ...(topicHomework.length > 0 ? [{ text: 'Задания по теме', id: 'zadaniya-po-teme', level: 0 }] : []),
   ...(topic.data.simulator ? [{ text: 'Покрутить руками', id: 'simulyator', level: 0 }] : []),
 ];
 ---
@@ -72,7 +101,7 @@ const toc = [
 
     <article>
       <p class="muted">
-        Тема {topic.data.number}{topic.data.date ? ` · лекция ${topic.data.date}` : ''}
+        Тема {topic.data.number}{lectureHeadline}
       </p>
       <h1>{topic.data.title}</h1>
       <p class="lead">{topic.data.summary}</p>
@@ -95,12 +124,28 @@ const toc = [
 
       {topic.data.covered.length > 0 && (
         <div class="panel" id="chto-razbirali">
-          <b>Что разбирали на лекции</b>
-          <ul class="tasks">
-            {topic.data.covered.map((line) => (
-              <li>{line}</li>
-            ))}
-          </ul>
+          <b>{coveredTitle}</b>
+          {lectures.length > 1 && lectureDates && (
+            <p class="muted">Лекции {lectureNumbers} · {lectureDates}</p>
+          )}
+          {coveredGroups.length > 0 ? (
+            coveredGroups.map((group) => (
+              <div class="covered-group">
+                <p class="covered-group-title">{group.title}</p>
+                <ul class="tasks">
+                  {group.items.map((line) => (
+                    <li>{line}</li>
+                  ))}
+                </ul>
+              </div>
+            ))
+          ) : (
+            <ul class="tasks">
+              {topic.data.covered.map((line) => (
+                <li>{line}</li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
 
@@ -144,6 +189,22 @@ const toc = [
             </tbody>
           </table>
         </>
+      )}
+
+      {topicHomework.length > 0 && (
+        <div class="panel" id="zadaniya-po-teme">
+          <b>Задания по теме</b>
+          <ul class="links">
+            {topicHomework.map((item) => (
+              <li>
+                <a href={withBase(`students/mai/rl/homework/${item.id}/`)}>
+                  {item.data.title}
+                  {item.data.due ? ` · сдать ${item.data.due}` : ''}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {topic.data.simulator && (
