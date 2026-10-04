@@ -6,7 +6,7 @@ groups:
 - name: М80-203СВ-25
   date: 22.09.2026
   rows:
-  - student: Грин П.
+  - student: Гришин П.
     status: зачёт
     links:
     - title: Тема 2 · Цикл «агент — среда»
