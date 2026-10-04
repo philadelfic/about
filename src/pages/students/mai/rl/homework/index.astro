@@ -28,7 +28,7 @@ const current = Astro.url.pathname;
             <li>
               <a href={withBase(`students/mai/rl/homework/${item.id}/`)}>
                 <span class="step">
-                  {item.data.topic ? `К теме ${item.data.topic}` : 'Задание'}
+                  {item.data.lecture ? `Лекция ${item.data.lecture}` : item.data.topic ? `К теме ${item.data.topic}` : 'Задание'}
                   {item.data.due ? ` · сдать ${item.data.due}` : ''}
                 </span>
                 <h3>{item.data.title}</h3>

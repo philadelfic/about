@@ -6,6 +6,15 @@ import { withBase } from '../../../../../data/site';
 
 const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
 const current = Astro.url.pathname;
+
+// Тема может закрывать несколько лекций — показываем это в списке.
+const lectureLabel = (topic: (typeof topics)[number]) => {
+  const items = topic.data.lectures;
+  if (items.length === 0) return topic.data.date ? ` · ${topic.data.date}` : '';
+  const numbers = items.map((item) => item.number).join(' и ');
+  const dates = items.every((item) => item.date) ? ` · ${items.map((item) => item.date).join(', ')}` : '';
+  return ` · ${items.length > 1 ? 'лекции' : 'лекция'} ${numbers}${dates}`;
+};
 ---
 
 <BaseLayout title="Темы" description="Пройденные темы курса «Обучение с подкреплением».">
@@ -25,7 +34,7 @@ const current = Astro.url.pathname;
             <li>
               <a href={withBase(`students/mai/rl/topics/${topic.id}/`)}>
                 <span class="step">
-                  Тема {topic.data.number}{topic.data.date ? ` · ${topic.data.date}` : ''}
+                  Тема {topic.data.number}{lectureLabel(topic)}
                 </span>
                 <h3>{topic.data.title}</h3>
                 <p class="muted">{topic.data.summary}</p>
