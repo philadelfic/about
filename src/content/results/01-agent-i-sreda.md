@@ -166,7 +166,7 @@ groups:
     links:
     - title: Тема 2 · Доход и дисконтирование
       href: students/mai/rl/topics/02-agent-i-sreda/#доход-и-дисконтирование
-  - student: Рукотянский А.
+  - student: Рокотянский А.
     status: зачёт
     links:
     - title: Тема 2 · Где можно γ = 1
