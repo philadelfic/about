@@ -143,7 +143,7 @@ groups:
     links:
     - title: Тема 1 · Когда RL действительно нужен
       href: students/mai/rl/topics/01-oblast-primenimosti/#когда-rl-действительно-нужен
-  - student: Креж В.
+  - student: Кряж В.
     status: зачёт
     links:
     - title: Тема 2 · Доход и дисконтирование
