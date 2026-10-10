@@ -4,9 +4,10 @@ import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
 import { optionalCollection } from '../../../../../lib/collections';
+import { homeworkKind, homeworkOrder } from '../../../../../lib/homework.mjs';
 
 const items = (await optionalCollection('homework')).sort(
-  (a, b) => (a.data.topic ?? 0) - (b.data.topic ?? 0)
+  (a, b) => homeworkOrder(a) - homeworkOrder(b)
 );
 const current = Astro.url.pathname;
 ---
@@ -28,7 +29,7 @@ const current = Astro.url.pathname;
             <li>
               <a href={withBase(`students/mai/rl/homework/${item.id}/`)}>
                 <span class="step">
-                  {item.data.lecture ? `Лекция ${item.data.lecture}` : item.data.topic ? `К теме ${item.data.topic}` : 'Задание'}
+                  {homeworkKind(item)}
                   {item.data.due ? ` · сдать ${item.data.due}` : ''}
                 </span>
                 <h3>{item.data.title}</h3>

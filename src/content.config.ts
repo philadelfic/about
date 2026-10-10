@@ -45,6 +45,8 @@ const homework = defineCollection({
     topic: z.number().optional(),
     /** Номер лекции, к которой относится задание (может отличаться от номера темы). */
     lecture: z.number().optional(),
+    /** Номер семинара, если задание выдано на занятии (тогда ярлык лекции не ставим). */
+    seminar: z.number().optional(),
   }),
 });
 
@@ -81,6 +83,17 @@ const seminars = defineCollection({
         })
       )
       .default([]),
+    /** Задание занятия: что сделать и где взять файлы; полное условие — на странице домашнего задания. */
+    assignment: z
+      .object({
+        title: z.string().default('Задание'),
+        /** Короткое «что сделать» — обычным текстом, без разметки. */
+        text: z.string().default(''),
+        files: z.array(z.object({ title: z.string(), href: z.string() })).default([]),
+        due: z.string().optional(),
+        homework: z.object({ title: z.string(), href: z.string() }).optional(),
+      })
+      .optional(),
     materials: z.array(z.object({ title: z.string(), href: z.string().optional() })).default([]),
     /** Заготовка формата — не показывается на сайте. */
     draft: z.boolean().default(false),

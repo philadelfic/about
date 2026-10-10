@@ -2,6 +2,7 @@
 import { getCollection } from 'astro:content';
 import { withBase } from '../data/site';
 import { optionalCollection } from '../lib/collections';
+import { homeworkLabel, homeworkOrder } from '../lib/homework.mjs';
 
 interface Props {
   current: string;
@@ -11,7 +12,7 @@ const { current } = Astro.props;
 
 const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
 const homework = (await optionalCollection('homework')).sort(
-  (a, b) => (a.data.lecture ?? a.data.topic ?? 0) - (b.data.lecture ?? b.data.topic ?? 0)
+  (a, b) => homeworkOrder(a) - homeworkOrder(b)
 );
 const seminars = (await optionalCollection('seminars'))
   .filter((item) => !item.data.draft)
@@ -37,12 +38,6 @@ const section = current.startsWith(sections.homework)
       : 'topics';
 
 const isCurrent = (href: string) => current === href;
-const homeworkLabel = (item: (typeof homework)[number]) =>
-  item.data.lecture
-    ? `ДЗ по лекции ${item.data.lecture}`
-    : item.data.topic
-      ? `ДЗ по теме ${item.data.topic}`
-      : item.data.title;
 
 // У проверки может быть несколько групп — в подсписке показываем их даты через запятую.
 const resultsLabel = (item: (typeof results)[number]) => {

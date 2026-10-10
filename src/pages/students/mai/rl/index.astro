@@ -25,7 +25,10 @@ const sections = [
   {
     href: withBase('students/mai/rl/seminars/'),
     title: 'Семинарские занятия',
-    text: seminars.length > 0 ? `Проведено занятий: ${seminars.length}.` : 'Материалы семинаров.',
+    text:
+      seminars.length > 0
+        ? `Материалы занятий: что разбирали и что говорить (занятий: ${seminars.length}).`
+        : 'Материалы занятий: что разбирали и что говорить.',
   },
   {
     href: withBase('students/mai/rl/results/'),
