@@ -7,6 +7,7 @@ import Simulator from '../../../../../components/Simulator.astro';
 import { withBase } from '../../../../../data/site';
 import { slugify } from '../../../../../lib/slug.mjs';
 import { optionalCollection } from '../../../../../lib/collections';
+import { homeworkOrder } from '../../../../../lib/homework.mjs';
 
 export async function getStaticPaths() {
   const topics = await getCollection('topics');
@@ -24,7 +25,7 @@ const current = Astro.url.pathname;
 // Задания, привязанные к этой теме (обратная ссылка «тема → задания»).
 const topicHomework = (await optionalCollection('homework'))
   .filter((item) => item.data.topic === topic.data.number)
-  .sort((a, b) => (a.data.lecture ?? 0) - (b.data.lecture ?? 0));
+  .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
 
 // Связь темы с лекциями: тема может закрывать несколько лекций.
 const lectures = topic.data.lectures;

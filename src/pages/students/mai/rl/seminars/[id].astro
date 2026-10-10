@@ -90,7 +90,10 @@ const toc = [
     ? [{ text: 'Задачи для проверки понимания', id: 'zadachi', level: 0 }]
     : []),
   ...(item.data.quiz.length > 0
-    ? [{ text: 'Рубежный контроль №1', id: 'rk', level: 0 }]
+    ? [{ text: `Рубежный контроль №${item.data.number}`, id: 'rk', level: 0 }]
+    : []),
+  ...(item.data.assignment
+    ? [{ text: item.data.assignment.title, id: 'zadanie', level: 0 }]
     : []),
   ...(item.data.materials.length > 0
     ? [{ text: 'Материалы', id: 'materialy', level: 0 }]
@@ -171,7 +174,7 @@ const toc = [
 
       {item.data.quiz.length > 0 && (
         <div class="panel" id="rk" data-task-switch>
-          <b>Рубежный контроль №1</b>
+          <b>Рубежный контроль №{item.data.number}</b>
           <p class="muted">
             Двенадцать вопросов, 12 баллов, 12 минут: десять с выбором ответа и два — своими словами.
             Вариант — по вашей группе. Ответы спрятаны: сначала отвечаете сами, потом сверяетесь.
@@ -218,6 +221,36 @@ const toc = [
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {item.data.assignment && (
+        <div class="panel" id="zadanie">
+          <b>{item.data.assignment.title}</b>
+          {item.data.assignment.text && <p>{item.data.assignment.text}</p>}
+
+          {(item.data.assignment.homework || item.data.assignment.files.length > 0) && (
+            <ul class="links">
+              {item.data.assignment.homework && (
+                <li>
+                  <a href={href(item.data.assignment.homework.href)}>
+                    {item.data.assignment.homework.title}
+                  </a>
+                </li>
+              )}
+              {item.data.assignment.files.map((file) => (
+                <li>
+                  <a href={href(file.href)} target={isFile(file.href) ? '_blank' : undefined}>
+                    {file.title}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {item.data.assignment.due && (
+            <p class="muted">Срок: {item.data.assignment.due}</p>
+          )}
         </div>
       )}
 
