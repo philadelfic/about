@@ -1,10 +1,10 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
-import { optionalCollection } from '../../../../../lib/collections';
 
-const items = (await optionalCollection('results'))
+const items = (await getCollection('results'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
 const current = Astro.url.pathname;

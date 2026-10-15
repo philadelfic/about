@@ -1,0 +1,103 @@
+---
+/**
+ * Витрина «Проекты»: одна страница для обоих языков, разница — в строках и префиксе URL.
+ * Маршруты-обёртки: src/pages/projects/index.astro и src/pages/en/projects/index.astro.
+ */
+import type { CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../data/site';
+import type { Lang } from '../data/i18n';
+import { projectsList, latestRelease } from '../lib/projects.mjs';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+
+const t = {
+  ru: {
+    title: 'Проекты',
+    lead: 'Продукты, которые я делаю: зачем они нужны, как помогают и в каком они состоянии.',
+    why: 'Зачем',
+    how: 'Как помогает',
+    status: 'Состояние',
+    versionOf: 'версия',
+    versionFrom: 'от',
+    noReleases: ' · версий пока нет, продукт анонсирован',
+    versionsLink: 'Версии и улучшения →',
+    repoLink: 'Репозиторий на GitHub →',
+    stack: 'Стек',
+  },
+  en: {
+    title: 'Projects',
+    lead: 'Products I build: why they exist, how they help and where they stand.',
+    why: 'Why',
+    how: 'How it helps',
+    status: 'Status',
+    versionOf: 'version',
+    versionFrom: 'of',
+    noReleases: ' · no releases yet, announced',
+    versionsLink: 'Versions and improvements →',
+    repoLink: 'Repository on GitHub →',
+    stack: 'Stack',
+  },
+}[lang];
+
+const prefix = lang === 'en' ? 'en/projects' : 'projects';
+
+const items = await projectsList(lang);
+const latest = new Map<string, CollectionEntry<'releases'> | undefined>();
+for (const project of items) {
+  latest.set(project.slug, await latestRelease(project.slug, lang));
+}
+---
+
+<BaseLayout title={t.title} lang={lang}>
+  <div class="hero">
+    <h1>{t.title}</h1>
+    <p class="lead">{t.lead}</p>
+  </div>
+
+  {items.map((project) => (
+    <article class="project-card">
+      <h2>
+        <a class="project-title" href={withBase(`${prefix}/${project.slug}/`)}>{project.title}</a>
+      </h2>
+      <p class="project-idea">{project.idea}</p>
+
+      <dl class="project-details">
+        <dt>{t.why}</dt>
+        <dd>{project.why}</dd>
+        <dt>{t.how}</dt>
+        <dd>{project.how}</dd>
+        <dt>{t.status}</dt>
+        <dd>
+          <span class="badge">{project.status}</span>
+          {latest.get(project.slug) ? (
+            <span class="muted">
+              {' '}· {t.versionOf} {latest.get(project.slug)!.data.version} {t.versionFrom}{' '}
+              {latest.get(project.slug)!.data.date}
+            </span>
+          ) : (
+            <span class="muted">{t.noReleases}</span>
+          )}
+        </dd>
+        <dt>{t.stack}</dt>
+        <dd class="muted">{project.stack.join(' · ')}</dd>
+      </dl>
+
+      <p class="project-actions">
+        <a href={withBase(`${prefix}/${project.slug}/`)}>{t.versionsLink}</a>
+        {project.repo && (
+          <>
+            {' '}
+            <a class="muted" href={project.repo} target="_blank" rel="noopener">
+              {t.repoLink}
+            </a>
+          </>
+        )}
+      </p>
+    </article>
+  ))}
+</BaseLayout>

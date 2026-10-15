@@ -5,8 +5,7 @@ import CourseNav from '../../../../../components/CourseNav.astro';
 import TopicToc from '../../../../../components/TopicToc.astro';
 import Simulator from '../../../../../components/Simulator.astro';
 import { withBase } from '../../../../../data/site';
-import { slugify } from '../../../../../lib/slug.mjs';
-import { optionalCollection } from '../../../../../lib/collections';
+import { bodyHeadings, createIdNamer } from '../../../../../lib/headings.mjs';
 import { homeworkOrder } from '../../../../../lib/homework.mjs';
 
 export async function getStaticPaths() {
@@ -23,7 +22,7 @@ const next = index < all.length - 1 ? all[index + 1] : undefined;
 const current = Astro.url.pathname;
 
 // Задания, привязанные к этой теме (обратная ссылка «тема → задания»).
-const topicHomework = (await optionalCollection('homework'))
+const topicHomework = (await getCollection('homework'))
   .filter((item) => item.data.topic === topic.data.number)
   .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
 
@@ -60,27 +59,14 @@ const qaLabel = (text: string) => {
 };
 
 // Содержание темы (правая колонка): разделы страницы + заголовки теории.
-const used = new Map();
-const theoryHeadings = [];
-for (const raw of (topic.body ?? '').split('\n')) {
-  const match = /^(##|###)\s+(.*)$/.exec(raw.trim());
-  if (!match) continue;
-  const text = match[2].replace(/\*\*/g, '').trim();
-  let id = slugify(text) || 'section';
-  const count = used.get(id) ?? 0;
-  used.set(id, count + 1);
-  if (count > 0) id = `${id}-${count}`;
-  theoryHeadings.push({ text, id, level: match[1] === '###' ? 2 : 1 });
-}
+// Якоря вопросов продолжают нумерацию заголовков (общий namer — id уникальны на всей странице).
+const namer = createIdNamer();
+const theoryHeadings = bodyHeadings(topic.body, namer);
 
-// Якоря вопросов: id из текста вопроса, тем же slugify и той же нумерацией повторов,
-// что и у заголовков теории (used общий — id уникальны на всей странице).
-const qaItems = topic.data.qa.map((item) => {
-  const base = slugify(item.q) || 'vopros';
-  const count = used.get(base) ?? 0;
-  used.set(base, count + 1);
-  return { ...item, id: count > 0 ? `${base}-${count}` : base };
-});
+const qaItems = topic.data.qa.map((item) => ({
+  ...item,
+  id: namer.claim(item.q, 'vopros'),
+}));
 
 const toc = [
   ...(topic.data.covered.length > 0 ? [{ text: 'Что разбирали', id: 'chto-razbirali', level: 0 }] : []),

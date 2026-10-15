@@ -1,14 +1,7 @@
 ---
-import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import TopicToc from '../../../../../components/TopicToc.astro';
-import { withBase } from '../../../../../data/site';
-import {
-  projectBySlug,
-  releasesOf,
-  hasBody,
-  formatReleaseDate,
-} from '../../../../../lib/projects.mjs';
+import { getCollection } from 'astro:content';
+import ReleasePage from '../../../../../components/ReleasePage.astro';
+import { releasesOf, hasBody } from '../../../../../lib/projects.mjs';
 
 export async function getStaticPaths() {
   const projects = (await getCollection('projects')).filter(
@@ -27,84 +20,7 @@ export async function getStaticPaths() {
   return paths;
 }
 
-const { slug } = Astro.params;
-const project = await projectBySlug(slug, 'en');
 const { release } = Astro.props;
-const { Content, headings } = await render(release);
-
-const toc = headings
-  .filter((heading) => heading.depth === 2)
-  .map((heading) => ({ text: heading.text, id: heading.slug, level: 0 }));
-
-const cover = release.data.cover
-  ? new URL(withBase(release.data.cover), Astro.site).href
-  : undefined;
-
-const all = (await releasesOf(slug, 'en')).filter(hasBody);
-const index = all.findIndex((entry) => entry.data.version === release.data.version);
-const newer = index > 0 ? all[index - 1] : undefined;
-const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
-const hrefOf = (entry) => withBase(`en/projects/${slug}/releases/${entry.data.version}/`);
 ---
 
-<BaseLayout
-  title={`${project.title} ${release.data.version}`}
-  description={release.data.summary}
-  image={cover}
-  lang="en"
->
-  <nav class="crumbs" aria-label="Breadcrumb">
-    <a href={withBase('en/projects/')}>Projects</a>
-    <span aria-hidden="true">/</span>
-    <a href={withBase(`en/projects/${slug}/`)}>{project.title}</a>
-    <span aria-hidden="true">/</span>
-    <span>{release.data.version}</span>
-  </nav>
-
-  <div class="hero">
-    <p class="release-kicker">
-      {project.title} · {release.data.version} · {formatReleaseDate(release.data.date, 'en')}
-    </p>
-    <h1>{release.data.title}</h1>
-    <p class="lead">{release.data.summary}</p>
-  </div>
-
-  <div class={toc.length > 1 ? 'release-layout' : undefined}>
-    <div class="release-main">
-      {release.data.cover && (
-        <p class="release-cover">
-          <img src={withBase(release.data.cover)} alt={`${project.title} ${release.data.version}`} />
-        </p>
-      )}
-
-      <article class="release-body">
-        <Content />
-      </article>
-    </div>
-
-    {toc.length > 1 && (
-      <div class="release-aside">
-        <TopicToc items={toc} title="Contents" />
-      </div>
-    )}
-  </div>
-
-  <p class="project-actions">
-    {release.data.github && (
-      <a href={release.data.github} target="_blank" rel="noopener">Release on GitHub →</a>
-    )}
-    {release.data.post && (
-      <>
-        {' · '}
-        <a href={release.data.post} target="_blank" rel="noopener">Post in the channel (RU) →</a>
-      </>
-    )}
-  </p>
-
-  {(newer || older) && (
-    <nav class="release-nav" aria-label="Neighbouring versions">
-      {older ? <a href={hrefOf(older)}>← Older: {older.data.version}</a> : <span />}
-      {newer ? <a href={hrefOf(newer)}>Newer: {newer.data.version} →</a> : <span />}
-    </nav>
-  )}
-</BaseLayout>
+<ReleasePage lang="en" release={release} />

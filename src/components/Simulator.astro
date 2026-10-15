@@ -279,26 +279,37 @@ const { preset = 'l2' } = Astro.props;
 
   /* ---------- общие хелперы: принимают root, общего состояния не держат ---------- */
 
-  const num = (value, digits = 2) =>
+  const num = (value: number, digits = 2) =>
     (Number.isFinite(value) ? value.toFixed(digits) : '∞').replace('.', ',').replace('-', '−');
 
-  const readEl = (root, name) => root.querySelector(`[data-read="${name}"]`);
-  const outEl = (root, name) => root.querySelector(`[data-out="${name}"]`);
+  /**
+   * Элемент, который обязан быть: разметка панели живёт рядом в этом же компоненте,
+   * и его отсутствие — ошибка сборки панели, а не молчаливый null.
+   */
+  const reqIn = (root: HTMLElement, selector: string): Element => {
+    const el = root.querySelector(selector);
+    if (!el) throw new Error(`sim: не найден элемент ${selector}`);
+    return el;
+  };
+  const readEl = (root: HTMLElement, name: string) => reqIn(root, `[data-read="${name}"]`);
+  // у [data-out="slip"] нет в панели темы 2 — остальные выходы ищем через reqIn
+  const outEl = (root: HTMLElement, name: string): Element | null =>
+    root.querySelector(`[data-out="${name}"]`);
 
   /** Проценты для строки переходов: 0,8 → «80»; 0,125 → «12,5». */
-  const pct = (p) => String(Math.round(p * 10000) / 100).replace('.', ',');
+  const pct = (p: number) => String(Math.round(p * 10000) / 100).replace('.', ',');
 
   /** Вероятность в формуле: обычные два знака (0,80), третий — только когда он не ноль (0,125). */
-  const numP = (p) => (num(p, 3).endsWith('0') ? num(p, 2) : num(p, 3));
+  const numP = (p: number) => (num(p, 3).endsWith('0') ? num(p, 2) : num(p, 3));
 
   /** Награда шага: целую показываем без десятых (−1), дробную — с одной (−0,5). */
-  const numR = (r) => num(r, Number.isInteger(r) ? 0 : 1);
+  const numR = (r: number) => num(r, Number.isInteger(r) ? 0 : 1);
 
   /** Сколько номеров шагов показывать в клетке: больше — только последние с ведущим «…». */
   const MAX_CELL_STEPS = 8;
 
   /** Столбики весов γ^k — сколько «весит» каждый следующий шаг. */
-  function drawWeights(root, gamma) {
+  function drawWeights(root: HTMLElement, gamma: number) {
     const bars = weights(gamma, 12);
     readEl(root, 'bars').innerHTML = bars
       .map(
@@ -309,7 +320,7 @@ const { preset = 'l2' } = Astro.props;
   }
 
   /** Полоса ε-жадного выбора: доля случайных действий и доля «лучшего известного». */
-  function drawEps(root, epsilon) {
+  function drawEps(root: HTMLElement, epsilon: number) {
     const eps = Math.round(epsilon * 100);
     readEl(root, 'eps').innerHTML =
       `<span class="sim-eps-random" style="width:${eps}%"></span>` +
@@ -320,17 +331,22 @@ const { preset = 'l2' } = Astro.props;
    * Показ «по шагам» / «целиком» — механика одинаковая, поэтому вынесена из панелей.
    * compute — функция пересчёта своей панели (замыкание на её state).
    */
-  function bindShowButtons(root, state, compute, draw) {
-    root.querySelector('[data-act="step"]').addEventListener('click', () => {
+  function bindShowButtons(
+    root: HTMLElement,
+    state: { seed: number; index: number; startRnd?: () => number; run: { steps: unknown[] } },
+    compute: (options?: { restart?: boolean }) => void,
+    draw: () => void
+  ) {
+    reqIn(root, '[data-act="step"]').addEventListener('click', () => {
       if (state.index >= state.run.steps.length) state.index = 0;
       state.index = Math.min(state.index + 1, state.run.steps.length);
       draw();
     });
-    root.querySelector('[data-act="run"]').addEventListener('click', () => {
+    reqIn(root, '[data-act="run"]').addEventListener('click', () => {
       state.index = state.run.steps.length;
       draw();
     });
-    root.querySelector('[data-act="reset"]').addEventListener('click', () => {
+    reqIn(root, '[data-act="reset"]').addEventListener('click', () => {
       state.seed = (state.seed % 999) + 1;
       // свой поток старта пересоздаём вместе с seed — последовательность остаётся воспроизводимой
       if (state.startRnd !== undefined) state.startRnd = makePrng(state.seed + 1000);
@@ -338,13 +354,76 @@ const { preset = 'l2' } = Astro.props;
     });
   }
 
+  /* ---------- типы состояния панелей: повторяют то, что возвращают функции lib/sim.mjs ---------- */
+
+  interface MazeStepInfo {
+    t: number;
+    from: number;
+    to: number;
+    action: string;
+    reward: number;
+    bonus: number;
+    g: number;
+    slipped: boolean;
+    explored: boolean;
+    done: boolean;
+  }
+  interface MazeRunInfo {
+    steps: MazeStepInfo[];
+    g: number;
+    done: boolean;
+    stepsCount: number;
+    start: number;
+  }
+  interface MazeState {
+    slip: number;
+    showValues: boolean;
+    gamma: number;
+    epsilon: number;
+    stepReward: number;
+    exitReward: number;
+    seed: number;
+    start: number;
+    startRnd: () => number;
+    index: number;
+    run: MazeRunInfo;
+    calcOn: boolean;
+  }
+  type MazeKnob = 'gamma' | 'epsilon' | 'slip' | 'stepReward' | 'exitReward';
+
+  interface FridgeStepInfo {
+    t: number;
+    temp: number;
+    action: string;
+    reward: number;
+    g: number;
+    explored: boolean;
+  }
+  interface FridgeRunInfo {
+    steps: FridgeStepInfo[];
+    g: number;
+    temp: number;
+    converged: boolean;
+    growth: number;
+  }
+  interface FridgeState {
+    gamma: number;
+    epsilon: number;
+    penalty: number;
+    seed: number;
+    index: number;
+    run: FridgeRunInfo;
+  }
+  type FridgeKnob = 'gamma' | 'epsilon' | 'penalty';
+
   /* ---------- лабиринт (эпизодическая задача) ---------- */
 
-  function initMaze(root) {
+  function initMaze(root: HTMLElement) {
+    const need = (selector: string): Element => reqIn(root, selector);
     // пресет панели: 'l3' — среда со сносами (ползунок p); иначе — детерминированная (сносов нет)
     const stochastic = root.dataset.preset === 'l3';
     const slip = stochastic ? SLIP_LECTURE3 : SLIP_DETERMINISTIC;
-    const state = {
+    const state: MazeState = {
       slip,
       // ценности «по расстоянию» показываем только в панели темы 3
       showValues: stochastic,
@@ -357,13 +436,14 @@ const { preset = 'l2' } = Astro.props;
       // отдельный поток для «Случайного старта»: свои броски, сносы он не трогает
       startRnd: makePrng(7 + 1000),
       index: 0,
-      run: null,
+      // пустой прогон вместо null: compute() ниже сразу его пересчитает
+      run: { steps: [], g: 0, done: true, stepsCount: 0, start: 1 },
       // «Шаг на числах» до первого показа — пустой стейт с подсказкой (см. drawCalc)
       calcOn: false,
     };
 
-    const grid = root.querySelector('[data-maze-grid]');
-    const cells = [];
+    const grid = need('[data-maze-grid]');
+    const cells: HTMLButtonElement[] = [];
     for (let id = 1; id <= MAZE.cells; id += 1) {
       const cell = document.createElement('button');
       cell.type = 'button';
@@ -400,8 +480,8 @@ const { preset = 'l2' } = Astro.props;
     }
 
     /** Посещения клеток: номера ВСЕХ шагов, на которых агент в них попадал, в порядке посещения. */
-    function visitsByCell(shown) {
-      const visits = new Map();
+    function visitsByCell(shown: MazeStepInfo[]) {
+      const visits = new Map<number, number[]>();
       shown.forEach((step, i) => {
         const list = visits.get(step.to);
         if (list) list.push(i + 1);
@@ -412,8 +492,8 @@ const { preset = 'l2' } = Astro.props;
 
     /** Таблица шагов: строки заполняются по мере показа (state.index). */
     function drawTrace() {
-      const rows = root.querySelector('[data-maze-rows]');
-      const box = root.querySelector('[data-maze-trace]');
+      const rows = need('[data-maze-rows]');
+      const box = need('[data-maze-trace]');
       rows.innerHTML = state.run.steps
         .slice(0, state.index)
         .map(
@@ -559,11 +639,11 @@ const { preset = 'l2' } = Astro.props;
       readEl(root, 'g').textContent = last ? num(last.g) : '—';
       readEl(root, 'start').textContent = `S${state.start} → выход S${MAZE.exit}`;
 
-      outEl(root, 'gamma').textContent = num(state.gamma, 2);
-      outEl(root, 'epsilon').textContent = num(state.epsilon, 2);
-      outEl(root, 'stepReward').textContent =
+      reqIn(root, '[data-out="gamma"]').textContent = num(state.gamma, 2);
+      reqIn(root, '[data-out="epsilon"]').textContent = num(state.epsilon, 2);
+      reqIn(root, '[data-out="stepReward"]').textContent =
         (state.stepReward < 0 ? '−' : '') + num(Math.abs(state.stepReward), 1);
-      outEl(root, 'exitReward').textContent = '+' + num(state.exitReward, 0);
+      reqIn(root, '[data-out="exitReward"]').textContent = '+' + num(state.exitReward, 0);
       const slipOut = outEl(root, 'slip');
       if (slipOut) slipOut.textContent = num(state.slip, 2);
 
@@ -593,25 +673,27 @@ const { preset = 'l2' } = Astro.props;
       drawCalc();
     }
 
-    root.querySelectorAll('[data-knob]').forEach((input) => {
+    root.querySelectorAll<HTMLInputElement>('[data-knob]').forEach((input) => {
       input.addEventListener('input', () => {
-        state[input.dataset.knob] = Number(input.value);
+        // в панели лабиринта ползунки — только числовые поля состояния, см. MazeKnob
+        const knob = input.dataset.knob as MazeKnob;
+        state[knob] = Number(input.value);
         compute();
       });
     });
 
     // «Шаг на числах» поднимаем до первого показа: обработчики ниже срабатывают первыми и
     // включают расчёт, а сам показ делает обработчик из bindShowButtons
-    root.querySelector('[data-act="step"]').addEventListener('click', () => {
+    reqIn(root, '[data-act="step"]').addEventListener('click', () => {
       state.calcOn = true;
     });
-    root.querySelector('[data-act="run"]').addEventListener('click', () => {
+    reqIn(root, '[data-act="run"]').addEventListener('click', () => {
       state.calcOn = true;
     });
 
     bindShowButtons(root, state, compute, draw);
 
-    root.querySelector('[data-act="random"]').addEventListener('click', () => {
+    reqIn(root, '[data-act="random"]').addEventListener('click', () => {
       // клетка из отдельного воспроизводимого потока: только старт, сносы не перетасовываем
       state.start = 1 + Math.floor(state.startRnd() * (MAZE.cells - 1)); // 1..11, S12 исключён
       compute({ restart: true });
@@ -622,17 +704,19 @@ const { preset = 'l2' } = Astro.props;
 
   /* ---------- холодильник (непрерывная задача) ---------- */
 
-  function initFridge(root) {
-    const state = {
+  function initFridge(root: HTMLElement) {
+    const need = (selector: string): Element => reqIn(root, selector);
+    const state: FridgeState = {
       gamma: 0.9,
       epsilon: 0.1,
       penalty: 1,
       seed: 7,
       index: 0,
-      run: null,
+      // пустой прогон вместо null: compute() ниже сразу его пересчитает
+      run: { steps: [], g: 0, temp: FRIDGE.ambient, converged: false, growth: 0 },
     };
 
-    const trace = root.querySelector('[data-fridge-trace]');
+    const trace = need('[data-fridge-trace]');
     const ns = 'http://www.w3.org/2000/svg';
 
     /** Пересчёт прогона: restart — показ начинается заново. */
@@ -649,8 +733,8 @@ const { preset = 'l2' } = Astro.props;
 
     /** Таблица шагов: строки заполняются по мере показа (state.index). */
     function drawTrace() {
-      const rows = root.querySelector('[data-fridge-rows]');
-      const box = root.querySelector('[data-fridge-trace-box]');
+      const rows = need('[data-fridge-rows]');
+      const box = need('[data-fridge-trace-box]');
       rows.innerHTML = state.run.steps
         .slice(0, state.index)
         .map(
@@ -677,15 +761,15 @@ const { preset = 'l2' } = Astro.props;
       const W = 340;
       const H = 130;
       const pad = { l: 26, r: 8, t: 8, b: 18 };
-      const x = (i) => pad.l + (i / Math.max(1, steps.length - 1)) * (W - pad.l - pad.r);
-      const y = (t) => pad.t + ((FRIDGE.max - t) / (FRIDGE.max - FRIDGE.min)) * (H - pad.t - pad.b);
+      const x = (i: number) => pad.l + (i / Math.max(1, steps.length - 1)) * (W - pad.l - pad.r);
+      const y = (t: number) => pad.t + ((FRIDGE.max - t) / (FRIDGE.max - FRIDGE.min)) * (H - pad.t - pad.b);
 
-      const line = (x1, y1, x2, y2, cls, dash) => {
+      const line = (x1: number, y1: number, x2: number, y2: number, cls: string, dash?: string) => {
         const l = document.createElementNS(ns, 'line');
-        l.setAttribute('x1', x1);
-        l.setAttribute('y1', y1);
-        l.setAttribute('x2', x2);
-        l.setAttribute('y2', y2);
+        l.setAttribute('x1', String(x1));
+        l.setAttribute('y1', String(y1));
+        l.setAttribute('x2', String(x2));
+        l.setAttribute('y2', String(y2));
         if (dash) l.setAttribute('stroke-dasharray', dash);
         l.setAttribute('class', cls);
         trace.appendChild(l);
@@ -694,10 +778,10 @@ const { preset = 'l2' } = Astro.props;
       line(pad.l, y(FRIDGE.target), W - pad.r, y(FRIDGE.target), 'sim-target', '5 4');
       line(pad.l, y(FRIDGE.min), pad.l, y(FRIDGE.max), 'sim-axis');
 
-      const label = (text, cx, cy) => {
+      const label = (text: string, cx: number, cy: number) => {
         const t = document.createElementNS(ns, 'text');
-        t.setAttribute('x', cx);
-        t.setAttribute('y', cy);
+        t.setAttribute('x', String(cx));
+        t.setAttribute('y', String(cy));
         t.setAttribute('class', 'sim-label');
         t.textContent = text;
         trace.appendChild(t);
@@ -719,9 +803,9 @@ const { preset = 'l2' } = Astro.props;
       shown.forEach((step, i) => {
         if (!step.explored) return;
         const mark = document.createElementNS(ns, 'circle');
-        mark.setAttribute('cx', x(i + 1));
-        mark.setAttribute('cy', y(step.temp));
-        mark.setAttribute('r', 2.6);
+        mark.setAttribute('cx', String(x(i + 1)));
+        mark.setAttribute('cy', String(y(step.temp)));
+        mark.setAttribute('r', String(2.6));
         mark.setAttribute('class', 'sim-dot-random');
         mark.appendChild(document.createElementNS(ns, 'title')).textContent =
           `шаг ${i + 1}: случайное действие «${step.action}», ${num(step.temp, 2)} °C`;
@@ -730,9 +814,9 @@ const { preset = 'l2' } = Astro.props;
 
       const dot = document.createElementNS(ns, 'circle');
       const last = shown[shown.length - 1];
-      dot.setAttribute('cx', x(shown.length));
-      dot.setAttribute('cy', y(last.temp));
-      dot.setAttribute('r', 3.5);
+      dot.setAttribute('cx', String(x(shown.length)));
+      dot.setAttribute('cy', String(y(last.temp)));
+      dot.setAttribute('r', String(3.5));
       dot.setAttribute('class', 'sim-dot');
       trace.appendChild(dot);
     }
@@ -747,9 +831,9 @@ const { preset = 'l2' } = Astro.props;
       readEl(root, 'g').textContent = last ? num(last.g) : '—';
       readEl(root, 'temp').textContent = num(last ? last.temp : FRIDGE.ambient, 2) + ' °C';
 
-      outEl(root, 'gamma').textContent = num(state.gamma, 2);
-      outEl(root, 'epsilon').textContent = num(state.epsilon, 2);
-      outEl(root, 'penalty').textContent = num(state.penalty, 2);
+      reqIn(root, '[data-out="gamma"]').textContent = num(state.gamma, 2);
+      reqIn(root, '[data-out="epsilon"]').textContent = num(state.epsilon, 2);
+      reqIn(root, '[data-out="penalty"]').textContent = num(state.penalty, 2);
 
       drawWeights(root, state.gamma);
       drawEps(root, state.epsilon);
@@ -790,9 +874,11 @@ const { preset = 'l2' } = Astro.props;
       drawReadouts();
     }
 
-    root.querySelectorAll('[data-knob]').forEach((input) => {
+    root.querySelectorAll<HTMLInputElement>('[data-knob]').forEach((input) => {
       input.addEventListener('input', () => {
-        state[input.dataset.knob] = Number(input.value);
+        // в панели холодильника ползунки — только числовые поля состояния, см. FridgeKnob
+        const knob = input.dataset.knob as FridgeKnob;
+        state[knob] = Number(input.value);
         compute();
       });
     });
@@ -804,9 +890,9 @@ const { preset = 'l2' } = Astro.props;
 
   /* ---------- запуск: панели независимы, каждая стартует сама по себе ---------- */
 
-  const mazeRoot = document.querySelector('[data-sim="maze"]');
+  const mazeRoot = document.querySelector<HTMLElement>('[data-sim="maze"]');
   if (mazeRoot) initMaze(mazeRoot);
 
-  const fridgeRoot = document.querySelector('[data-sim="fridge"]');
+  const fridgeRoot = document.querySelector<HTMLElement>('[data-sim="fridge"]');
   if (fridgeRoot) initFridge(fridgeRoot);
 </script>

@@ -10,13 +10,6 @@ export const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
 /** Склеивает базовый путь с относительным: withBase('projects/') → '/about/projects/'. */
 export const withBase = (path = '') => `${base}${path.replace(/^\//, '')}`;
 
-export const site = {
-  name: 'Олег Орловский',
-  title: 'Олег Орловский — проекты и материалы студентам',
-  description:
-    'Личный портал: ИТ-лид команды разработки, преподаю обучение с подкреплением, делаю инструменты для работы с LLM-харнесами.',
-};
-
 export const links = {
   github: 'https://github.com/philadelfic',
   telegram: 'https://t.me/HobbyOdnogoITishnika',

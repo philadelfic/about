@@ -1,5 +1,5 @@
 import { defineConfig } from 'astro/config';
-import { slugify } from './src/lib/slug.mjs';
+import { createIdNamer } from './src/lib/headings.mjs';
 import remarkMath from 'remark-math';
 import rehypeKatex from 'rehype-katex';
 
@@ -34,17 +34,15 @@ function collectText(node) {
 
 /**
  * Расставляем id заголовкам теории — по ним скачет оглавление в левом меню.
- * Алгоритм тот же, что в src/lib/slug.mjs, поэтому ссылки в оглавлении совпадают.
+ * Алгоритм тот же, что в src/lib/headings.mjs (общий с содержанием темы и якорями вопросов),
+ * поэтому ссылки в оглавлении совпадают.
  */
 function rehypeHeadingIds() {
   return (tree) => {
-    const used = new Map();
+    const namer = createIdNamer();
     const walk = (node) => {
       if (node.type === 'element' && /^h[23]$/.test(node.tagName)) {
-        let id = slugify(collectText(node)) || 'section';
-        const count = used.get(id) ?? 0;
-        used.set(id, count + 1);
-        if (count > 0) id = `${id}-${count}`;
+        const id = namer.claim(collectText(node));
         node.properties = { ...(node.properties || {}), id };
       }
       if (Array.isArray(node.children)) node.children.forEach(walk);

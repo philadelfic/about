@@ -1,14 +1,14 @@
 ---
-import { render } from 'astro:content';
+import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import TopicToc from '../../../../../components/TopicToc.astro';
-import { optionalCollection } from '../../../../../lib/collections';
-import { slugify } from '../../../../../lib/slug.mjs';
+import GroupTabs from '../../../../../components/GroupTabs.astro';
+import { bodyHeadings, createIdNamer } from '../../../../../lib/headings.mjs';
 import { withBase } from '../../../../../data/site';
 
 export async function getStaticPaths() {
-  const items = (await optionalCollection('seminars')).filter((item) => !item.data.draft);
+  const items = (await getCollection('seminars')).filter((item) => !item.data.draft);
   return items.map((item) => ({ params: { id: item.id }, props: { item } }));
 }
 
@@ -31,10 +31,12 @@ const qaLabel = (text: string) => {
 // Группы занятия: задачи раскладываем по группам, переключатель — внизу блока.
 const groupNames = ['А', 'Б'];
 // Якоря ответов: у семинара вопрос-ответ живёт внутри задачи, а подпись всегда «Ответ»,
-// поэтому id берём из названия задачи (slugify + нумерация повторов, как у заголовков).
-const usedQa = new Map();
+// поэтому id берём из названия задачи (свой namer для задач, свой — для рубежного контроля,
+// заголовки теории нумеруют свой: ровно как раньше, ids не меняются).
+const tasksNamer = createIdNamer();
+const quizNamer = createIdNamer();
 // Задача без группы — общая: её видит и группа А, и группа Б (так помечены задачи 1–4 семинара 1).
-const belongsTo = (task, group) => {
+const belongsTo = (task: { group?: string }, group: string) => {
   const value = (task.group ?? '').trim();
   return value === '' || value === group;
 };
@@ -44,41 +46,24 @@ const taskGroups = groupNames.map((group) => ({
     .filter((task) => belongsTo(task, group))
     .map((task) => {
       if (!task.answer) return { ...task, qaId: null };
-      const base = slugify(task.title) || 'otvet';
-      const count = usedQa.get(base) ?? 0;
-      usedQa.set(base, count + 1);
-      return { ...task, qaId: count > 0 ? `${base}-${count}` : base };
+      return { ...task, qaId: tasksNamer.claim(task.title, 'otvet') };
     }),
 }));
 
 // Рубежный контроль: вопросы по вариантам, нумерация своя в каждом варианте.
-const usedQuizQa = new Map();
+// Якорь резервируется у каждого вопроса (как раньше), даже если ответа пока нет.
 const quizGroups = groupNames.map((group) => ({
   group,
   items: item.data.quiz
     .filter((question) => belongsTo(question, group))
     .map((question) => {
-      const base = slugify(question.title) || 'vopros';
-      const count = usedQuizQa.get(base) ?? 0;
-      usedQuizQa.set(base, count + 1);
-      const qaId = count > 0 ? `${base}-${count}` : base;
+      const qaId = quizNamer.claim(question.title, 'vopros');
       return { ...question, qaId: question.answer ? qaId : null };
     }),
 }));
 
 // Содержание занятия (правая колонка): блоки страницы + заголовки теории.
-const used = new Map();
-const theoryHeadings = [];
-for (const raw of (item.body ?? '').split('\n')) {
-  const match = /^(##|###)\s+(.*)$/.exec(raw.trim());
-  if (!match) continue;
-  const text = match[2].replace(/\*\*/g, '').trim();
-  let id = slugify(text) || 'section';
-  const count = used.get(id) ?? 0;
-  used.set(id, count + 1);
-  if (count > 0) id = `${id}-${count}`;
-  theoryHeadings.push({ text, id, level: match[1] === '###' ? 2 : 1 });
-}
+const theoryHeadings = bodyHeadings(item.body);
 
 const toc = [
   ...(item.data.covered.length > 0
@@ -277,18 +262,5 @@ const toc = [
     <TopicToc items={toc} title="Содержание занятия" />
   </div>
 
-  <script>
-    document.querySelectorAll('[data-task-switch]').forEach((block) => {
-      const buttons = Array.from(block.querySelectorAll('.group-switch button'));
-      const lists = Array.from(block.querySelectorAll('[data-task-group]'));
-      const show = (group) => {
-        buttons.forEach((button) =>
-          button.setAttribute('aria-selected', String(button.dataset.group === group))
-        );
-        lists.forEach((list) => (list.hidden = list.dataset.taskGroup !== group));
-      };
-      buttons.forEach((button) => button.addEventListener('click', () => show(button.dataset.group)));
-      if (buttons.length > 0) show(buttons[0].dataset.group);
-    });
-  </script>
+  <GroupTabs />
 </BaseLayout>

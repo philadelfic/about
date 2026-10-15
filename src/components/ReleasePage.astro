@@ -1,0 +1,132 @@
+---
+/**
+ * Страница релиза: одна на оба языка, разница — в строках и префиксе URL.
+ * Маршруты-обёртки: src/pages/projects/[slug]/releases/[version].astro и
+ * src/pages/en/projects/[slug]/releases/[version].astro — там же getStaticPaths.
+ */
+import { render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import TopicToc from './TopicToc.astro';
+import { withBase } from '../data/site';
+import type { Lang } from '../data/i18n';
+import { projectBySlug, releasesOf, hasBody, formatReleaseDate } from '../lib/projects.mjs';
+
+interface Props {
+  lang: Lang;
+  release: CollectionEntry<'releases'>;
+}
+
+const { lang, release } = Astro.props;
+const { slug } = Astro.params;
+
+const t = {
+  ru: {
+    title: 'Проекты',
+    crumbs: 'Путь',
+    tocTitle: 'Содержание релиза',
+    githubLink: 'Релиз на GitHub →',
+    postLink: 'Пост в канале →',
+    navAria: 'Соседние версии',
+    older: '← Старее: ',
+    newer: 'Новее: ',
+    newerTail: ' →',
+  },
+  en: {
+    title: 'Projects',
+    crumbs: 'Breadcrumb',
+    tocTitle: 'Contents',
+    githubLink: 'Release on GitHub →',
+    postLink: 'Post in the channel (RU) →',
+    navAria: 'Neighbouring versions',
+    older: '← Older: ',
+    newer: 'Newer: ',
+    newerTail: ' →',
+  },
+}[lang];
+
+const prefix = lang === 'en' ? 'en/projects' : 'projects';
+
+const project = await projectBySlug(slug, lang);
+// Слаг приходит из getStaticPaths — страницы существуют только для известных слагов.
+if (!project) throw new Error(`Проект не найден: ${slug}`);
+const { Content, headings } = await render(release);
+
+// Содержание релиза: только разделы верхнего уровня — их у релиза около десяти.
+const toc = headings
+  .filter((heading) => heading.depth === 2)
+  .map((heading) => ({ text: heading.text, id: heading.slug, level: 0 }));
+
+const cover = release.data.cover
+  ? new URL(withBase(release.data.cover), Astro.site).href
+  : undefined;
+
+// Соседние версии: «предыдущая» — старее, «следующая» — новее.
+const all = (await releasesOf(slug, lang)).filter(hasBody);
+const index = all.findIndex((entry) => entry.data.version === release.data.version);
+const newer = index > 0 ? all[index - 1] : undefined;
+const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
+const hrefOf = (entry: (typeof all)[number]) =>
+  withBase(`${prefix}/${slug}/releases/${entry.data.version}/`);
+---
+
+<BaseLayout
+  title={`${project.title} ${release.data.version}`}
+  description={release.data.summary}
+  image={cover}
+  lang={lang}
+>
+  <nav class="crumbs" aria-label={t.crumbs}>
+    <a href={withBase(`${prefix}/`)}>{t.title}</a>
+    <span aria-hidden="true">/</span>
+    <a href={withBase(`${prefix}/${slug}/`)}>{project.title}</a>
+    <span aria-hidden="true">/</span>
+    <span>{release.data.version}</span>
+  </nav>
+
+  <div class="hero">
+    <p class="release-kicker">
+      {project.title} · {release.data.version} · {formatReleaseDate(release.data.date, lang)}
+    </p>
+    <h1>{release.data.title}</h1>
+    <p class="lead">{release.data.summary}</p>
+  </div>
+
+  <div class={toc.length > 1 ? 'release-layout' : undefined}>
+    <div class="release-main">
+      {release.data.cover && (
+        <p class="release-cover">
+          <img src={withBase(release.data.cover)} alt={`${project.title} ${release.data.version}`} />
+        </p>
+      )}
+
+      <article class="release-body">
+        <Content />
+      </article>
+    </div>
+
+    {toc.length > 1 && (
+      <div class="release-aside">
+        <TopicToc items={toc} title={t.tocTitle} />
+      </div>
+    )}
+  </div>
+
+  <p class="project-actions">
+    {release.data.github && (
+      <a href={release.data.github} target="_blank" rel="noopener">{t.githubLink}</a>
+    )}
+    {release.data.post && (
+      <>
+        {' · '}
+        <a href={release.data.post} target="_blank" rel="noopener">{t.postLink}</a>
+      </>
+    )}
+  </p>
+
+  {(newer || older) && (
+    <nav class="release-nav" aria-label={t.navAria}>
+      {older ? <a href={hrefOf(older)}>{t.older}{older.data.version}</a> : <span />}
+      {newer ? <a href={hrefOf(newer)}>{t.newer}{newer.data.version}{t.newerTail}</a> : <span />}
+    </nav>
+  )}
+</BaseLayout>

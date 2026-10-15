@@ -1,7 +1,6 @@
 ---
 import { getCollection } from 'astro:content';
 import { withBase } from '../data/site';
-import { optionalCollection } from '../lib/collections';
 import { homeworkLabel, homeworkOrder } from '../lib/homework.mjs';
 
 interface Props {
@@ -11,13 +10,13 @@ interface Props {
 const { current } = Astro.props;
 
 const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
-const homework = (await optionalCollection('homework')).sort(
+const homework = (await getCollection('homework')).sort(
   (a, b) => homeworkOrder(a) - homeworkOrder(b)
 );
-const seminars = (await optionalCollection('seminars'))
+const seminars = (await getCollection('seminars'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
-const results = (await optionalCollection('results'))
+const results = (await getCollection('results'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
 
