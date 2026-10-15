@@ -1,0 +1,124 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { withBase } from '../../data/site';
+import {
+  localizeProject,
+  releasesOf,
+  hasBody,
+  projectBySlug,
+  formatReleaseDate,
+} from '../../lib/projects.mjs';
+
+export async function getStaticPaths() {
+  const all = await getCollection('projects');
+  return all
+    .filter((entry) => !entry.data.draft)
+    .map((entry) => ({ params: { slug: entry.data.slug } }));
+}
+
+const { slug } = Astro.params;
+const project = await projectBySlug(slug, 'ru');
+const releases = await releasesOf(slug, 'ru');
+const latest = releases[0];
+
+// Картинка для соцсетей: обложка свежего релиза, если она есть.
+const cover = latest?.data.cover
+  ? new URL(withBase(latest.data.cover), Astro.site).href
+  : undefined;
+
+// В ленте релиз ведёт на свою страницу, если у него есть текст; иначе — на GitHub.
+const releaseHref = (release) =>
+  hasBody(release)
+    ? withBase(`projects/${slug}/releases/${release.data.version}/`)
+    : release.data.github;
+const isExternal = (release) => !hasBody(release);
+---
+
+<BaseLayout title={project ? `Проекты — ${project.title}` : 'Проекты'} image={cover}>
+  <nav class="crumbs" aria-label="Путь">
+    <a href={withBase('projects/')}>Проекты</a>
+    <span aria-hidden="true">/</span>
+    <span>{project.title}</span>
+  </nav>
+
+  <div class="hero">
+    <h1>{project.title}</h1>
+    <p class="lead">{project.idea}</p>
+  </div>
+
+  <dl class="project-details project-details-wide">
+    <dt>Зачем</dt>
+    <dd>{project.why}</dd>
+    <dt>Как помогает</dt>
+    <dd>{project.how}</dd>
+    <dt>Состояние</dt>
+    <dd>
+      <span class="badge">{project.status}</span>
+      {latest && (
+        <span class="muted"> · версия {latest.data.version} от {formatReleaseDate(latest.data.date, 'ru')}</span>
+      )}
+    </dd>
+    <dt>Стек</dt>
+    <dd class="muted">{project.stack.join(' · ')}</dd>
+  </dl>
+
+  {project.links.length > 0 && (
+    <p class="project-actions">
+      {project.links.map((link, index) => (
+        <>
+          {index > 0 && ' · '}
+          <a href={link.href} target="_blank" rel="noopener">{link.title} →</a>
+        </>
+      ))}
+    </p>
+  )}
+
+  {project.sections.map((section) => (
+    <section class="block">
+      <h2>{section.title}</h2>
+      <ul class="roadmap">
+        {section.items.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {project.kind === 'announcement' ? (
+    <section class="block">
+      <h2>Что планируется</h2>
+      <ul class="roadmap">
+        {project.roadmap.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+      <p class="muted">
+        Продукт в работе: версий пока нет, как только появится первая — она встанет сюда
+        строкой в ленте «Версии и улучшения».
+      </p>
+    </section>
+  ) : (
+    <section class="block">
+      <h2>Версии и улучшения</h2>
+      {releases.length === 0 ? (
+        <p class="muted">Версий пока нет.</p>
+      ) : (
+        <ol class="versions">
+          {releases.map((release) => (
+            <li class="version-item">
+              <div class="version-head">
+                <a href={releaseHref(release)} target={isExternal(release) ? '_blank' : undefined} rel={isExternal(release) ? 'noopener' : undefined}>
+                  <span class="version-number">{release.data.version}</span>
+                  <span class="version-title">{release.data.title}</span>
+                </a>
+                <span class="muted version-date">{formatReleaseDate(release.data.date, 'ru')}</span>
+              </div>
+              <p class="version-summary">{release.data.summary}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )}
+</BaseLayout>

@@ -1,44 +1,61 @@
 ---
 import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { withBase } from '../../../data/site';
+import { projectsList, latestRelease } from '../../../lib/projects.mjs';
 
-const products = [
-  {
-    title: 'LLM Second brain',
-    idea: 'Memory for an AI assistant: so it remembers facts, agreements and context instead of starting every conversation from scratch.',
-    why: 'An assistant without memory forgets who you are, what you agreed on and how you like things done. You end up repeating yourself in every conversation and explaining the context again.',
-    how: 'Knowledge lives separately from the model: notes, terms, facts about you and “how to do things” procedures. The assistant pulls what it needs for the task at hand, and decisions stay between conversations instead of disappearing with the chat.',
-    href: 'https://github.com/philadelfic/llm-second-brain',
-  },
-  {
-    title: 'LLMesenger',
-    idea: 'Messaging run by AI harnesses themselves: threads, delivery and files between assistants, with a human as the account owner.',
-    why: 'Assistants have nowhere to exchange results: passing something from one AI harness to another takes a human in the middle copying text and files by hand.',
-    how: 'Every harness gets an account and starts threads, replies and attaches files — like a regular messenger, except the participants are not people. The account owner sees the conversation and can step in, and nothing is copied by hand.',
-    href: 'https://github.com/philadelfic/LLMesenger',
-  },
-];
+const items = await projectsList('en');
+const latest = new Map(items.map((p) => [p.slug, null]));
+for (const project of items) {
+  latest.set(project.slug, await latestRelease(project.slug, 'en'));
+}
 ---
 
-<BaseLayout title="Projects">
+<BaseLayout title="Projects" lang="en">
   <div class="hero">
     <h1>Projects</h1>
-    <p class="lead">Products I build: why they exist, how they help and where they stand.</p>
+    <p class="lead">
+      Products I build: why they exist, how they help and where they stand.
+    </p>
   </div>
 
-  {products.map((product) => (
+  {items.map((project) => (
     <article class="project-card">
-      <h2>{product.title}</h2>
-      <p class="project-idea">{product.idea}</p>
+      <h2>
+        <a class="project-title" href={withBase(`en/projects/${project.slug}/`)}>{project.title}</a>
+      </h2>
+      <p class="project-idea">{project.idea}</p>
 
       <dl class="project-details">
         <dt>Why</dt>
-        <dd>{product.why}</dd>
+        <dd>{project.why}</dd>
         <dt>How it helps</dt>
-        <dd>{product.how}</dd>
+        <dd>{project.how}</dd>
+        <dt>Status</dt>
+        <dd>
+          <span class="badge">{project.status}</span>
+          {latest.get(project.slug) ? (
+            <span class="muted">
+              {' '}· version {latest.get(project.slug)!.data.version} of{' '}
+              {latest.get(project.slug)!.data.date}
+            </span>
+          ) : (
+            <span class="muted"> · no releases yet, announced</span>
+          )}
+        </dd>
+        <dt>Stack</dt>
+        <dd class="muted">{project.stack.join(' · ')}</dd>
       </dl>
 
       <p class="project-actions">
-        <a href={product.href}>Repository on GitHub →</a>
+        <a href={withBase(`en/projects/${project.slug}/`)}>Versions and improvements →</a>
+        {project.repo && (
+          <>
+            {' '}
+            <a class="muted" href={project.repo} target="_blank" rel="noopener">
+              Repository on GitHub →
+            </a>
+          </>
+        )}
       </p>
     </article>
   ))}
