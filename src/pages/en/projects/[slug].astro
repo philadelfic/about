@@ -1,0 +1,115 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import { withBase } from '../../../data/site';
+import { releasesOf, hasBody, projectBySlug, formatReleaseDate } from '../../../lib/projects.mjs';
+
+export async function getStaticPaths() {
+  const all = await getCollection('projects');
+  return all
+    .filter((entry) => !entry.data.draft)
+    .map((entry) => ({ params: { slug: entry.data.slug } }));
+}
+
+const { slug } = Astro.params;
+const project = await projectBySlug(slug, 'en');
+const releases = await releasesOf(slug, 'en');
+const latest = releases[0];
+
+// Social preview: the cover of the latest release, when there is one.
+const cover = latest?.data.cover
+  ? new URL(withBase(latest.data.cover), Astro.site).href
+  : undefined;
+
+const releaseHref = (release) =>
+  hasBody(release)
+    ? withBase(`en/projects/${slug}/releases/${release.data.version}/`)
+    : release.data.github;
+const isExternal = (release) => !hasBody(release);
+---
+
+<BaseLayout title={`Projects — ${project.title}`} image={cover} lang="en">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <a href={withBase('en/projects/')}>Projects</a>
+    <span aria-hidden="true">/</span>
+    <span>{project.title}</span>
+  </nav>
+
+  <div class="hero">
+    <h1>{project.title}</h1>
+    <p class="lead">{project.idea}</p>
+  </div>
+
+  <dl class="project-details project-details-wide">
+    <dt>Why</dt>
+    <dd>{project.why}</dd>
+    <dt>How it helps</dt>
+    <dd>{project.how}</dd>
+    <dt>Status</dt>
+    <dd>
+      <span class="badge">{project.status}</span>
+      {latest && <span class="muted"> · version {latest.data.version} of {formatReleaseDate(latest.data.date, 'en')}</span>}
+    </dd>
+    <dt>Stack</dt>
+    <dd class="muted">{project.stack.join(' · ')}</dd>
+  </dl>
+
+  {project.links.length > 0 && (
+    <p class="project-actions">
+      {project.links.map((link, index) => (
+        <>
+          {index > 0 && ' · '}
+          <a href={link.href} target="_blank" rel="noopener">{link.title} →</a>
+        </>
+      ))}
+    </p>
+  )}
+
+  {project.sections.map((section) => (
+    <section class="block">
+      <h2>{section.title}</h2>
+      <ul class="roadmap">
+        {section.items.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {project.kind === 'announcement' ? (
+    <section class="block">
+      <h2>What is planned</h2>
+      <ul class="roadmap">
+        {project.roadmap.map((item) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+      <p class="muted">
+        In active development: no releases yet. The first one will show up here as a line in
+        “Versions and improvements”.
+      </p>
+    </section>
+  ) : (
+    <section class="block">
+      <h2>Versions and improvements</h2>
+      {releases.length === 0 ? (
+        <p class="muted">No releases yet.</p>
+      ) : (
+        <ol class="versions">
+          {releases.map((release) => (
+            <li class="version-item">
+              <div class="version-head">
+                <a href={releaseHref(release)} target={isExternal(release) ? '_blank' : undefined} rel={isExternal(release) ? 'noopener' : undefined}>
+                  <span class="version-number">{release.data.version}</span>
+                  <span class="version-title">{release.data.title}</span>
+                </a>
+                <span class="muted version-date">{formatReleaseDate(release.data.date, 'en')}</span>
+              </div>
+              <p class="version-summary">{release.data.summary}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )}
+</BaseLayout>

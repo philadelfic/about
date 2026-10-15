@@ -1,0 +1,111 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../layouts/BaseLayout.astro';
+import TopicToc from '../../../../components/TopicToc.astro';
+import { withBase } from '../../../../data/site';
+import {
+  projectBySlug,
+  releasesOf,
+  hasBody,
+  formatReleaseDate,
+} from '../../../../lib/projects.mjs';
+
+export async function getStaticPaths() {
+  const projects = (await getCollection('projects')).filter(
+    (entry) => !entry.data.draft && entry.data.kind !== 'announcement'
+  );
+  const paths = [];
+  for (const project of projects) {
+    const releases = (await releasesOf(project.data.slug, 'ru')).filter(hasBody);
+    for (const release of releases) {
+      paths.push({
+        params: { slug: project.data.slug, version: release.data.version },
+        props: { release },
+      });
+    }
+  }
+  return paths;
+}
+
+const { slug } = Astro.params;
+const project = await projectBySlug(slug, 'ru');
+const { release } = Astro.props;
+const { Content, headings } = await render(release);
+
+// Содержание релиза: только разделы верхнего уровня — их у релиза около десяти.
+const toc = headings
+  .filter((heading) => heading.depth === 2)
+  .map((heading) => ({ text: heading.text, id: heading.slug, level: 0 }));
+
+const cover = release.data.cover
+  ? new URL(withBase(release.data.cover), Astro.site).href
+  : undefined;
+
+// Соседние версии: «предыдущая» — старее, «следующая» — новее.
+const all = (await releasesOf(slug, 'ru')).filter(hasBody);
+const index = all.findIndex((entry) => entry.data.version === release.data.version);
+const newer = index > 0 ? all[index - 1] : undefined;
+const older = index >= 0 && index < all.length - 1 ? all[index + 1] : undefined;
+const hrefOf = (entry) => withBase(`projects/${slug}/releases/${entry.data.version}/`);
+---
+
+<BaseLayout
+  title={`${project.title} ${release.data.version}`}
+  description={release.data.summary}
+  image={cover}
+>
+  <nav class="crumbs" aria-label="Путь">
+    <a href={withBase('projects/')}>Проекты</a>
+    <span aria-hidden="true">/</span>
+    <a href={withBase(`projects/${slug}/`)}>{project.title}</a>
+    <span aria-hidden="true">/</span>
+    <span>{release.data.version}</span>
+  </nav>
+
+  <div class="hero">
+    <p class="release-kicker">
+      {project.title} · {release.data.version} · {formatReleaseDate(release.data.date, 'ru')}
+    </p>
+    <h1>{release.data.title}</h1>
+    <p class="lead">{release.data.summary}</p>
+  </div>
+
+  <div class={toc.length > 1 ? 'release-layout' : undefined}>
+    <div class="release-main">
+      {release.data.cover && (
+        <p class="release-cover">
+          <img src={withBase(release.data.cover)} alt={`${project.title} ${release.data.version}`} />
+        </p>
+      )}
+
+      <article class="release-body">
+        <Content />
+      </article>
+    </div>
+
+    {toc.length > 1 && (
+      <div class="release-aside">
+        <TopicToc items={toc} title="Содержание релиза" />
+      </div>
+    )}
+  </div>
+
+  <p class="project-actions">
+    {release.data.github && (
+      <a href={release.data.github} target="_blank" rel="noopener">Релиз на GitHub →</a>
+    )}
+    {release.data.post && (
+      <>
+        {' · '}
+        <a href={release.data.post} target="_blank" rel="noopener">Пост в канале →</a>
+      </>
+    )}
+  </p>
+
+  {(newer || older) && (
+    <nav class="release-nav" aria-label="Соседние версии">
+      {older ? <a href={hrefOf(older)}>← Старее: {older.data.version}</a> : <span />}
+      {newer ? <a href={hrefOf(newer)}>Новее: {newer.data.version} →</a> : <span />}
+    </nav>
+  )}
+</BaseLayout>

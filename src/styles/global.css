@@ -2198,3 +2198,178 @@ article .results-table {
   margin: 10px 0 4px;
   font-weight: 600;
 }
+
+/* ---------- раздел «Проекты»: карточки, версии, страница релиза ---------- */
+
+.crumbs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  font-size: 14px;
+  color: var(--muted);
+  margin: 4px 0 14px;
+}
+
+.crumbs a {
+  color: var(--muted);
+}
+
+/* Заголовок карточки продукта — сама ссылка на страницу продукта. */
+.project-title {
+  color: inherit;
+}
+
+.project-title:hover {
+  color: var(--accent);
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: var(--bg-soft);
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.project-details-wide,
+.block,
+.release-body,
+.release-nav {
+  max-width: var(--measure);
+}
+
+.project-details-wide dd {
+  max-width: none;
+}
+
+.block {
+  margin: 34px 0 0;
+}
+
+.block h2 {
+  font-size: 22px;
+  margin: 0 0 14px;
+}
+
+/* Лента «Версии и улучшения»: версия · название · дата, ниже — строка «что нового». */
+.versions {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.version-item {
+  padding: 14px 0;
+  border-top: 1px solid var(--border);
+}
+
+.version-item:first-child {
+  border-top: 0;
+  padding-top: 0;
+}
+
+.version-head {
+  display: flex;
+  gap: 12px;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.version-number {
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  margin-right: 10px;
+}
+
+.version-summary {
+  margin: 6px 0 0;
+  color: var(--muted);
+}
+
+.version-date {
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.roadmap {
+  margin: 0 0 12px;
+  padding-left: 20px;
+}
+
+.roadmap li {
+  margin-bottom: 6px;
+}
+
+.release-kicker {
+  font-size: 14px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+
+.release-cover {
+  margin: 22px 0 26px;
+}
+
+.release-cover img {
+  display: block;
+  width: 100%;
+  max-width: var(--measure);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.release-body h2 {
+  font-size: 20px;
+  margin: 30px 0 10px;
+}
+
+.release-body p {
+  margin: 12px 0;
+}
+
+.release-body ul {
+  padding-left: 22px;
+}
+
+.release-nav {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 34px 0 10px;
+}
+
+/* Заголовок ворот курса читается как h1, но в разметке это h2: на странице должен
+   остаться один h1 (скрытый заголовок ворот ломал семантику всех страниц портала). */
+.gate-title {
+  font-size: clamp(30px, 5vw, 44px);
+  line-height: 1.12;
+  letter-spacing: -0.03em;
+  margin: 0 0 16px;
+}
+
+/* Страница релиза: текст в колонке, содержание — отдельной колонкой справа.
+   Содержание липнет в своей колонке (обёртка .release-aside), поэтому видно с самого
+   верха страницы — ещё когда читаешь обложку, — и не уезжает вместе с текстом. */
+@media (min-width: 1180px) {
+  .release-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 210px;
+    gap: 40px;
+    align-items: start;
+  }
+
+  .release-aside {
+    position: sticky;
+    top: 96px;
+  }
+
+  .release-layout .topic-toc {
+    position: static;
+    top: auto;
+    max-height: calc(100vh - 130px);
+  }
+}

@@ -8,6 +8,8 @@ interface Props {
   title?: string;
   description?: string;
   lang?: Lang;
+  /** Абсолютный URL картинки для соцсетей (og:image); нет — тега не будет. */
+  image?: string;
 }
 
 const current = Astro.url.pathname;
@@ -25,6 +27,7 @@ const showTools = !isT1;
 
 const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t.siteName}` : t.title;
 const description = Astro.props.description ?? t.description;
+const ogImage = Astro.props.image ?? undefined;
 
 const nav = [
   { href: withBase(lang === 'en' ? 'en/projects/' : 'projects/'), label: t.nav.projects },
@@ -55,6 +58,8 @@ const courseNav = [
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:type" content="website" />
+    {ogImage && <meta property="og:image" content={ogImage} />}
+    {ogImage && <meta name="twitter:card" content="summary_large_image" />}
     <meta name="theme-color" content="#ffffff" />
     <link rel="alternate" hreflang="ru" href={new URL(lang === 'en' ? altHref : current, Astro.site)} />
     <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? current : altHref, Astro.site)} />
@@ -167,7 +172,7 @@ const courseNav = [
     <main>
       <div class="wrap">
         <div id="gate" class="gate" hidden>
-          <h1>Материалы курса</h1>
+          <h2 class="gate-title">Материалы курса</h2>
           <p class="lead">
             Это раздел для студентов курса. Введите код, который я дал на занятии, — откроются
             материалы.

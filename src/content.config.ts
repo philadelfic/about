@@ -133,4 +133,70 @@ const results = defineCollection({
   }),
 });
 
-export const collections = { topics, homework, seminars, results };
+/**
+ * Продукты: карточка на витрине «Проекты» и страница продукта.
+ * kind: repo — продукт с публичным репозиторием; announcement — только анонс.
+ */
+const projects = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/projects' }),
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    kind: z.enum(['repo', 'announcement']).default('repo'),
+    /** Ссылка на публичный репозиторий (если он есть). */
+    repo: z.string().optional(),
+    status: z.string(),
+    statusEn: z.string(),
+    stack: z.array(z.string()).default([]),
+    /** Стек для английского зеркала; не задан — берётся stack. */
+    stackEn: z.array(z.string()).optional(),
+    /** Порядок карточек на витрине: меньше — выше. */
+    order: z.number().default(100),
+    /** Три абзаца карточки — почему продукт нужен. */
+    idea: z.string(),
+    ideaEn: z.string(),
+    why: z.string(),
+    whyEn: z.string(),
+    how: z.string(),
+    howEn: z.string(),
+    /** Анонс: что планируется (у анонса версий нет). */
+    roadmap: z.array(z.object({ text: z.string(), textEn: z.string() })).default([]),
+    /** Дополнительные блоки страницы продукта: заголовок и пункты списка. */
+    sections: z
+      .array(
+        z.object({
+          title: z.string(),
+          titleEn: z.string(),
+          items: z.array(z.object({ text: z.string(), textEn: z.string() })).default([]),
+        })
+      )
+      .default([]),
+    /** Дополнительные ссылки: релизы, пост в канале, сайт. */
+    links: z
+      .array(z.object({ title: z.string(), titleEn: z.string().optional(), href: z.string() }))
+      .default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+/**
+ * Релизы продуктов: имя файла — <проект>-<версия>.<язык>.md, тело файла — большой текст релиза.
+ * Тело может быть пустым: тогда в ленте остаётся строка «что нового» и ссылка на GitHub.
+ */
+const releases = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/releases' }),
+  schema: z.object({
+    project: z.string(),
+    version: z.string(),
+    lang: z.enum(['ru', 'en']).default('ru'),
+    date: z.string(),
+    title: z.string(),
+    summary: z.string(),
+    cover: z.string().optional(),
+    github: z.string().optional(),
+    post: z.string().optional(),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { topics, homework, seminars, results, projects, releases };
