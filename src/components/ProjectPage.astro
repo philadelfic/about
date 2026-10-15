@@ -1,0 +1,157 @@
+---
+/**
+ * Страница продукта: одна на оба языка, разница — в строках и префиксе URL.
+ * Маршруты-обёртки: src/pages/projects/[slug].astro и src/pages/en/projects/[slug].astro.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { withBase } from '../data/site';
+import type { Lang } from '../data/i18n';
+import { projectBySlug, releasesOf, hasBody, formatReleaseDate } from '../lib/projects.mjs';
+
+interface Props {
+  lang: Lang;
+}
+
+const { lang } = Astro.props;
+const { slug } = Astro.params;
+
+const t = {
+  ru: {
+    title: 'Проекты',
+    crumbs: 'Путь',
+    why: 'Зачем',
+    how: 'Как помогает',
+    status: 'Состояние',
+    version: 'версия',
+    of: 'от',
+    stack: 'Стек',
+    plannedTitle: 'Что планируется',
+    plannedNote:
+      'Продукт в работе: версий пока нет, как только появится первая — она встанет сюда строкой в ленте «Версии и улучшения».',
+    releasesTitle: 'Версии и улучшения',
+    noReleases: 'Версий пока нет.',
+  },
+  en: {
+    title: 'Projects',
+    crumbs: 'Breadcrumb',
+    why: 'Why',
+    how: 'How it helps',
+    status: 'Status',
+    version: 'version',
+    of: 'of',
+    stack: 'Stack',
+    plannedTitle: 'What is planned',
+    plannedNote:
+      'In active development: no releases yet. The first one will show up here as a line in “Versions and improvements”.',
+    releasesTitle: 'Versions and improvements',
+    noReleases: 'No releases yet.',
+  },
+}[lang];
+
+const prefix = lang === 'en' ? 'en/projects' : 'projects';
+
+const project = await projectBySlug(slug, lang);
+// Слаг приходит из getStaticPaths — страницы существуют только для известных слагов.
+if (!project) throw new Error(`Проект не найден: ${slug}`);
+const releases = await releasesOf(slug, lang);
+const latest = releases[0];
+
+// Картинка для соцсетей: обложка свежего релиза, если она есть.
+const cover = latest?.data.cover
+  ? new URL(withBase(latest.data.cover), Astro.site).href
+  : undefined;
+
+// В ленте релиз ведёт на свою страницу, если у него есть текст; иначе — на GitHub.
+const releaseHref = (version: string) =>
+  withBase(`${prefix}/${slug}/releases/${version}/`);
+const isExternal = (release: (typeof releases)[number]) => !hasBody(release);
+---
+
+<BaseLayout title={`${t.title} — ${project.title}`} image={cover} lang={lang}>
+  <nav class="crumbs" aria-label={t.crumbs}>
+    <a href={withBase(`${prefix}/`)}>{t.title}</a>
+    <span aria-hidden="true">/</span>
+    <span>{project.title}</span>
+  </nav>
+
+  <div class="hero">
+    <h1>{project.title}</h1>
+    <p class="lead">{project.idea}</p>
+  </div>
+
+  <dl class="project-details project-details-wide">
+    <dt>{t.why}</dt>
+    <dd>{project.why}</dd>
+    <dt>{t.how}</dt>
+    <dd>{project.how}</dd>
+    <dt>{t.status}</dt>
+    <dd>
+      <span class="badge">{project.status}</span>
+      {latest && (
+        <span class="muted"> · {t.version} {latest.data.version} {t.of} {formatReleaseDate(latest.data.date, lang)}</span>
+      )}
+    </dd>
+    <dt>{t.stack}</dt>
+    <dd class="muted">{project.stack.join(' · ')}</dd>
+  </dl>
+
+  {project.links.length > 0 && (
+    <p class="project-actions">
+      {project.links.map((link: { title: string; href: string }, index: number) => (
+        <>
+          {index > 0 && ' · '}
+          <a href={link.href} target="_blank" rel="noopener">{link.title} →</a>
+        </>
+      ))}
+    </p>
+  )}
+
+  {project.sections.map((section: { title: string; items: string[] }) => (
+    <section class="block">
+      <h2>{section.title}</h2>
+      <ul class="roadmap">
+        {section.items.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+    </section>
+  ))}
+
+  {project.kind === 'announcement' ? (
+    <section class="block">
+      <h2>{t.plannedTitle}</h2>
+      <ul class="roadmap">
+        {project.roadmap.map((item: string) => (
+          <li>{item}</li>
+        ))}
+      </ul>
+      <p class="muted">{t.plannedNote}</p>
+    </section>
+  ) : (
+    <section class="block">
+      <h2>{t.releasesTitle}</h2>
+      {releases.length === 0 ? (
+        <p class="muted">{t.noReleases}</p>
+      ) : (
+        <ol class="versions">
+          {releases.map((release) => (
+            <li class="version-item">
+              <div class="version-head">
+                <a
+                  href={isExternal(release) ? release.data.github : releaseHref(release.data.version)}
+                  target={isExternal(release) ? '_blank' : undefined}
+                  rel={isExternal(release) ? 'noopener' : undefined}
+                >
+                  <span class="version-number">{release.data.version}</span>
+                  <span class="version-title">{release.data.title}</span>
+                </a>
+                <span class="muted version-date">{formatReleaseDate(release.data.date, lang)}</span>
+              </div>
+              <p class="version-summary">{release.data.summary}</p>
+            </li>
+          ))}
+        </ol>
+      )}
+    </section>
+  )}
+</BaseLayout>

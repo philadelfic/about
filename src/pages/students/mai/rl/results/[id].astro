@@ -1,11 +1,12 @@
 ---
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
-import { optionalCollection } from '../../../../../lib/collections';
+import GroupTabs from '../../../../../components/GroupTabs.astro';
 import { withBase } from '../../../../../data/site';
 
 export async function getStaticPaths() {
-  const items = (await optionalCollection('results')).filter((item) => !item.data.draft);
+  const items = (await getCollection('results')).filter((item) => !item.data.draft);
   return items.map((item) => ({ params: { id: item.id }, props: { item } }));
 }
 
@@ -103,18 +104,5 @@ const firstGroup = groups[0]?.name;
     </article>
   </div>
 
-  <script>
-    document.querySelectorAll('[data-task-switch]').forEach((block) => {
-      const buttons = Array.from(block.querySelectorAll('.group-switch button'));
-      const lists = Array.from(block.querySelectorAll('[data-task-group]'));
-      const show = (group) => {
-        buttons.forEach((button) =>
-          button.setAttribute('aria-selected', String(button.dataset.group === group))
-        );
-        lists.forEach((list) => (list.hidden = list.dataset.taskGroup !== group));
-      };
-      buttons.forEach((button) => button.addEventListener('click', () => show(button.dataset.group)));
-      if (buttons.length > 0) show(buttons[0].dataset.group);
-    });
-  </script>
+  <GroupTabs />
 </BaseLayout>

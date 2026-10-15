@@ -2,10 +2,9 @@
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
-import { optionalCollection } from '../../../../../lib/collections';
 
 export async function getStaticPaths() {
-  const items = await optionalCollection('homework');
+  const items = await getCollection('homework');
   return items.map((item) => ({ params: { id: item.id }, props: { item } }));
 }
 

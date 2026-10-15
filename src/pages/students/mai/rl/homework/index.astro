@@ -3,10 +3,9 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
-import { optionalCollection } from '../../../../../lib/collections';
 import { homeworkKind, homeworkOrder } from '../../../../../lib/homework.mjs';
 
-const items = (await optionalCollection('homework')).sort(
+const items = (await getCollection('homework')).sort(
   (a, b) => homeworkOrder(a) - homeworkOrder(b)
 );
 const current = Astro.url.pathname;

@@ -1,0 +1,25 @@
+---
+/**
+ * Скрипт переключателя групп/вариантов (страницы семинаров и результатов).
+ * Разметка — на самой странице: блок [data-task-switch], внутри кнопки .group-switch
+ * и списки [data-task-group]. Без JS первая группа видна, кнопки просто не работают.
+ * Скрипт здесь один на страницу: Astro склеивает повторные включения компонента.
+ */
+---
+
+<script>
+  document.querySelectorAll('[data-task-switch]').forEach((block) => {
+    const buttons = Array.from(block.querySelectorAll<HTMLButtonElement>('.group-switch button'));
+    const lists = Array.from(block.querySelectorAll<HTMLElement>('[data-task-group]'));
+    const show = (group: string) => {
+      buttons.forEach((button) =>
+        button.setAttribute('aria-selected', String(button.dataset.group === group))
+      );
+      lists.forEach((list) => (list.hidden = list.dataset.taskGroup !== group));
+    };
+    buttons.forEach((button) =>
+      button.addEventListener('click', () => show(button.dataset.group ?? ''))
+    );
+    if (buttons.length > 0) show(buttons[0].dataset.group ?? '');
+  });
+</script>
