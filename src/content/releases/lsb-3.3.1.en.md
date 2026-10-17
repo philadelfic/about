@@ -28,6 +28,6 @@ The suite of 2147 checks now runs across several workers: ~30 seconds instead of
 
 ## 📦 Upgrading
 
-The data schema is unchanged and there are no migrations — upgrading is replacing the container. Both bugs were found on the test contour and never reached production.
+The data schema is unchanged and there are no migrations — upgrading is replacing the container.
 
 A memory that tidies up after itself 🧹
