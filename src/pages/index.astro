@@ -14,11 +14,14 @@ const entries = [
     text: 'Материалы курса «Обучение с подкреплением»: темы, лекции и семинары.',
   },
 ];
+
+const roles = 'ИТ-лид команды разработки · преподаватель МАИ';
 ---
 
 <BaseLayout>
   <div class="hero">
-    <h1>Привет, я Олег Орловский.<br /><span class="grad">ИТ-лид команды разработки и преподаватель</span></h1>
+    <p class="overline">{roles}</p>
+    <h1>Олег Орловский</h1>
     <p class="lead">
       Разрабатываю с командой кадровые сервисы самообслуживания. Преподаю «Обучение с подкреплением»
       в магистратуре и делаю инструменты для работы с LLM-харнесами. Здесь — проекты и материалы
@@ -26,22 +29,26 @@ const entries = [
     </p>
   </div>
 
-  <div class="cards">
-    {entries.map((entry) => (
-      <a class="card" href={entry.href}>
-        <h3>{entry.title}</h3>
-        <p>{entry.text}</p>
-        <span class="more">Открыть →</span>
-      </a>
+  <p class="rule-label">Разделы</p>
+  <ul class="index-list">
+    {entries.map((entry, index) => (
+      <li>
+        <a href={entry.href}>
+          <span class="index-num">{String(index + 1).padStart(2, '0')}</span>
+          <span class="index-title">{entry.title}</span>
+          <span class="index-arrow" aria-hidden="true">&rarr;</span>
+          <span class="index-text">{entry.text}</span>
+        </a>
+      </li>
     ))}
-  </div>
+  </ul>
 
-  <h2>Ссылки</h2>
+  <p class="rule-label">Ссылки</p>
   <ul class="links">
     {externalLinks.map((link) => (
       <li>
         <a href={link.href}>{link.title}</a>
-        <span class="muted"> — {link.note}</span>
+        <span class="link-note">— {link.note}</span>
       </li>
     ))}
   </ul>

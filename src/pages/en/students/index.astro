@@ -5,22 +5,27 @@ import { withBase } from '../../../data/site';
 
 <BaseLayout title="Students">
   <div class="hero">
-    <h1>Students</h1>
+    <p class="overline">Students</p>
+    <h1>Course materials</h1>
     <p class="lead">
       The “Reinforcement Learning” course I teach: from task formulation and the agent–environment
       loop to tabular methods and Q-learning.
     </p>
   </div>
 
-  <div class="cards">
-    <a class="card" href={withBase('students/mai/')}>
-      <h3>Reinforcement Learning (MAI)</h3>
-      <p>Syllabus, topics with theory and Q&amp;A, homework and seminar notes.</p>
-      <span class="more">Open the course →</span>
-    </a>
-  </div>
+  <p class="rule-label">Courses</p>
+  <ul class="index-list">
+    <li>
+      <a href={withBase('students/mai/')}>
+        <span class="index-num">01</span>
+        <span class="index-title">Reinforcement Learning (MAI)</span>
+        <span class="index-arrow" aria-hidden="true">&rarr;</span>
+        <span class="index-text">Syllabus, topics with theory and Q&amp;A, homework and seminar notes.</span>
+      </a>
+    </li>
+  </ul>
 
-  <p class="notice">
+  <p class="muted">
     Course materials are in Russian. Access to the course section is open to my students — the
     section asks for the code I give in class.
   </p>

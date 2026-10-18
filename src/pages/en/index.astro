@@ -23,34 +23,41 @@ const links = [
     note: 'personal blog (in Russian)',
   },
 ];
+
+const roles = 'IT lead of a development team · teacher at MAI';
 ---
 
 <BaseLayout>
   <div class="hero">
-    <h1>Hi, I’m Oleg Orlovsky.<br /><span class="grad">IT lead of a development team and teacher</span></h1>
+    <p class="overline">{roles}</p>
+    <h1>Oleg Orlovsky</h1>
     <p class="lead">
-      I build HR self-service services with my team. I teach Reinforcement Learning in a master’s
+      I build HR self-service systems with my team. I teach Reinforcement Learning in a master’s
       programme and build tools for LLM harnesses. Here — my projects and study materials, for
       students and for anyone curious about what I do.
     </p>
   </div>
 
-  <div class="cards">
-    {entries.map((entry) => (
-      <a class="card" href={entry.href}>
-        <h3>{entry.title}</h3>
-        <p>{entry.text}</p>
-        <span class="more">Open →</span>
-      </a>
+  <p class="rule-label">Sections</p>
+  <ul class="index-list">
+    {entries.map((entry, index) => (
+      <li>
+        <a href={entry.href}>
+          <span class="index-num">{String(index + 1).padStart(2, '0')}</span>
+          <span class="index-title">{entry.title}</span>
+          <span class="index-arrow" aria-hidden="true">&rarr;</span>
+          <span class="index-text">{entry.text}</span>
+        </a>
+      </li>
     ))}
-  </div>
+  </ul>
 
-  <h2>Links</h2>
+  <p class="rule-label">Links</p>
   <ul class="links">
     {links.map((link) => (
       <li>
         <a href={link.href}>{link.title}</a>
-        <span class="muted"> — {link.note}</span>
+        <span class="link-note">— {link.note}</span>
       </li>
     ))}
   </ul>

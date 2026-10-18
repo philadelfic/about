@@ -5,17 +5,22 @@ import { withBase } from '../../data/site';
 
 <BaseLayout title="Студентам">
   <div class="hero">
-    <h1>Студентам</h1>
-    <p class="lead">Материалы курсов, которые я веду.</p>
+    <p class="overline">Студентам</p>
+    <h1>Материалы курсов</h1>
+    <p class="lead">Курсы, которые я веду: темы, лекции и семинары.</p>
   </div>
 
-  <div class="cards">
-    <a class="card" href={withBase('students/mai/')}>
-      <h3>Т1 + МАИ</h3>
-      <p>Магистратура: курс «Обучение с подкреплением».</p>
-      <span class="more">Открыть →</span>
-    </a>
-  </div>
+  <p class="rule-label">Курсы</p>
+  <ul class="index-list">
+    <li>
+      <a href={withBase('students/mai/')}>
+        <span class="index-num">01</span>
+        <span class="index-title">Т1 + МАИ</span>
+        <span class="index-arrow" aria-hidden="true">&rarr;</span>
+        <span class="index-text">Магистратура: курс «Обучение с подкреплением».</span>
+      </a>
+    </li>
+  </ul>
 
   <p class="muted">Материалы по темам добавляются по ходу семестра.</p>
 </BaseLayout>

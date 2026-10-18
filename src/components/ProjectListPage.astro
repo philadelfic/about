@@ -7,7 +7,7 @@ import type { CollectionEntry } from 'astro:content';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { withBase } from '../data/site';
 import type { Lang } from '../data/i18n';
-import { projectsList, latestRelease } from '../lib/projects.mjs';
+import { projectsList, latestRelease, formatReleaseDate } from '../lib/projects.mjs';
 
 interface Props {
   lang: Lang;
@@ -21,11 +21,9 @@ const t = {
     lead: 'Продукты, которые я делаю: зачем они нужны, как помогают и в каком они состоянии.',
     why: 'Зачем',
     how: 'Как помогает',
-    status: 'Состояние',
-    versionOf: 'версия',
+    lastVersion: 'Последняя версия',
     versionFrom: 'от',
-    noReleases: ' · версий пока нет, продукт анонсирован',
-    versionsLink: 'Версии и улучшения →',
+    versionsLink: 'Подробнее и версии →',
     repoLink: 'Репозиторий на GitHub →',
     stack: 'Стек',
   },
@@ -34,11 +32,9 @@ const t = {
     lead: 'Products I build: why they exist, how they help and where they stand.',
     why: 'Why',
     how: 'How it helps',
-    status: 'Status',
-    versionOf: 'version',
-    versionFrom: 'of',
-    noReleases: ' · no releases yet, announced',
-    versionsLink: 'Versions and improvements →',
+    lastVersion: 'Latest version',
+    versionFrom: 'released',
+    versionsLink: 'Details and versions →',
     repoLink: 'Repository on GitHub →',
     stack: 'Stack',
   },
@@ -55,12 +51,13 @@ for (const project of items) {
 
 <BaseLayout title={t.title} lang={lang}>
   <div class="hero">
-    <h1>{t.title}</h1>
+    <p class="overline">{t.title}</p>
+    <h1>{lang === 'en' ? 'Products I build' : 'Продукты, которые я делаю'}</h1>
     <p class="lead">{t.lead}</p>
   </div>
 
   {items.map((project) => (
-    <article class="project-card">
+    <article class="project">
       <h2>
         <a class="project-title" href={withBase(`${prefix}/${project.slug}/`)}>{project.title}</a>
       </h2>
@@ -71,18 +68,17 @@ for (const project of items) {
         <dd>{project.why}</dd>
         <dt>{t.how}</dt>
         <dd>{project.how}</dd>
-        <dt>{t.status}</dt>
-        <dd>
-          <span class="badge">{project.status}</span>
-          {latest.get(project.slug) ? (
-            <span class="muted">
-              {' '}· {t.versionOf} {latest.get(project.slug)!.data.version} {t.versionFrom}{' '}
-              {latest.get(project.slug)!.data.date}
-            </span>
-          ) : (
-            <span class="muted">{t.noReleases}</span>
-          )}
-        </dd>
+        {latest.get(project.slug) && (
+          <>
+            <dt>{t.lastVersion}</dt>
+            <dd>
+              <span class="status">{latest.get(project.slug)!.data.version}</span>
+              <span class="version">
+                {t.versionFrom} {formatReleaseDate(latest.get(project.slug)!.data.date, lang)}
+              </span>
+            </dd>
+          </>
+        )}
         <dt>{t.stack}</dt>
         <dd class="muted">{project.stack.join(' · ')}</dd>
       </dl>
@@ -90,12 +86,9 @@ for (const project of items) {
       <p class="project-actions">
         <a href={withBase(`${prefix}/${project.slug}/`)}>{t.versionsLink}</a>
         {project.repo && (
-          <>
-            {' '}
-            <a class="muted" href={project.repo} target="_blank" rel="noopener">
-              {t.repoLink}
-            </a>
-          </>
+          <a class="muted" href={project.repo} target="_blank" rel="noopener">
+            {t.repoLink}
+          </a>
         )}
       </p>
     </article>
