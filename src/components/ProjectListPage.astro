@@ -24,8 +24,8 @@ const t = {
     status: 'Состояние',
     versionOf: 'версия',
     versionFrom: 'от',
-    noReleases: ' · версий пока нет, продукт анонсирован',
-    versionsLink: 'Версии и улучшения →',
+    noReleases: 'версий пока нет, продукт анонсирован',
+    versionsLink: 'Подробнее и версии →',
     repoLink: 'Репозиторий на GitHub →',
     stack: 'Стек',
   },
@@ -37,8 +37,8 @@ const t = {
     status: 'Status',
     versionOf: 'version',
     versionFrom: 'of',
-    noReleases: ' · no releases yet, announced',
-    versionsLink: 'Versions and improvements →',
+    noReleases: 'no releases yet, announced',
+    versionsLink: 'Details and versions →',
     repoLink: 'Repository on GitHub →',
     stack: 'Stack',
   },
@@ -55,12 +55,13 @@ for (const project of items) {
 
 <BaseLayout title={t.title} lang={lang}>
   <div class="hero">
-    <h1>{t.title}</h1>
+    <p class="overline">{t.title}</p>
+    <h1>{lang === 'en' ? 'Products I build' : 'Продукты, которые я делаю'}</h1>
     <p class="lead">{t.lead}</p>
   </div>
 
   {items.map((project) => (
-    <article class="project-card">
+    <article class="project">
       <h2>
         <a class="project-title" href={withBase(`${prefix}/${project.slug}/`)}>{project.title}</a>
       </h2>
@@ -73,14 +74,14 @@ for (const project of items) {
         <dd>{project.how}</dd>
         <dt>{t.status}</dt>
         <dd>
-          <span class="badge">{project.status}</span>
+          <span class="status">{project.status}</span>
           {latest.get(project.slug) ? (
-            <span class="muted">
-              {' '}· {t.versionOf} {latest.get(project.slug)!.data.version} {t.versionFrom}{' '}
+            <span class="version">
+              {' '}{t.versionOf} {latest.get(project.slug)!.data.version} {t.versionFrom}{' '}
               {latest.get(project.slug)!.data.date}
             </span>
           ) : (
-            <span class="muted">{t.noReleases}</span>
+            <span class="version">{t.noReleases}</span>
           )}
         </dd>
         <dt>{t.stack}</dt>
@@ -90,12 +91,9 @@ for (const project of items) {
       <p class="project-actions">
         <a href={withBase(`${prefix}/${project.slug}/`)}>{t.versionsLink}</a>
         {project.repo && (
-          <>
-            {' '}
-            <a class="muted" href={project.repo} target="_blank" rel="noopener">
-              {t.repoLink}
-            </a>
-          </>
+          <a class="muted" href={project.repo} target="_blank" rel="noopener">
+            {t.repoLink}
+          </a>
         )}
       </p>
     </article>

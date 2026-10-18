@@ -1,20 +1,42 @@
+/* ============================================================
+   Портал Олега Орловского — визуальный язык публичной части.
+   «Из стартап-лендинга — в книгу»: антиква вместо гротеска, бумага
+   и чернила, один сдержанный акцент, линейки вместо теней и пилюль.
+   Стили раздела «Т1 + МАИ» (body.theme-t1, .course-*, .sim-*) ниже
+   не тронуты: это отдельный мини-сайт курса.
+   ============================================================ */
+
 :root {
-  --bg: #ffffff;
-  --bg-soft: #f6f7f9;
-  --fg: #101216;
-  --muted: #5f6673;
-  --border: #e6e8ee;
+  /* светлая тема: бумага и чернила */
+  --bg: #faf9f5;
+  --bg-soft: #f2f0ea;
   --card: #ffffff;
-  --accent: #3b5bfd;
-  --accent-2: #8b5cf6;
+  --fg: #1f2023;
+  --muted: #5f6167;
+  --faint: #8b8c92;
+  --line: #e2e0d8;
+  --line-strong: #cfccc2;
+  --accent: #7d2e35;            /* глубокий бордо: один акцент на весь сайт */
+  --accent-soft: rgba(125, 46, 53, 0.08);
+  --on-accent: #ffffff;
+
+  /* типографика */
+  --serif: "Spectral", "PT Serif", Georgia, "Times New Roman", serif;
+  --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Courier New", monospace;
+
+  /* компоновка */
+  --wrap: 1160px;
+  /* мера набора публичной части: текст читается как в книге.
+     --measure (995px) — мера текста КУРСА, она задаётся ниже и трогать её нельзя:
+     широкие формулы тем разъедутся. */
+  --text-measure: 640px;
+  --pad: clamp(20px, 4vw, 40px);
+  --radius: 4px;
+  --radius-sm: 3px;
   --shadow: 0 1px 2px rgba(16, 18, 22, 0.04), 0 8px 24px rgba(16, 18, 22, 0.06);
-  --radius: 16px;
-  --radius-sm: 10px;
-  /* ширина контейнера общего портала. Раздел «Т1 + МАИ» шире — см. body.theme-t1 .wrap */
+  /* совместимость: старые правила курса читают --maxw/--measure */
   --maxw: 1280px;
-  /* одна мера для текста, карточек и таблиц в статье. 995px ≈ 92ch при основном
-     тексте 17px; в px, а не в ch, потому что ch считается от шрифта самого элемента
-     и у таблицы (15px) дал бы другую ширину — правый край разъехался бы. */
   --measure: 995px;
 }
 
@@ -30,9 +52,13 @@ body {
   margin: 0;
   background: var(--bg);
   color: var(--fg);
-  font: 17px/1.65 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font: 17px/1.75 var(--serif);
+  font-optical-sizing: auto;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
+
+/* ---------- ссылки ---------- */
 
 a {
   color: var(--accent);
@@ -40,135 +66,239 @@ a {
   text-underline-offset: 3px;
 }
 
-a:hover {
-  text-decoration: underline;
-}
+/* в тексте — как в книге: цвет и подчёркивание (только вне раздела Т1) */
+body:not(.theme-t1) article a, body:not(.theme-t1) .prose a, body:not(.theme-t1) .lead a { text-decoration: underline; text-decoration-thickness: 1px; }
+a:hover { text-decoration: underline; }
+
+/* ---------- контейнеры ---------- */
 
 .wrap {
-  max-width: var(--maxw);
+  max-width: var(--maxw, var(--wrap));
   margin: 0 auto;
   padding: 0 22px;
+  padding: 0 var(--pad);
+}
+
+/* основной текст публичной части — узкой книжной колонкой */
+.measure, main .prose, article, .hero, .index-list, .project { max-width: calc(var(--text-measure) + 2 * var(--pad)); }
+footer .wrap, header .wrap { max-width: var(--wrap); }
+
+/* ---------- живой фон: граф — тихая нейросеть за текстом ---------- */
+
+.bg-graph {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* контент поверх фона; шапка и подвал непрозрачные — граф виден
+   только в главном поле страницы */
+.site-header,
+main,
+.site-footer {
+  position: relative;
+  z-index: 1;
 }
 
 /* ---------- шапка ---------- */
 
 .site-header {
-  position: sticky;
-  top: 0;
-  z-index: 20;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  backdrop-filter: saturate(180%) blur(12px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg);
 }
 
 .site-header .wrap {
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  min-height: 62px;
+  align-items: baseline;
+  gap: 24px;
+  min-height: 72px;
+  padding-top: 18px;
+  padding-bottom: 16px;
+  flex-wrap: wrap;
 }
 
+/* словесный логотип: имя, без значков и градиентов */
 .brand {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
+  font-family: var(--serif);
+  font-size: 21px;
   font-weight: 600;
+  letter-spacing: 0.01em;
   color: var(--fg);
-  letter-spacing: -0.01em;
   white-space: nowrap;
 }
 
-.brand .mark {
-  width: 28px;
-  height: 28px;
-  border-radius: 9px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #fff;
-  display: grid;
-  place-items: center;
-  font-size: 14px;
-  font-weight: 700;
-}
+.brand:hover { text-decoration: none; color: var(--accent); }
 
 .site-nav {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  gap: 22px;
   flex-wrap: wrap;
 }
 
 .site-nav a {
+  font-family: var(--sans);
+  font-size: 14px;
+  letter-spacing: 0.02em;
   color: var(--muted);
-  font-size: 15px;
-  padding: 7px 12px;
-  border-radius: 999px;
-  transition: background 0.15s ease, color 0.15s ease;
+  padding: 2px 0;
+  border-bottom: 1px solid transparent;
 }
 
-.site-nav a:hover {
-  color: var(--fg);
-  background: var(--bg-soft);
-  text-decoration: none;
-}
+.site-nav a:hover { color: var(--fg); text-decoration: none; }
 
 .site-nav a[aria-current="page"] {
   color: var(--fg);
-  background: var(--bg-soft);
+  border-bottom-color: var(--accent);
 }
 
-/* ---------- контент ---------- */
+/* ---------- типографика ---------- */
 
-main {
-  padding: 48px 0 72px;
-}
+main { padding: clamp(44px, 8vh, 84px) 0 72px; }
 
-h1 {
-  font-size: clamp(30px, 5vw, 44px);
-  line-height: 1.12;
-  letter-spacing: -0.03em;
-  margin: 0 0 16px;
-}
-
-h2 {
-  font-size: 22px;
-  letter-spacing: -0.02em;
-  margin: 44px 0 14px;
-}
-
-h3 {
-  font-size: 17px;
-  margin: 0 0 6px;
-}
-
-p {
+/* надзаголовок: роль, раздел — мелкий капс */
+.overline {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
   margin: 0 0 14px;
 }
 
+h1 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: clamp(36px, 5.6vw, 58px);
+  line-height: 1.08;
+  letter-spacing: -0.015em;
+  margin: 0 0 22px;
+  text-wrap: balance;
+}
+
+h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 26px;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  margin: 56px 0 14px;
+}
+
+h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 19.5px;
+  margin: 34px 0 10px;
+}
+
+p { margin: 0 0 16px; }
+
 .lead {
   color: var(--muted);
-  font-size: 19px;
-  line-height: 1.6;
+  font-size: 19.5px;
+  line-height: 1.65;
   margin: 0 0 28px;
   max-width: 62ch;
+  max-width: 36em;
 }
 
-.muted {
+.muted { color: var(--muted); }
+.faint { color: var(--faint); }
+
+strong { font-weight: 600; }
+
+/* выноска над линией раздела */
+.rule-label {
+  font-family: var(--sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 64px 0 0;
+  padding-top: 18px;
+  border-top: 1px solid var(--line-strong);
+}
+
+.hero { padding: 26px 0 8px; }
+
+/* ---------- оглавление вместо карточек (главная) ---------- */
+
+.index-list { list-style: none; margin: 8px 0 0; padding: 0; }
+
+.index-list li { border-bottom: 1px solid var(--line); }
+
+.index-list li:first-child { border-top: 1px solid var(--line); }
+
+/* строка оглавления: номер · заголовок → описание */
+.index-list a {
+  display: grid;
+  grid-template-columns: 52px 1fr auto;
+  align-items: baseline;
+  gap: 8px 20px;
+  padding: 20px 4px 20px 0;
+  color: inherit;
+}
+
+.index-list a:hover { text-decoration: none; }
+.index-list a:hover .index-title { color: var(--accent); }
+
+.index-num {
+  font-family: var(--mono);
+  font-size: 13px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+}
+
+.index-title {
+  font-family: var(--serif);
+  font-size: 23px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  transition: color 0.15s ease;
+}
+
+.index-text {
+  grid-column: 2;
+  font-size: 15.5px;
   color: var(--muted);
+  margin: 2px 0 0;
 }
 
-.grad {
-  background: linear-gradient(120deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
+.index-arrow {
+  font-family: var(--serif);
+  font-size: 22px;
+  color: var(--faint);
+  transition: transform 0.15s ease, color 0.15s ease;
 }
 
-.hero {
-  padding: 26px 0 8px;
+.index-list a:hover .index-arrow { transform: translateX(5px); color: var(--accent); }
+
+@media (max-width: 560px) {
+  .index-list a { grid-template-columns: 40px 1fr; }
+  .index-arrow { display: none; }
 }
 
-/* ---------- карточки ---------- */
+/* ---------- списки-линейки ---------- */
+
+.links { list-style: none; padding: 0; margin: 0; }
+
+.links li {
+  padding: 15px 0;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  align-items: baseline;
+}
+
+.links li:first-child { border-top: 1px solid var(--line); }
+
+.links .link-note { color: var(--muted); font-size: 15.5px; }
+
+/* ---------- карточки (используются страницами раздела Т1) ---------- */
 
 .cards {
   display: grid;
@@ -181,49 +311,22 @@ p {
   position: relative;
   display: block;
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: var(--radius);
   padding: 20px;
   color: inherit;
-  box-shadow: var(--shadow);
   transition: transform 0.18s ease, border-color 0.18s ease;
 }
 
 .card:hover {
   transform: translateY(-3px);
-  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--line));
   text-decoration: none;
 }
 
-.card p {
-  margin: 0;
-  color: var(--muted);
-  font-size: 15px;
-}
+.card p { margin: 0; color: var(--muted); font-size: 15px; }
 
-.card .more {
-  display: inline-block;
-  margin-top: 12px;
-  font-size: 14px;
-  color: var(--accent);
-}
-
-/* ---------- списки ---------- */
-
-.links {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-}
-
-.links li {
-  padding: 13px 0;
-  border-bottom: 1px solid var(--border);
-}
-
-.links li:last-child {
-  border-bottom: none;
-}
+.card .more { display: inline-block; margin-top: 12px; font-size: 14px; color: var(--accent); }
 
 .row {
   display: flex;
@@ -237,12 +340,12 @@ p {
   font-size: 13px;
   color: var(--muted);
   background: var(--bg-soft);
-  border: 1px solid var(--border);
+  border: 1px solid var(--line);
   border-radius: 999px;
   padding: 2px 10px;
 }
 
-/* ---------- таблицы ---------- */
+/* ---------- таблицы (база — используется и в разделе курса) ---------- */
 
 table {
   width: 100%;
@@ -255,7 +358,7 @@ th,
 td {
   text-align: left;
   padding: 10px 12px;
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid var(--line);
   vertical-align: top;
 }
 
@@ -264,6 +367,39 @@ th {
   font-weight: 500;
   font-size: 14px;
 }
+
+/* ---------- код доступа к материалам курса ---------- */
+
+.gate { max-width: 460px; margin: 36px auto 0; }
+
+.gate form { display: flex; gap: 10px; margin: 18px 0 0; }
+
+.gate input {
+  flex: 1;
+  padding: 11px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--fg);
+  font-size: 16px;
+}
+
+.gate input:focus {
+  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
+  outline-offset: 1px;
+}
+
+.gate button {
+  padding: 11px 18px;
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  color: var(--on-accent);
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.gate button:hover { opacity: 0.88; }
 
 /* ---------- курс: сайдбар + контент ---------- */
 
@@ -416,62 +552,56 @@ th {
   margin-bottom: 10px;
 }
 
-/* ---------- подвал ---------- */
+/* ---------- подвал: структурный, как титульный лист ---------- */
 
 .site-footer {
-  border-top: 1px solid var(--border);
-  padding: 26px 0 40px;
-  color: var(--muted);
-  font-size: 15px;
+  border-top: 1px solid var(--line-strong);
+  padding: 44px 0 56px;
 }
 
-.site-footer .wrap {
+.footer-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr;
+  gap: 32px;
+}
+
+@media (max-width: 760px) { .footer-grid { grid-template-columns: 1fr; } }
+
+.footer-name {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 600;
+  margin: 0 0 8px;
+}
+
+.footer-desc { font-size: 15px; color: var(--muted); max-width: 30em; margin: 0; line-height: 1.6; }
+
+.footer-col h2 {
+  font-family: var(--sans);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin: 0 0 12px;
+}
+
+.footer-col ul { list-style: none; margin: 0; padding: 0; }
+.footer-col li { margin-bottom: 8px; font-family: var(--sans); font-size: 15px; }
+.footer-col a { color: var(--muted); }
+.footer-col a:hover { color: var(--accent); }
+
+.footer-bottom {
+  margin-top: 40px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  font-family: var(--sans);
+  font-size: 13.5px;
+  color: var(--faint);
   display: flex;
   flex-wrap: wrap;
-  gap: 8px 20px;
+  gap: 8px 24px;
   justify-content: space-between;
-}
-
-/* ---------- код доступа к материалам курса ---------- */
-
-.gate {
-  max-width: 460px;
-  margin: 36px auto 0;
-}
-
-.gate form {
-  display: flex;
-  gap: 10px;
-  margin: 18px 0 0;
-}
-
-.gate input {
-  flex: 1;
-  padding: 11px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  background: var(--card);
-  color: var(--fg);
-  font-size: 16px;
-}
-
-.gate input:focus {
-  outline: 2px solid color-mix(in srgb, var(--accent) 45%, transparent);
-  outline-offset: 1px;
-}
-
-.gate button {
-  padding: 11px 18px;
-  border: none;
-  border-radius: var(--radius-sm);
-  background: linear-gradient(120deg, var(--accent), var(--accent-2));
-  color: #fff;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-.gate button:hover {
-  opacity: 0.92;
 }
 
 /* ---------- вопросы и ответы ---------- */
@@ -738,59 +868,47 @@ article img {
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
 }
 
-/* ---------- карточки проектов ---------- */
+/* ---------- раздел «Проекты»: статьи-энциклопедические карточки ---------- */
 
-.project-card {
-  background: var(--card);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  box-shadow: var(--shadow);
-  padding: 26px 28px;
-  margin: 0 0 20px;
-}
+.project { border-top: 1px solid var(--line-strong); padding: 30px 0 10px; }
+.project:first-of-type { border-top: 0; padding-top: 0; }
 
-.project-card h2 {
-  margin: 0 0 12px;
-  font-size: 24px;
-}
+.project h2 { margin: 0 0 8px; font-size: 30px; }
+.project h2 a { color: inherit; }
+.project h2 a:hover { color: var(--accent); text-decoration: none; }
 
-.project-idea {
-  color: var(--muted);
-  font-size: 17px;
-  margin: 0;
-}
+.project-idea { font-size: 18px; color: var(--muted); max-width: 36em; margin: 0; }
 
-.project-details {
-  margin: 22px 0 0;
-}
-
+/* определения — как в энциклопедии: термин мелким капсом, пояснение текстом */
+.project-details { margin: 26px 0 0; }
 .project-details dt {
-  font-size: 13px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--muted);
+  font-family: var(--sans);
+  font-size: 12px;
   font-weight: 600;
-  margin-top: 18px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-top: 20px;
+}
+.project-details dt:first-child { margin-top: 0; }
+.project-details dd { margin: 6px 0 0; max-width: 40em; }
+
+.project-details .status {
+  font-family: var(--sans);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--fg);
+  border: 1px solid var(--line-strong);
+  border-radius: 3px;
+  padding: 2px 9px;
+  margin-right: 8px;
 }
 
-.project-details dt:first-of-type {
-  margin-top: 0;
-}
+.project-details .version { font-family: var(--mono); font-size: 13.5px; color: var(--muted); }
 
-.project-details dd {
-  margin: 8px 0 0;
-  max-width: 82ch;
-}
-
-.project-actions {
-  margin: 24px 0 0;
-  padding-top: 18px;
-  border-top: 1px solid var(--border);
-}
-
-.project-actions a {
-  font-size: 16px;
-}
+.project-actions { margin: 24px 0 8px; font-family: var(--sans); font-size: 15px; }
+.project-actions a + a { margin-left: 18px; }
+.project-actions a.muted { color: var(--faint); }
 
 /* материалы темы — заметный блок в начале страницы */
 
@@ -808,44 +926,44 @@ article img {
   border-bottom: none;
 }
 /* ---------- автоматическая тёмная тема (кроме раздела Т1) ---------- */
-
-/* тёмная тема: по системе, если пользователь не выбрал вручную; или вручную — по кнопке */
+/* тёмная тема: чернила на тёмной бумаге, не чистый чёрный */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --bg: #0d0f13;
-    --bg-soft: #14171d;
-    --fg: #f2f4f8;
-    --muted: #9aa3b2;
-    --border: #232833;
-    --card: #14171d;
-    --accent: #7f9bff;
-    --accent-2: #b98cff;
-    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.35);
+    --bg: #161719;
+    --bg-soft: #1d1e21;
+    --card: #1d1e21;
+    --fg: #e9e8e2;
+    --muted: #a6a7ad;
+    --faint: #7d7e85;
+    --line: #2c2d32;
+    --line-strong: #3a3b41;
+    --accent: #d38f94;
+    --accent-soft: rgba(211, 143, 148, 0.12);
+    --on-accent: #161719;
   }
 }
 
 :root[data-theme='dark'] {
-  --bg: #0d0f13;
-  --bg-soft: #14171d;
-  --fg: #f2f4f8;
-  --muted: #9aa3b2;
-  --border: #232833;
-  --card: #14171d;
-  --accent: #7f9bff;
-  --accent-2: #b98cff;
-  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 10px 30px rgba(0, 0, 0, 0.35);
+  --bg: #161719;
+  --bg-soft: #1d1e21;
+  --card: #1d1e21;
+  --fg: #e9e8e2;
+  --muted: #a6a7ad;
+  --faint: #7d7e85;
+  --line: #2c2d32;
+  --line-strong: #3a3b41;
+  --accent: #d38f94;
+  --accent-soft: rgba(211, 143, 148, 0.12);
+  --on-accent: #161719;
 }
 
-:root[data-theme='light'] {
-  --bg: #ffffff;
-  --bg-soft: #f6f7f9;
-  --fg: #101216;
-  --muted: #5f6673;
-  --border: #e6e8ee;
-  --card: #ffffff;
-  --accent: #3b5bfd;
-  --accent-2: #8b5cf6;
-  --shadow: 0 1px 2px rgba(16, 18, 22, 0.04), 0 8px 24px rgba(16, 18, 22, 0.06);
+/* раздел «Т1 + МАИ» — свой шрифт: системный гротекст (ALS-Hauss нельзя),
+   публичная антиква сюда не доезжает */
+body.theme-t1,
+body.theme-t1 h1,
+body.theme-t1 h2,
+body.theme-t1 h3 {
+  font-family: var(--sans);
 }
 
 /* ---------- раздел «Т1 + МАИ»: всегда белая тема в стиле Т1 ---------- */
@@ -862,7 +980,6 @@ body.theme-t1 {
   --border: #ebebeb;
   --card: #ffffff;
   --accent: #1daff7;
-  --accent-2: #1daff7;
   --radius: 12px;
   --radius-sm: 10px;
   --shadow: 0 1px 2px rgba(42, 45, 48, 0.04), 0 8px 24px rgba(42, 45, 48, 0.06);
@@ -1335,82 +1452,53 @@ article .panel {
   border-radius: 6px;
 }
 
-/* ---------- кнопки темы и языка в шапке ---------- */
+/* ---------- кнопки темы и языка в шапке: текстовые, как сноски ---------- */
 
 .header-tools {
   display: flex;
-  align-items: center;
-  gap: 6px;
+  align-items: baseline;
+  gap: 16px;
+  margin-left: auto;
 }
 
 .tool-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
-  line-height: 1;
+  font-family: var(--sans);
+  font-size: 13px;
+  color: var(--faint);
+  background: none;
+  border: none;
+  border-bottom: 1px dotted var(--faint);
+  padding: 0 0 1px;
   cursor: pointer;
 }
 
 .tool-btn:hover {
   color: var(--fg);
-  background: var(--bg-soft);
-  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
-}
-
-.tool-btn svg {
-  width: 16px;
-  height: 16px;
-  flex: none;
-}
-
-.tool-btn[aria-pressed='true'] {
-  color: var(--fg);
-  background: var(--bg-soft);
+  border-bottom-color: var(--fg);
 }
 
 .lang-switch {
   display: inline-flex;
-  gap: 4px;
+  gap: 10px;
 }
 
 .lang-switch a {
-  padding: 7px 11px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
+  font-family: var(--sans);
   font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
+  color: var(--faint);
+  border-bottom: 1px dotted var(--faint);
+  padding: 0 0 1px;
 }
 
 .lang-switch a:hover {
   color: var(--fg);
+  border-bottom-color: var(--fg);
   text-decoration: none;
-  background: var(--bg-soft);
 }
 
 .lang-switch a[aria-current='true'] {
-  color: #ffffff;
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-@media (max-width: 640px) {
-  .header-tools {
-    gap: 4px;
-  }
-
-  .tool-btn {
-    padding: 7px 10px;
-  }
+  color: var(--fg);
+  border-bottom-color: var(--accent);
 }
 
 /* ---------- мини-симулятор в теме 2 ---------- */
