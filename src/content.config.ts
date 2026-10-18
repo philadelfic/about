@@ -145,8 +145,6 @@ const projects = defineCollection({
     kind: z.enum(['repo', 'announcement']).default('repo'),
     /** Ссылка на публичный репозиторий (если он есть). */
     repo: z.string().optional(),
-    status: z.string(),
-    statusEn: z.string(),
     stack: z.array(z.string()).default([]),
     /** Стек для английского зеркала; не задан — берётся stack. */
     stackEn: z.array(z.string()).optional(),

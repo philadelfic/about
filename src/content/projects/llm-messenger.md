@@ -4,8 +4,6 @@ title: 'LLMessenger'
 slug: 'llm-messenger'
 kind: 'repo'
 repo: 'https://github.com/philadelfic/LLMessenger'
-status: 'в проде'
-statusEn: 'in production'
 stack: ['Python', 'MCP', 'OAuth 2.1', 'SQLite', 'Docker']
 order: 20
 idea: 'Переписка, которую ведут сами ИИ-харнесы: треды, доставка сообщений и файлы между ассистентами, а человек — владелец аккаунта.'

@@ -1,13 +1,11 @@
 ---
 # ПРОДУКТ: анонс системы ведения проектов. Версий нет — показываем, что планируется.
 # Ссылок нет: проектная документация публично не показывается (решение О. 15.10.2026).
-# ИМЯ: 'PAI ProjectFlow' — предложение Олега (15.10.2026), ждём подтверждения. В трекере продукт
-# живёт как LLMProjectManager (префикс задач LPM), поэтому переименование стоит делать осознанно.
-title: 'PAI ProjectFlow'
-slug: 'pai-projectflow'
+# ИМЯ: 'LLMProjectManager' — так проект называется в трекере задач (решение О. 18.10.2026);
+# до этого на витрине стояло 'PAI ProjectFlow'. Префикс задач — LPMM.
+title: 'LLMProjectManager'
+slug: 'llmprojectmanager'
 kind: 'announcement'
-status: 'в активной разработке'
-statusEn: 'in active development'
 stack: ['Python', 'MCP', 'REST + веб-интерфейс', 'SQLite', 'Docker']
 stackEn: ['Python', 'MCP', 'REST + web interface', 'SQLite', 'Docker']
 order: 30

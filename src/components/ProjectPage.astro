@@ -21,8 +21,7 @@ const t = {
     crumbs: 'Путь',
     why: 'Зачем',
     how: 'Как помогает',
-    status: 'Состояние',
-    version: 'версия',
+    lastVersion: 'Последняя версия',
     of: 'от',
     stack: 'Стек',
     plannedTitle: 'Что планируется',
@@ -37,9 +36,8 @@ const t = {
     crumbs: 'Breadcrumb',
     why: 'Why',
     how: 'How it helps',
-    status: 'Status',
-    version: 'version',
-    of: 'of',
+    lastVersion: 'Latest version',
+    of: 'released',
     stack: 'Stack',
     plannedTitle: 'What is planned',
     plannedNote:
@@ -78,13 +76,15 @@ const isExternal = (release: (typeof releases)[number]) => !hasBody(release);
     <p class="lead">{project.idea}</p>
 
     <dl class="project-details project-details-wide">
-      <dt>{t.status}</dt>
-      <dd>
-        <span class="status">{project.status}</span>
-        {latest && (
-          <span class="version">{t.version} {latest.data.version} {t.of} {formatReleaseDate(latest.data.date, lang)}</span>
-        )}
-      </dd>
+      {latest && (
+        <>
+          <dt>{t.lastVersion}</dt>
+          <dd>
+            <span class="status">{latest.data.version}</span>
+            <span class="version">{t.of} {formatReleaseDate(latest.data.date, lang)}</span>
+          </dd>
+        </>
+      )}
       <dt>{t.stack}</dt>
       <dd class="muted">{project.stack.join(' · ')}</dd>
     </dl>

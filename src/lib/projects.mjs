@@ -20,7 +20,6 @@ export function localizeProject(data, lang = 'ru') {
     slug: data.slug,
     kind: data.kind,
     repo: data.repo,
-    status: en ? data.statusEn : data.status,
     stack: en ? data.stackEn ?? data.stack : data.stack,
     order: data.order,
     idea: en ? data.ideaEn : data.idea,
