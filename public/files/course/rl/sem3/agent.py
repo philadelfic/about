@@ -1,6 +1,12 @@
 # agent.py — агент: оценки q, счётчики n, update() и act().
-# Впишите: update() — обновление оценки (слайд 18), act() — ε-жадный выбор (слайд 24).
+# Впишите: update() — обновление оценки, act() — ε-жадный выбор.
 # Проверка: python3 agent.py
+#
+# Теория на портале:
+#   «Как двигается оценка» — семинар 3:
+#   https://philadelfic.github.io/about/students/mai/rl/seminars/03-mnogorukij-bandit/
+#   «ε-жадная стратегия» — тема 2:
+#   https://philadelfic.github.io/about/students/mai/rl/topics/02-agent-i-sreda/
 
 import math
 import random
@@ -37,7 +43,7 @@ class Agent:                                                           # тим�
             self.q[act] = reward
         else:
             step = self.alpha if self.alpha is not None else 1.0 / self.n[act]
-            # ↓ ВПИШИТЕ (слайд 18): Q <- Q + шаг·(R − Q) — одна строка.
+            # ↓ ВПИШИТЕ: Q <- Q + шаг·(R − Q) — одна строка.
             raise NotImplementedError("впишите правило обновления оценки в update()")
         if self.mode == "gradient":
             self.avg += (reward - self.avg) / self.t                   # базовая линия: средний доход
@@ -48,7 +54,7 @@ class Agent:                                                           # тим�
 
     def act(self):
         if self.mode == "eps":
-            # ↓ ВПИШИТЕ (слайд 24): с вероятностью self.epsilon — случайный подход
+            # ↓ ВПИШИТЕ: с вероятностью self.epsilon — случайный подход
             #   (разведка), иначе — жадно: return self.greedy_choice()
             raise NotImplementedError("впишите ε-жадный выбор в act()")
         if self.mode == "gradient":
@@ -120,7 +126,7 @@ def self_check(verbose=True):                                          # аге�
     return all(ok for ok, _ in result)
 
 
-ALPHA = 0.5                                                            # слайд 19: 0.1 или 0.9 — ряд изменится
+ALPHA = 0.5                                                            # α: 0.1 или 0.9 — ряд изменится
 
 
 def trace(arm="B", observations=(1, 0, 2), alpha=ALPHA):               # ряд по шагам: 1/n и α
@@ -143,7 +149,7 @@ if __name__ == "__main__":
     print("\nИстинные средние среды (агенту не видны): A = 0,3 · B = 0,8 · C = 1,3")
 
     try:
-        trace()                                                        # слайды 16 и 19: ряд 1 → 0,5 → 1,0 и α
+        trace()                                                        # ряд 1 → 0,5 → 1,0 при 1/n и α
     except NotImplementedError as e:
         print("\n   [нет] ряд пока не построить: %s" % e)
 
