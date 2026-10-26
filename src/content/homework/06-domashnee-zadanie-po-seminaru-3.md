@@ -35,10 +35,10 @@ due: "03.11.2026 · 06.11.2026"
 | UCB, c = 2 | `python3 run.py --exp --strategy ucb` |
 | градиентная | `python3 run.py --exp --strategy gradient` |
 
-4. Заполнить `REPORT.md`: свои числа по пяти стратегиям (доход и доля выборов руки C), таблицу
+4. Заполнить `task-and-report.md`: свои числа по пяти стратегиям (доход и доля выборов руки C), таблицу
    «что вписал — значение — почему такое», и **три вывода, каждый с числом** из ваших прогонов.
    Например: «жадная ни разу не выбрала C — 0 %, потому что не пробует».
-5. Прислать в чат: `REPORT.md` и `agent.py` (или три файла целиком).
+5. Прислать в чат: `task-and-report.md` и `agent.py` (или три файла целиком).
 
 **Что проверяем.**
 
@@ -53,4 +53,4 @@ due: "03.11.2026 · 06.11.2026"
 **Файлы.** [environment.py](/about/files/course/rl/sem3/environment.py),
 [agent.py](/about/files/course/rl/sem3/agent.py),
 [run.py](/about/files/course/rl/sem3/run.py),
-[шаблон отчёта](/about/files/course/rl/sem3/report-template.md).
+[задание и отчёт](/about/files/course/rl/sem3/task-and-report.md).

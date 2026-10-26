@@ -1,5 +1,4 @@
 # agent.py — агент: оценки q, счётчики n, update() и act().
-# Впишите: update() — обновление оценки, act() — ε-жадный выбор.
 # Проверка: python3 agent.py
 #
 # Теория на портале:
@@ -43,7 +42,6 @@ class Agent:                                                           # тим�
             self.q[act] = reward
         else:
             step = self.alpha if self.alpha is not None else 1.0 / self.n[act]
-            # ↓ ВПИШИТЕ: Q <- Q + шаг·(R − Q) — одна строка.
             raise NotImplementedError("впишите правило обновления оценки в update()")
         if self.mode == "gradient":
             self.avg += (reward - self.avg) / self.t                   # базовая линия: средний доход
@@ -54,8 +52,6 @@ class Agent:                                                           # тим�
 
     def act(self):
         if self.mode == "eps":
-            # ↓ ВПИШИТЕ: с вероятностью self.epsilon — случайный подход
-            #   (разведка), иначе — жадно: return self.greedy_choice()
             raise NotImplementedError("впишите ε-жадный выбор в act()")
         if self.mode == "gradient":
             prefs = self.preferences()
