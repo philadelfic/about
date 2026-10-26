@@ -50,7 +50,7 @@ due: "03.11.2026 · 06.11.2026"
 **Срок.** Приносите на пятую практику: группа М80-203СВ-25 — 03.11.2026, группа М80-202СВ-25 —
 06.11.2026. Кто не успел — присылайте в чат, разберём на разборе.
 
-**Файлы.** [environment.py](/files/course/rl/sem3/environment.py),
-[agent.py](/files/course/rl/sem3/agent.py),
-[run.py](/files/course/rl/sem3/run.py),
-[шаблон отчёта](/files/course/rl/sem3/report-template.md).
+**Файлы.** [environment.py](/about/files/course/rl/sem3/environment.py),
+[agent.py](/about/files/course/rl/sem3/agent.py),
+[run.py](/about/files/course/rl/sem3/run.py),
+[шаблон отчёта](/about/files/course/rl/sem3/report-template.md).
