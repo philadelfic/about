@@ -123,7 +123,7 @@ const toc = [
                   <li>
                     <b>{task.title}</b>
                     <p>{task.text}</p>
-                    {task.answer && (
+                    {task.answer && !item.data.answersHidden && (
                       <div class="qa">
                         <details id={task.qaId}>
                           <summary>
