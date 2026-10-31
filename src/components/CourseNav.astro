@@ -2,7 +2,7 @@
 import { getCollection } from 'astro:content';
 import { withBase } from '../data/site';
 import { homeworkLabel, homeworkOrder } from '../lib/homework.mjs';
-import { guideKind, guideOrder } from '../lib/guides.mjs';
+import { labKind, labOrder } from '../lib/labs.mjs';
 
 interface Props {
   current: string;
@@ -11,23 +11,23 @@ interface Props {
 const { current } = Astro.props;
 
 const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
-const homework = (await getCollection('homework')).sort(
-  (a, b) => homeworkOrder(a) - homeworkOrder(b)
-);
+const homework = (await getCollection('homework'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
 const seminars = (await getCollection('seminars'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
 const results = (await getCollection('results'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
-const guides = (await getCollection('guides'))
+const labs = (await getCollection('labs'))
   .filter((item) => !item.data.draft)
-  .sort((a, b) => guideOrder(a) - guideOrder(b));
+  .sort((a, b) => labOrder(a) - labOrder(b));
 
 const sections = {
   topics: withBase('students/mai/rl/topics/'),
   homework: withBase('students/mai/rl/homework/'),
-  guides: withBase('students/mai/rl/guides/'),
+  labs: withBase('students/mai/rl/labs/'),
   seminars: withBase('students/mai/rl/seminars/'),
   results: withBase('students/mai/rl/results/'),
 };
@@ -35,8 +35,8 @@ const sections = {
 // Какая часть курса открыта сейчас — от этого зависит нижний список.
 const section = current.startsWith(sections.homework)
   ? 'homework'
-  : current.startsWith(sections.guides)
-    ? 'guides'
+  : current.startsWith(sections.labs)
+    ? 'labs'
     : current.startsWith(sections.seminars)
     ? 'seminars'
     : current.startsWith(sections.results)
@@ -69,8 +69,8 @@ const resultsLabel = (item: (typeof results)[number]) => {
       </a>
     </li>
     <li>
-      <a href={sections.guides} aria-current={section === 'guides' ? 'page' : undefined}>
-        Руководства
+      <a href={sections.labs} aria-current={section === 'labs' ? 'page' : undefined}>
+        Лабораторные
       </a>
     </li>
     <li>
@@ -126,18 +126,18 @@ const resultsLabel = (item: (typeof results)[number]) => {
     </>
   )}
 
-  {section === 'guides' && guides.length > 0 && (
+  {section === 'labs' && labs.length > 0 && (
     <>
       <h2>
-        <a href={sections.guides}>Руководства</a>
+        <a href={sections.labs}>Лабораторные</a>
       </h2>
       <ul>
-        {guides.map((item) => {
-          const href = withBase(`students/mai/rl/guides/${item.id}/`);
+        {labs.map((item) => {
+          const href = withBase(`students/mai/rl/labs/${item.id}/`);
           return (
             <li>
               <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-                {guideKind(item)}
+                {labKind(item)}
                 <span class="muted"> · {item.data.title}</span>
               </a>
             </li>

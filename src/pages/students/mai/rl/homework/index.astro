@@ -5,9 +5,9 @@ import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
 import { homeworkKind, homeworkOrder } from '../../../../../lib/homework.mjs';
 
-const items = (await getCollection('homework')).sort(
-  (a, b) => homeworkOrder(a) - homeworkOrder(b)
-);
+const items = (await getCollection('homework'))
+  .filter((item) => !item.data.draft)
+  .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
 const current = Astro.url.pathname;
 ---
 
