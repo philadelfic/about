@@ -23,8 +23,13 @@ const current = Astro.url.pathname;
 
 // Задания, привязанные к этой теме (обратная ссылка «тема → задания»).
 const topicHomework = (await getCollection('homework'))
-  .filter((item) => item.data.topic === topic.data.number)
+  .filter((item) => !item.data.draft && item.data.topic === topic.data.number)
   .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
+
+// Лабораторные работы этой темы (обратная ссылка «тема → лабораторные»).
+const topicLabs = (await getCollection('labs'))
+  .filter((item) => !item.data.draft && item.data.topic === topic.data.number)
+  .sort((a, b) => a.data.number - b.data.number);
 
 // Связь темы с лекциями: тема может закрывать несколько лекций.
 const lectures = topic.data.lectures;
@@ -185,6 +190,22 @@ const toc = [
             {topicHomework.map((item) => (
               <li>
                 <a href={withBase(`students/mai/rl/homework/${item.id}/`)}>
+                  {item.data.title}
+                  {item.data.due ? ` · сдать ${item.data.due}` : ''}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {topicLabs.length > 0 && (
+        <div class="panel" id="laboratornye-po-teme">
+          <b>Лабораторные по теме</b>
+          <ul class="links">
+            {topicLabs.map((item) => (
+              <li>
+                <a href={withBase(`students/mai/rl/labs/${item.id}/`)}>
                   {item.data.title}
                   {item.data.due ? ` · сдать ${item.data.due}` : ''}
                 </a>
