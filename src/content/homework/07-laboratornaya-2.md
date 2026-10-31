@@ -10,6 +10,11 @@ due: "10.11.2026 (гр. 1) · 13.11.2026 (гр. 2)"
 дрейфует и с какой интенсивностью σ, как устроен цикл взаимодействия. Полное техзадание — в файле:
 [техническое задание лабораторной 2](/about/files/course/rl/sem4/lab2-spec.md).
 
+**Как выполнить по шагам.** Подробное руководство — на портале: [Лабораторная 2: пошаговое
+руководство](/about/students/mai/rl/guides/laboratornaya-2/). Там разобраны три пропуска кода занятия,
+таблица по сидам, три исследования, графики, лог прогона и отчёт. Таблицу считает скрипт
+[calc_table.py](/about/files/course/rl/sem4/calc_table.py) — по вашему коду, одной командой.
+
 **Что сделать.** Три обязательных исследования.
 
 1. **Стратегии в движущемся мире.** При σ = 0,05 сравнить ε-жадную, UCB и градиентную (оценки — α = 0,1).
@@ -48,5 +53,7 @@ due: "10.11.2026 (гр. 1) · 13.11.2026 (гр. 2)"
 [техническое задание](/about/files/course/rl/sem4/lab2-spec.md),
 [шаблон отчёта REPORT.md](/about/files/course/rl/sem4/REPORT.md),
 [чек-лист критериев](/about/files/course/rl/sem4/checklist.md),
-[числа эталона для сверки](/about/files/course/rl/sem4/etalon-numbers.md) и
-[картинка эталона](/about/files/course/rl/sem4/etalon.png).
+[числа эталона для сверки](/about/files/course/rl/sem4/etalon-numbers.md),
+[картинка эталона](/about/files/course/rl/sem4/etalon.png),
+[calc_table.py — считает таблицу по вашему коду](/about/files/course/rl/sem4/calc_table.py) и
+[пошаговое руководство](/about/students/mai/rl/guides/laboratornaya-2/).
