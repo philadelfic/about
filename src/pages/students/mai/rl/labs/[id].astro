@@ -6,7 +6,7 @@ import TopicToc from '../../../../../components/TopicToc.astro';
 import { bodyHeadings } from '../../../../../lib/headings.mjs';
 
 export async function getStaticPaths() {
-  const items = (await getCollection('guides')).filter((item) => !item.data.draft);
+  const items = (await getCollection('labs')).filter((item) => !item.data.draft);
   return items.map((item) => ({ params: { id: item.id }, props: { item } }));
 }
 
@@ -14,20 +14,23 @@ const { item } = Astro.props;
 const { Content } = await render(item);
 const current = Astro.url.pathname;
 
-// Оглавление справа: заголовки разделов и подразделов — как на странице занятия.
+// Оглавление справа: разделы работы и её пошагового руководства.
 const toc = bodyHeadings(item.body);
 ---
 
-<BaseLayout title={item.data.title} description={item.data.summary}>
+<BaseLayout title={`${item.data.title}`} description={item.data.summary}>
   <div class="course course--toc">
     <CourseNav current={current} />
 
     <article>
       <p class="muted">
-        Руководство{item.data.seminar ? ` · семинар ${item.data.seminar}` : ''}
+        Лабораторная работа {item.data.number}
+        {item.data.seminar ? ` · семинар ${item.data.seminar}` : ''}
+        {item.data.topic ? ` · тема ${item.data.topic}` : ''}
       </p>
       <h1>{item.data.title}</h1>
       <p class="lead">{item.data.summary}</p>
+      {item.data.due && <p class="lead">Сдать: {item.data.due}</p>}
 
       <Content />
     </article>

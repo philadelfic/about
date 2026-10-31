@@ -37,11 +37,9 @@ assignment:
       href: "/files/course/rl/sem4/checklist.md"
     - title: "Таблица по вашему коду — calc_table.py"
       href: "/files/course/rl/sem4/calc_table.py"
-    - title: "Пошаговое руководство по лабораторной 2"
-      href: "/students/mai/rl/guides/laboratornaya-2/"
   homework:
-    title: "Домашнее задание по семинару 4 — лабораторная 2: что сделать, что сдать и к какому сроку"
-    href: "students/mai/rl/homework/07-laboratornaya-2/"
+    title: "Лабораторная 2 — условие, сроки и пошаговое руководство"
+    href: "students/mai/rl/labs/02-laboratornaya-2/"
   due: "10.11.2026 (гр. 1) · 13.11.2026 (гр. 2)"
 materials:
   - title: "Код занятия — среда environment.py"

@@ -42,8 +42,8 @@ assignment:
     - title: "Прогон — run.py"
       href: "/files/course/rl/run.py"
   homework:
-    title: "Домашнее задание по семинару 2 — полное условие и сроки"
-    href: "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+    title: "Лабораторная 1 — условие, файлы и срок"
+    href: "students/mai/rl/labs/01-sborka-raboty-iz-treh-fajlov/"
 materials:
   - title: "Презентация занятия, группа М80-203СВ-25 — после 13.10.2026"
   - title: "Презентация занятия, группа М80-202СВ-25 — после 13.10.2026"
