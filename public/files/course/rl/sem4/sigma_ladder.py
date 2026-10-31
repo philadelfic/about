@@ -95,7 +95,9 @@ def main(argv=None):
                  cells[name_step]["доход за спринт"]["median"], gap))
 
     # где шаг обгоняет честное среднее и где разрыв самый большой
-    share_of = lambda cells, name: cells[name]["доля лучшего"]["median"]  # noqa: E731
+    def share_of(cells, name):
+        return cells[name]["доля лучшего"]["median"]
+
     cross = next((s for s, c in rows if s > 0 and share_of(c, name_step) > share_of(c, name_mean)), None)
     best = max(rows, key=lambda item: share_of(item[1], name_step) - share_of(item[1], name_mean))
     gap_best = share_of(best[1], name_step) - share_of(best[1], name_mean)

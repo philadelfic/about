@@ -5,15 +5,17 @@
 
 import argparse
 import os
+import statistics
 import sys
 
-from agent import Agent
-from environment import APPROACHES, SIGMA, Bandit
+from agent import Agent, self_check as agent_check
+from environment import APPROACHES, SIGMA, Bandit, self_check as env_check
 
-STEPS = 1000                                                           # сколько спринтов гоним одну стратегию
-SEED = 7                                                               # один и тот же прогон для всех стратегий
+STEPS = 1000        # сколько спринтов гоним одну стратегию
+SEED = 7            # один и тот же прогон для всех стратегий
 
-STRATEGIES = (                                                         # стратегии и правила обновления: имя → настройки агента
+# стратегии и правила обновления: имя → настройки агента
+STRATEGIES = (
     ("жадная",             dict(mode="greedy")),
     ("ε-жадная 0,1 / 1n",  dict(mode="eps", epsilon=0.1)),
     ("ε-жадная 0,1 / α0,1", dict(mode="eps", epsilon=0.1, alpha=0.1)),
@@ -23,7 +25,8 @@ STRATEGIES = (                                                         # стр�
     ("градиентная",        dict(mode="gradient", h_alpha=0.1)),
 )
 
-STRATEGY_ALIASES = {                                                   # алиасы: имя в зале → mode
+# как стратегию зовут в зале → mode агента
+STRATEGY_ALIASES = {
     "жадная": "greedy",
     "ε-жадная": "eps",
     "eps": "eps",
@@ -34,28 +37,29 @@ STRATEGY_ALIASES = {                                                   # али�
     "градиентная": "gradient",
     "gradient": "gradient",
 }
-NAMES = ("жадная", "ε-жадная", "оптимистичная", "UCB", "градиентная")  # как зовём в зале
+NAMES = ("жадная", "ε-жадная", "оптимистичная", "UCB", "градиентная")    # как зовём в зале
 
-EXP_MODE = "eps"                                                       # стратегия для --exp
-EXP_SEED = 7                                                           # другой seed — другая случайность
-EXP_EPSILON = 0.1                                                      # доля шагов наугад (только для eps)
-EXP_C = 2.0                                                            # масштаб бонуса неуверенности (только для ucb)
-EXP_Q0 = 5.0                                                           # стартовая оценка (optimistic)
-EXP_ALPHA = None                                                       # шаг оценки: None — 1/n, число — α
-EXP_H_ALPHA = 0.1                                                      # шаг предпочтений (только для gradient)
-EXP_STEPS = 1000                                                       # сколько спринтов гоним
+# настройки по умолчанию для --exp
+EXP_SEED = 7            # другой seed — другая случайность
+EXP_EPSILON = 0.1       # доля шагов наугад (только для eps)
+EXP_C = 2.0             # масштаб бонуса неуверенности (только для ucb)
+EXP_Q0 = 5.0            # стартовая оценка (optimistic)
+EXP_H_ALPHA = 0.1       # шаг предпочтений (только для gradient)
+EXP_STEPS = 1000        # сколько спринтов гоним
 
 
-def update_is_stub():                                                  # ПРОПУСК 2 ещё не заполнен?
+def update_is_stub():
+    # ПРОПУСК 2 ещё не заполнен?
     agent = Agent(None, mode="greedy", alpha=None)
-    agent.update("A", 0.0)                                            # первое наблюдение: q = 0
+    agent.update("A", 0.0)
     agent.update("B", 2.0)
     before = dict(agent.q)
-    agent.update("A", 2.0)                                            # второе по A — должен быть сдвиг
+    agent.update("A", 2.0)      # второе по A: если правило работает, оценка сдвинется
     return dict(agent.q) == before
 
 
-def env_is_stub():                                                     # ПРОПУСК 1 ещё не заполнен?
+def env_is_stub():
+    # ПРОПУСК 1 ещё не заполнен?
     env = Bandit(seed=0, sigma=0.05)
     before = dict(env.mu)
     for _ in range(20):
@@ -74,21 +78,23 @@ def one_run(mode_kwargs, steps=STEPS, seed=SEED, sigma=SIGMA):          # оди
         rewards.append(reward)
         acts.append(act)
 
-    hits = sum(1 for t, act in enumerate(acts) if act == env.log_best(t))  # «текущий лучший» — по истории μ
+    # «текущий лучший» считаем по истории μ, а не по финалу прогона
+    hits = sum(1 for t, act in enumerate(acts) if act == env.log_best(t))
     n_last = [agent.n[a] for a in APPROACHES]
-    skew = max(n_last) / max(1, min(n_last))                            # перекос: во сколько раз лидер чаще, чем самый редкий
+    skew = max(n_last) / max(1, min(n_last))    # во сколько раз лидер чаще самого редкого
     return {
         "rewards": rewards,
         "acts": acts,
         "mu_log": env.mu_log,
         "income": sum(rewards) / len(rewards),
-        "share": hits / len(acts),                                      # доля выборов текущего лучшего
+        "share": hits / len(acts),            # доля выборов текущего лучшего
         "skew": skew,
         "n": n_last,
     }
 
 
-def compare(steps=STEPS, seed=SEED, strategies=STRATEGIES, sigma=SIGMA):  # прогнать стратегии и собрать числа
+def compare(steps=STEPS, seed=SEED, strategies=STRATEGIES, sigma=SIGMA):
+    # прогнать все стратегии на одной среде и собрать числа
     rows = []
     for name, kwargs in strategies:
         run = one_run(kwargs, steps=steps, seed=seed, sigma=sigma)
@@ -96,12 +102,14 @@ def compare(steps=STEPS, seed=SEED, strategies=STRATEGIES, sigma=SIGMA):  # пр
     return rows
 
 
-def sliding(values, window):                                           # скользящее среднее — сглаживает шум
+def sliding(values, window):
+    # скользящее среднее — сглаживает шум, оставляя тренд
     return [sum(values[max(0, i - window):i + 1]) / len(values[max(0, i - window):i + 1])
             for i in range(len(values))]
 
 
-def text_report(run, blocks=10):                                       # та же картина таблицей, без matplotlib
+def text_report(run, blocks=10):
+    # та же картина таблицей — на случай, когда matplotlib нет
     n = len(run["acts"])
     step = max(1, n // blocks)
     print("   сводка по шагам (без картинки):")
@@ -114,40 +122,50 @@ def text_report(run, blocks=10):                                       # та ж
     print("   потолок плывёт: лучший рычаг меняется вместе со средними — смотрите долю лучшего, не доход")
 
 
-def _log_best(run, t):                                                 # лучший по записанной истории средних
+def _log_best(run, t):
+    # лучший по записанной истории средних
     row = run["mu_log"][t]
     return max(APPROACHES, key=lambda a: row[APPROACHES.index(a)])
 
 
-def print_table(rows):                                                 # таблица сравнения стратегий
+def print_table(rows):
+    # таблица сравнения на одном прогоне — для разбора в зале
     print("\n1000 спринтов, seed = %d:" % SEED)
     print("   %-22s %8s %10s %8s" % ("стратегия", "доход", "доля лучш.", "перекос n"))
     for name, income, share, skew in rows:
         print("   %-22s %8.3f %9.0f%% %8.1f" % (name, income, 100 * share, skew))
-    print("\nпотолок — всегда тянуть текущего лучшего: доход ≈ 1,35–1,45, доля ≈ 100%")
+    print("\nпотолок — всегда тянуть текущего лучшего: медиана дохода ≈ 1,45, доля ≈ 100%")
 
 
-def report(steps=STEPS, seed=SEED, quiet=False, sigma=SIGMA):          # проверки и таблица
-    import environment as EN
-    import agent as AG
+CHECK_SEEDS = 30    # сравнения считаем по сидам: на одном сиде зазор в три–шестнадцать пунктов гуляет
 
-    out = []
-    out.append((EN.self_check(verbose=False), "среда: блуждание, вероятности и история средних сошлись"))
-    out.append((AG.self_check(verbose=False), "агент: оценки и стратегии сошлись"))
+
+def median_share(kwargs, seeds=CHECK_SEEDS, steps=STEPS, sigma=SIGMA):
+    # медиана доли текущего лучшего по сидам — устойчивее одного прогона
+    shares = [one_run(kwargs, steps=steps, seed=s, sigma=sigma)["share"] for s in range(1, seeds + 1)]
+    return statistics.median(shares)
+
+
+def report(steps=STEPS, seed=SEED, quiet=False, sigma=SIGMA):
+    # проверки и таблица
+    out = [
+        (env_check(verbose=False), "среда: блуждание, вероятности и история средних сошлись"),
+        (agent_check(verbose=False), "агент: оценки и стратегии сошлись"),
+    ]
 
     rows = compare(steps, seed, sigma=sigma)
-    table = {name: (income, share, skew) for name, income, share, skew in rows}
 
-    eps_n = table["ε-жадная 0,1 / 1n"]
-    eps_a = table["ε-жадная 0,1 / α0,1"]
-    ucb_n = table["UCB c = 2 / 1n"]
-    grad = table["градиентная"]
+    eps_n = median_share(dict(mode="eps", epsilon=0.1), steps=steps, sigma=sigma)
+    eps_a = median_share(dict(mode="eps", epsilon=0.1, alpha=0.1), steps=steps, sigma=sigma)
+    ucb_n = median_share(dict(mode="ucb", c=2.0), steps=steps, sigma=sigma)
+    grad = median_share(dict(mode="gradient", h_alpha=0.1), steps=steps, sigma=sigma)
 
-    out.append((ucb_n[1] > 0.6, "UCB с 1/n держит текущего лучшего: %.0f%%" % (100 * ucb_n[1])))
-    out.append((eps_a[1] > eps_n[1], "α обгоняет 1/n по доле лучшего: %.0f%% против %.0f%%"
-                % (100 * eps_a[1], 100 * eps_n[1])))
-    out.append((grad[1] < eps_a[1], "градиентная в дрейфе слабее ε-жадной с α: %.0f%% против %.0f%%"
-                % (100 * grad[1], 100 * eps_a[1])))
+    out.append((ucb_n > 0.6, "UCB с 1/n держит текущего лучшего: %.0f%% (медиана по %d сидам)"
+                % (100 * ucb_n, CHECK_SEEDS)))
+    out.append((eps_a > eps_n, "α обгоняет 1/n по доле лучшего: %.0f%% против %.0f%%"
+                % (100 * eps_a, 100 * eps_n)))
+    out.append((grad < eps_a, "градиентная в дрейфе слабее ε-жадной с α: %.0f%% против %.0f%%"
+                % (100 * grad, 100 * eps_a)))
 
     if not quiet:
         for ok, text in out:
@@ -166,8 +184,8 @@ def plot(path, steps=STEPS, seed=SEED):                                # кар�
 
     window = 50
     plt.figure(figsize=(11.0, 5.6))
-    for name, kwargs in STRATEGIES[:5]:                                # пять из семи: картинка занятия,
-                                                                       # в отчёте — те стратегии, что сравниваете
+    # пять из семи — картинка занятия; в отчёте стройте те стратегии, что сравниваете
+    for name, kwargs in STRATEGIES[:5]:
         run = one_run(kwargs, steps=steps, seed=seed)
         cum = []
         total = 0
@@ -242,8 +260,8 @@ def trace(arm="B", observations=(1, 0, 2), alpha=0.5):                  # ряд
     print("   первое наблюдение якорит оценку: Q := R1, дальше шаг = 1/n или α")
 
 
-def seeds_table(strategies=STRATEGIES, steps=STEPS, n_seeds=30, sigma=SIGMA):  # несколько сидов: среднее, медиана, IQR
-    import statistics
+def seeds_table(strategies=STRATEGIES, steps=STEPS, n_seeds=30, sigma=SIGMA):
+    # несколько сидов: медиана, IQR и среднее — распределение, а не одна точка
 
     rows = []
     for name, kwargs in strategies:
@@ -296,10 +314,10 @@ if __name__ == "__main__":
 
     quiet = bool(args.exp or args.trace)
     if args.seeds:
-        seeds_table(steps=min(STEPS, 1000), n_seeds=args.seeds, sigma=args.sigma)
+        seeds_table(steps=STEPS, n_seeds=args.seeds, sigma=args.sigma)
         sys.exit(0)
 
-    ok, rows = report(steps=STEPS if not quiet else STEPS, quiet=quiet, sigma=args.sigma)
+    ok, rows = report(steps=STEPS, quiet=quiet, sigma=args.sigma)
 
     if args.png:
         path = os.path.abspath(args.out)

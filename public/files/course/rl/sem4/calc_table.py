@@ -17,8 +17,6 @@
 минимум 100 сидов на точку таблицы (ТЗ, раздел 6).
 """
 
-from __future__ import annotations
-
 import argparse
 import csv
 import json
@@ -46,8 +44,9 @@ def load_code(code_dir: Path):
         sys.exit("папка с кодом не найдена: %s" % code_dir)
     sys.path.insert(0, str(code_dir))
     try:
-        import run as R  # noqa: E402
-    except Exception as exc:  # noqa: BLE001
+        # модули студента импортируем по пути из --code
+        import run as R
+    except Exception as exc:
         sys.exit("не удалось импортировать run.py из %s: %s" % (code_dir, exc))
     return R
 
