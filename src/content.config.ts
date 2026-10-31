@@ -65,6 +65,8 @@ const labs = defineCollection({
     seminar: z.number().optional(),
     /** Номер темы, к которой относится работа. */
     topic: z.number().optional(),
+    /** Работа уже выдана студентам: невыданные в списках не показываем. */
+    issued: z.boolean().default(true),
     /** Заготовка формата — не показывается на сайте. */
     draft: z.boolean().default(false),
   }),

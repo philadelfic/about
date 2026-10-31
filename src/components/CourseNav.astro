@@ -21,7 +21,7 @@ const results = (await getCollection('results'))
   .filter((item) => !item.data.draft)
   .sort((a, b) => a.data.number - b.data.number);
 const labs = (await getCollection('labs'))
-  .filter((item) => !item.data.draft)
+  .filter((item) => !item.data.draft && item.data.issued)
   .sort((a, b) => labOrder(a) - labOrder(b));
 
 const sections = {
