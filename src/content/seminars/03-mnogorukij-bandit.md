@@ -47,6 +47,10 @@ materials:
     href: "/files/course/rl/sem3/agent.py"
   - title: "Прогон — run.py (-png и -exp)"
     href: "/files/course/rl/sem3/run.py"
+  - title: "Презентация занятия, группа М80-203СВ-25 (20.10.2026) — PPTX"
+    href: "/files/course/rl/sem3/s3-mnogorukij-bandit-gr-m80-203.pptx"
+  - title: "Презентация занятия, группа М80-202СВ-25 (23.10.2026) — PPTX"
+    href: "/files/course/rl/sem3/s3-mnogorukij-bandit-gr-m80-202.pptx"
 ---
 
 ## Что мы делали на этом занятии

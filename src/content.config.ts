@@ -47,6 +47,28 @@ const homework = defineCollection({
     lecture: z.number().optional(),
     /** Номер семинара, если задание выдано на занятии (тогда ярлык лекции не ставим). */
     seminar: z.number().optional(),
+    /** Заглушка на старом адресе: в списках не показывается, по прямой ссылке открывается. */
+    draft: z.boolean().default(false),
+  }),
+});
+
+/** Лабораторные работы курса: условие, сроки, файлы и пошаговое руководство. */
+const labs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/labs' }),
+  schema: z.object({
+    number: z.number(),
+    title: z.string(),
+    summary: z.string().default(''),
+    /** Срок сдачи. */
+    due: z.string().optional(),
+    /** Номер семинара, на котором выдана работа. */
+    seminar: z.number().optional(),
+    /** Номер темы, к которой относится работа. */
+    topic: z.number().optional(),
+    /** Работа уже выдана студентам: невыданные в списках не показываем. */
+    issued: z.boolean().default(true),
+    /** Заготовка формата — не показывается на сайте. */
+    draft: z.boolean().default(false),
   }),
 });
 
@@ -199,4 +221,4 @@ const releases = defineCollection({
   }),
 });
 
-export const collections = { topics, homework, seminars, results, projects, releases };
+export const collections = { topics, homework, labs, seminars, results, projects, releases };
