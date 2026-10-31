@@ -5,7 +5,9 @@ import CourseNav from '../../../../components/CourseNav.astro';
 import { withBase } from '../../../../data/site';
 
 const topics = await getCollection('topics');
-const homework = await getCollection('homework');
+// Заглушки на старых адресах заданий в счёт не идут.
+const homework = (await getCollection('homework')).filter((item) => !item.data.draft);
+const labs = (await getCollection('labs')).filter((item) => !item.data.draft);
 const seminars = (await getCollection('seminars')).filter((item) => !item.data.draft);
 const results = (await getCollection('results')).filter((item) => !item.data.draft);
 const current = Astro.url.pathname;
@@ -20,6 +22,14 @@ const sections = [
     href: withBase('students/mai/rl/homework/'),
     title: 'Домашние задания',
     text: homework.length > 0 ? `Задания: ${homework.length}.` : 'Задания к темам курса.',
+  },
+  {
+    href: withBase('students/mai/rl/labs/'),
+    title: 'Лабораторные',
+    text:
+      labs.length > 0
+        ? `Лабораторные работы: условие, сроки, файлы и пошаговое руководство (работ: ${labs.length}).`
+        : 'Лабораторные работы: условие, сроки, файлы и пошаговое руководство.',
   },
   {
     href: withBase('students/mai/rl/seminars/'),
@@ -40,14 +50,14 @@ const sections = [
 ];
 ---
 
-<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, семинарские занятия, результаты заданий.">
+<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, лабораторные работы, семинарские занятия, результаты заданий.">
   <div class="course">
     <CourseNav current={current} />
 
     <div>
       <p class="muted">Т1 + МАИ · магистратура</p>
       <h1>Обучение с подкреплением</h1>
-      <p class="lead">Материалы курса: темы, домашние задания, семинарские занятия и результаты заданий.</p>
+      <p class="lead">Материалы курса: темы, домашние задания, лабораторные работы, семинарские занятия и результаты заданий.</p>
 
       <div class="cards">
         {sections.map((section) => (
