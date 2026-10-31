@@ -28,6 +28,18 @@ import sys
 from pathlib import Path
 
 
+METRICS = (                                                            # метрика: заголовок, знак, знаков после запятой
+    ("доход за спринт", "", 2),
+    ("доля лучшего", "%", 0),
+    ("перекос n", "", 1),
+)
+
+
+def fmt(value, digits):
+    """Число по-русски: 1,31 · 69."""
+    return ("%.*f" % (digits, value)).replace(".", ",")
+
+
 def load_code(code_dir: Path):
     """Подключить модули студента: agent.py, environment.py, run.py."""
     if not code_dir.is_dir():
@@ -79,13 +91,14 @@ def quartiles(values):
     ordered = sorted(values)
     if len(ordered) < 2:
         return {"median": ordered[0], "q1": ordered[0], "q3": ordered[0],
-                "mean": ordered[0], "min": ordered[0], "max": ordered[0]}
+                "mean": ordered[0], "std": 0.0, "min": ordered[0], "max": ordered[0]}
     q1, _, q3 = statistics.quantiles(ordered, n=4)
     return {
         "median": statistics.median(ordered),
         "q1": q1,
         "q3": q3,
         "mean": sum(ordered) / len(ordered),
+        "std": statistics.stdev(ordered),
         "min": ordered[0],
         "max": ordered[-1],
     }
@@ -158,11 +171,10 @@ def main() -> int:
                  share["median"], share["q1"], share["q3"],
                  round(share["min"]), round(share["max"]), skew["median"]))
 
-    print("\nсредние по сидам (для сверки с планом):")
+    print("\nсредние по сидам (среднее ± стандартное отклонение):")
     for name, inc, share, _ in summary:
         print("   %-24s доход %.2f ± %.2f   доля %.0f%% ± %.0f"
-              % (name, inc["mean"], (inc["q3"] - inc["q1"]) / 2,
-                 share["mean"], (share["q3"] - share["q1"]) / 2))
+              % (name, inc["mean"], inc["std"], share["mean"], share["std"]))
 
     if args.csv:
         with open(args.csv, "w", encoding="utf-8", newline="") as fh:
@@ -176,13 +188,21 @@ def main() -> int:
             os.path.basename(__file__), args.seeds, args.seed_from, args.steps, args.sigma)
         with open(args.log, "a", encoding="utf-8") as fh:
             for name, inc, share, skew in summary:
-                for metric, stats in (("income", inc), ("share_best", share), ("skew", skew)):
+                for (title, unit, digits), stats in zip(METRICS, (inc, share, skew)):
                     fh.write(json.dumps({
                         "n_runs": args.seeds,
                         "seed_from": seeds[0],
                         "seed_to": seeds[-1],
-                        "metric": "%s:%s:median[%.4f..%.4f]" % (
-                            name, metric, stats["q1"], stats["q3"]),
+                        "sigma": args.sigma,
+                        "metric": "%s: %s: медиана %s%s [%s–%s]" % (
+                            name, title, fmt(stats["median"], digits), unit,
+                            fmt(stats["q1"], digits), fmt(stats["q3"], digits)),
+                        "strategy": name,
+                        "metric_name": title,
+                        "median": round(stats["median"], digits),
+                        "q1": round(stats["q1"], digits),
+                        "q3": round(stats["q3"], digits),
+                        "unit": unit,
                         "command": command,
                     }, ensure_ascii=False) + "\n")
         print("строки лога дописаны: %s" % args.log)

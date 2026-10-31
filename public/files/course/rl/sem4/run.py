@@ -11,7 +11,7 @@ from agent import Agent
 from environment import APPROACHES, SIGMA, Bandit
 
 STEPS = 1000                                                           # сколько спринтов гоним одну стратегию
-SEED = 7                                                               # один seed — один и тот же год
+SEED = 7                                                               # один и тот же прогон для всех стратегий
 
 STRATEGIES = (                                                         # стратегии и правила обновления: имя → настройки агента
     ("жадная",             dict(mode="greedy")),
@@ -76,12 +76,12 @@ def one_run(mode_kwargs, steps=STEPS, seed=SEED, sigma=SIGMA):          # оди
 
     hits = sum(1 for t, act in enumerate(acts) if act == env.log_best(t))  # «текущий лучший» — по истории μ
     n_last = [agent.n[a] for a in APPROACHES]
-    skew = max(n_last) / max(1, min(n_last))                            # перекос: во сколько раз лидер чаще редкого
+    skew = max(n_last) / max(1, min(n_last))                            # перекос: во сколько раз лидер чаще, чем самый редкий
     return {
         "rewards": rewards,
         "acts": acts,
         "mu_log": env.mu_log,
-        "income": sum(rewards) / len(rewards),                          # доход за спринт
+        "income": sum(rewards) / len(rewards),
         "share": hits / len(acts),                                      # доля выборов текущего лучшего
         "skew": skew,
         "n": n_last,
@@ -119,8 +119,8 @@ def _log_best(run, t):                                                 # луч�
     return max(APPROACHES, key=lambda a: row[APPROACHES.index(a)])
 
 
-def print_table(rows, seeds=1):                                        # таблица сравнения стратегий
-    print("\n1000 спринтов, seed = %d%s:" % (SEED, "" if seeds == 1 else ", сидов %d" % seeds))
+def print_table(rows):                                                 # таблица сравнения стратегий
+    print("\n1000 спринтов, seed = %d:" % SEED)
     print("   %-22s %8s %10s %8s" % ("стратегия", "доход", "доля лучш.", "перекос n"))
     for name, income, share, skew in rows:
         print("   %-22s %8.3f %9.0f%% %8.1f" % (name, income, 100 * share, skew))
@@ -166,7 +166,8 @@ def plot(path, steps=STEPS, seed=SEED):                                # кар�
 
     window = 50
     plt.figure(figsize=(11.0, 5.6))
-    for name, kwargs in STRATEGIES[:5]:
+    for name, kwargs in STRATEGIES[:5]:                                # пять из семи: картинка занятия,
+                                                                       # в отчёте — те стратегии, что сравниваете
         run = one_run(kwargs, steps=steps, seed=seed)
         cum = []
         total = 0

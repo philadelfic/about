@@ -4,6 +4,7 @@
 
 import math
 import random
+import sys
 
 from environment import APPROACHES, OBS, mean
 
@@ -26,7 +27,7 @@ class Agent:                                                           # тим�
         self.q = {a: self.q0 for a in APPROACHES}                      # оценки ценности подходов
         self.n = {a: 0 for a in APPROACHES}                            # сколько спринтов провели каждым
         self.h = {a: 0.0 for a in APPROACHES}                          # предпочтения у gradient
-        self.t = 0                                                     # всего спринтов
+        self.t = 0
         self.avg = 0.0                                                 # средний доход — базовая линия gradient
 
     def update(self, act, reward):
@@ -82,9 +83,11 @@ def checks():                                                          # что 
     env = None                                                         # для проверок среда не нужна
 
     a = Agent(env, mode="greedy")
+    seen = []
     for r in (1, 0, 2):                                                # наблюдения по подходу B из семинара
         a.update("B", r)
-    out.append((abs(a.q["B"] - 1.0) < 1e-12,
+        seen.append(round(a.q["B"], 12))                              # сверяем весь ряд, не только финал:
+    out.append((seen == [1.0, 0.5, 1.0],                               # с пустым update() выйдет 1 → 1 → 1
                 "инкрементальное среднее по B: 1 → 0,5 → 1,0 (честное среднее 1,0)"))
 
     a = Agent(env, mode="greedy", alpha=0.5)
@@ -151,3 +154,4 @@ if __name__ == "__main__":
     ok = self_check()
     print("\nитог: все проверки агента сошлись" if ok
           else "\nитог: есть расхождения — смотрите строки [нет] выше")
+    sys.exit(0 if ok else 1)                                           # код возврата: 0 — сошлось, 1 — нет
