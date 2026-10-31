@@ -30,5 +30,5 @@ def spread(values):
     return statistics.median(values), q1, q3
 
 
-def cell(median, q1, q3, scale=100, template="%3.0f%% [%3.0f–%3.0f]"):
+def cell(median, q1, q3, scale=100, template="%.0f%% [%.0f–%.0f]"):
     return template % (median * scale, q1 * scale, q3 * scale)
