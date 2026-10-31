@@ -50,6 +50,21 @@ const homework = defineCollection({
   }),
 });
 
+/** Руководства курса: пошаговые инструкции к лабораторным работам. */
+const guides = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/guides' }),
+  schema: z.object({
+    title: z.string(),
+    summary: z.string().default(''),
+    /** Порядок в списке: меньше — выше. */
+    order: z.number().default(100),
+    /** Номер семинара, к которому относится руководство. */
+    seminar: z.number().optional(),
+    /** Заготовка формата — не показывается на сайте. */
+    draft: z.boolean().default(false),
+  }),
+});
+
 /** Семинарские занятия. */
 const seminars = defineCollection({
   loader: glob({ pattern: '**/*.md', base: './src/content/seminars' }),
@@ -199,4 +214,4 @@ const releases = defineCollection({
   }),
 });
 
-export const collections = { topics, homework, seminars, results, projects, releases };
+export const collections = { topics, homework, guides, seminars, results, projects, releases };

@@ -1,0 +1,37 @@
+---
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import TopicToc from '../../../../../components/TopicToc.astro';
+import { bodyHeadings } from '../../../../../lib/headings.mjs';
+
+export async function getStaticPaths() {
+  const items = (await getCollection('guides')).filter((item) => !item.data.draft);
+  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+}
+
+const { item } = Astro.props;
+const { Content } = await render(item);
+const current = Astro.url.pathname;
+
+// Оглавление справа: заголовки разделов и подразделов — как на странице занятия.
+const toc = bodyHeadings(item.body);
+---
+
+<BaseLayout title={item.data.title} description={item.data.summary}>
+  <div class="course course--toc">
+    <CourseNav current={current} />
+
+    <article>
+      <p class="muted">
+        Руководство{item.data.seminar ? ` · семинар ${item.data.seminar}` : ''}
+      </p>
+      <h1>{item.data.title}</h1>
+      <p class="lead">{item.data.summary}</p>
+
+      <Content />
+    </article>
+
+    <TopicToc items={toc} title="Содержание" />
+  </div>
+</BaseLayout>
