@@ -7,7 +7,8 @@ import { withBase } from '../../../../data/site';
 const topics = await getCollection('topics');
 // Заглушки на старых адресах заданий в счёт не идут.
 const homework = (await getCollection('homework')).filter((item) => !item.data.draft);
-const labs = (await getCollection('labs')).filter((item) => !item.data.draft);
+const allLabs = (await getCollection('labs')).filter((item) => !item.data.draft);
+const labs = allLabs.filter((item) => item.data.issued);
 const seminars = (await getCollection('seminars')).filter((item) => !item.data.draft);
 const results = (await getCollection('results')).filter((item) => !item.data.draft);
 const current = Astro.url.pathname;
@@ -31,7 +32,7 @@ const sections = [
     title: 'Лабораторные',
     text:
       labs.length > 0
-        ? `Работы по РПД: обязательные, с отчётом, чек-листом и логом (работ: ${labs.length}).`
+        ? `Работы по РПД: обязательные, с отчётом, чек-листом и логом (выдано ${labs.length} из ${allLabs.length}).`
         : 'Работы по РПД: обязательные, с отчётом, чек-листом и логом прогона.',
   },
   {

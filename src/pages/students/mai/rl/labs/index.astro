@@ -5,8 +5,9 @@ import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
 import { labKind, labOrder } from '../../../../../lib/labs.mjs';
 
+// Показываем только то, что уже выдавали: невыданные работы в списке не видны.
 const items = (await getCollection('labs'))
-  .filter((item) => !item.data.draft)
+  .filter((item) => !item.data.draft && item.data.issued)
   .sort((a, b) => labOrder(a) - labOrder(b));
 const current = Astro.url.pathname;
 ---
