@@ -39,11 +39,13 @@ const nav = [
 const altHref =
   lang === 'en' ? withBase(rel.replace(/^en\/?/, '')) : withBase(`en/${rel}`);
 
+// Меню курса в шапке — те же разделы, что и в боковом меню, ни одного не пропускаем.
 const courseNav = [
   { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
   { href: withBase('students/mai/rl/homework/'), label: 'Домашние задания' },
   { href: withBase('students/mai/rl/labs/'), label: 'Лабораторные' },
   { href: withBase('students/mai/rl/seminars/'), label: 'Семинары' },
+  { href: withBase('students/mai/rl/results/'), label: 'Результаты' },
 ];
 
 const footerTagline = {
