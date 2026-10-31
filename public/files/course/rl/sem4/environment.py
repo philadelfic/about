@@ -3,6 +3,7 @@
 # Куски — в snippets.py (группа 1). Проверка: python3 environment.py
 
 import random
+import sys
 
 APPROACHES = ("A", "B", "C")                                           # три подхода — три рычага
 TITLE = {
@@ -19,10 +20,10 @@ LO, HI = 0.1, 1.9                                                      # гра�
 
 
 def probs_from_mean(m):                                                # среднее → вероятности наблюдений 0 / 1 / 2
-    m = min(max(m, LO), HI)                                            # кусочно-линейно: m < 1 тянет к нулю,
-    if m < 1.0:                                                       # m > 1 — к двойке, остальное — единица
+    m = min(max(m, LO), HI)                                            # за границами — обрезаем
+    if m < 1.0:                                                       # ниже единицы вес перетекает от 1 к 0
         return (1.0 - m, m, 0.0)
-    if m > 1.0:
+    if m > 1.0:                                                       # выше единицы — от 1 к 2
         return (0.0, 2.0 - m, m - 1.0)
     return (0.0, 1.0, 0.0)
 
@@ -100,8 +101,8 @@ def checks():                                                          # что 
         env.step(env.best())
     inside = all(LO <= m <= HI for row in env.mu_log for m in row)
     out.append((inside, "за 1000 спринтов средние не вышли из границ %.1f–%.1f" % (LO, HI)))
-    out.append((abs(env.mu["A"] - MU0["A"]) < 1.0,
-                "через 1000 спринтов A ушёл от старта, но остался в границах: %.2f" % env.mu["A"]))
+    out.append((abs(env.mu["A"] - MU0["A"]) > 0.01,
+                "через 1000 спринтов A ушёл от старта: %.2f (старт %.1f)" % (env.mu["A"], MU0["A"])))
 
     env = Bandit(seed=7)
     for _ in range(20):
@@ -133,3 +134,4 @@ if __name__ == "__main__":
     ok = self_check()
     print("\nитог: все проверки среды сошлись" if ok
           else "\nитог: есть расхождения — смотрите строки [нет] выше")
+    sys.exit(0 if ok else 1)                                           # код возврата: 0 — сошлось, 1 — нет
