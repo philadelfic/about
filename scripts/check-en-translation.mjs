@@ -24,7 +24,8 @@ const ALLOWED_CYRILLIC = [/М80-\d{3}СВ-\d{2}/g, /зачёт|незачёт/g]
 
 const readParts = (path) => {
   const text = readFileSync(path, 'utf8');
-  const match = text.match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
+  // Файлы бывают с CRLF — разбираем оба варианта переноса строк.
+  const match = text.replace(/\r\n/g, '\n').match(/^---\n([\s\S]*?)\n---\n?([\s\S]*)$/);
   if (!match) throw new Error(`нет frontmatter: ${path}`);
   return { frontmatter: match[1], body: match[2] };
 };

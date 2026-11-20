@@ -19,7 +19,8 @@ const enDir = join(seminarsDir, 'en');
 const publicDir = join(root, 'public');
 
 const readFrontmatter = (path) => {
-  const text = readFileSync(path, 'utf8');
+  // Часть файлов в репозитории с CRLF — приводим переносы к LF, чтобы разбор не падал.
+  const text = readFileSync(path, 'utf8').replace(/\r\n/g, '\n');
   const match = text.match(/^---\n([\s\S]*?)\n---/);
   return match ? match[1] : '';
 };
