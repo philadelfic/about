@@ -10,6 +10,12 @@ interface Props {
   lang?: Lang;
   /** Абсолютный URL картинки для соцсетей (og:image); нет — тега не будет. */
   image?: string;
+  /**
+   * Та же страница на другом языке, путь без базового префикса
+   * ('en/students/mai/rl/seminars/07-saper-4x4/'). Не задан — считаем автоматически,
+   * null — перевода нет: ни переключателя, ни hreflang.
+   */
+  altHref?: string | null;
 }
 
 const current = Astro.url.pathname;
@@ -21,8 +27,11 @@ const rel = (current.startsWith(root) ? current.slice(root.length) : current).re
 const lang: Lang = Astro.props.lang ?? (rel === 'en' || rel.startsWith('en/') ? 'en' : 'ru');
 const t = dict[lang];
 
-// Внутри «Т1 + МАИ» — только русский: без переключателей языка и темы.
-const isT1 = current.startsWith(withBase('students/mai/'));
+// Раздел курса «Т1 + МАИ»: русские страницы в корне, английские — под /en/.
+// Своя шапка, свой шрифт, без живой темы; переключатель языка — только там,
+// где переведённая страница действительно есть (см. altHref).
+const isT1 =
+  current.startsWith(withBase('students/mai/')) || current.startsWith(withBase('en/students/mai/'));
 const showTools = !isT1;
 
 const pageTitle = Astro.props.title ? `${Astro.props.title} — ${t.siteName}` : t.title;
@@ -35,18 +44,63 @@ const nav = [
   { href: withBase(lang === 'en' ? 'en/me/' : 'me/'), label: t.nav.me },
 ];
 
-// Та же страница на другом языке.
+// Та же страница на другом языке. Вне курса — зеркало адреса. В курсе переведены
+// не все страницы, поэтому по умолчанию перевода нет: страница сама передаёт
+// готовый адрес, если двойник существует (иначе — null).
+const autoAltHref = lang === 'en' ? withBase(rel.replace(/^en\/?/, '')) : withBase(`en/${rel}`);
 const altHref =
-  lang === 'en' ? withBase(rel.replace(/^en\/?/, '')) : withBase(`en/${rel}`);
+  Astro.props.altHref === undefined
+    ? isT1
+      ? null
+      : autoAltHref
+    : Astro.props.altHref === null
+      ? null
+      : withBase(Astro.props.altHref);
 
 // Меню курса в шапке — те же разделы, что и в боковом меню, ни одного не пропускаем.
-const courseNav = [
-  { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
-  { href: withBase('students/mai/rl/homework/'), label: 'Домашние задания' },
-  { href: withBase('students/mai/rl/labs/'), label: 'Лабораторные' },
-  { href: withBase('students/mai/rl/seminars/'), label: 'Семинары' },
-  { href: withBase('students/mai/rl/results/'), label: 'Результаты' },
-];
+// Английская версия пока одна — семинары; остальное ведёт на русский курс, и это
+// честно написано в самой ссылке.
+const courseNav =
+  lang === 'en'
+    ? [
+        { href: withBase('en/students/mai/rl/seminars/'), label: 'Seminars' },
+        { href: withBase('students/mai/rl/'), label: 'Русский курс' },
+      ]
+    : [
+        { href: withBase('students/mai/rl/topics/'), label: 'Темы' },
+        { href: withBase('students/mai/rl/homework/'), label: 'Домашние задания' },
+        { href: withBase('students/mai/rl/labs/'), label: 'Лабораторные' },
+        { href: withBase('students/mai/rl/seminars/'), label: 'Семинары' },
+        { href: withBase('students/mai/rl/results/'), label: 'Результаты' },
+      ];
+
+// Подписи шапки и подвала курса: у английской версии свои.
+const t1Text =
+  lang === 'en'
+    ? {
+        chat: 'Course chat →',
+        footer: 'T1 + MAI · Reinforcement Learning course',
+        back: 'Back to portal',
+        gateTitle: 'Course materials',
+        gateLead:
+          'This section is for the students of the course. Enter the code I gave in class and the materials will open.',
+        gatePlaceholder: 'Access code',
+        gateButton: 'Open',
+        gateError: 'The code did not match. Check the keyboard layout and try again.',
+        toTop: 'Back to top',
+      }
+    : {
+        chat: 'Чат группы →',
+        footer: 'Т1 + МАИ · курс «Обучение с подкреплением»',
+        back: 'На портал',
+        gateTitle: 'Материалы курса',
+        gateLead:
+          'Это раздел для студентов курса. Введите код, который я дал на занятии, — откроются материалы.',
+        gatePlaceholder: 'Код доступа',
+        gateButton: 'Открыть',
+        gateError: 'Код не подошёл. Проверьте раскладку и попробуйте ещё раз.',
+        toTop: 'Наверх',
+      };
 
 const footerTagline = {
   ru: 'ИТ-лид команды разработки и преподаватель. Кадровые сервисы самообслуживания, курс по обучению с подкреплением, инструменты для работы с LLM-харнесами.',
@@ -74,8 +128,12 @@ const footerCols = {
     {ogImage && <meta property="og:image" content={ogImage} />}
     {ogImage && <meta name="twitter:card" content="summary_large_image" />}
     <meta name="theme-color" content="#ffffff" />
-    <link rel="alternate" hreflang="ru" href={new URL(lang === 'en' ? altHref : current, Astro.site)} />
-    <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? current : altHref, Astro.site)} />
+    {altHref && (
+      <>
+        <link rel="alternate" hreflang="ru" href={new URL(lang === 'en' ? altHref : current, Astro.site)} />
+        <link rel="alternate" hreflang="en" href={new URL(lang === 'en' ? current : altHref, Astro.site)} />
+      </>
+    )}
 
     {!isT1 && (
       <>
@@ -100,8 +158,9 @@ const footerCols = {
           var path = location.pathname;
           var rel = (path.indexOf(root) === 0 ? path.slice(root.length) : path).replace(/^\//, '');
 
-          // Раздел курса «Т1 + МАИ» — только по-русски.
-          if (rel.indexOf('students/mai') === 0) return;
+          // Страницы курса «Т1 + МАИ» автопереключение не трогает: переведены
+          // не все, а выбор языка на них делает переключатель в шапке.
+          if (rel.indexOf('students/mai') === 0 || rel.indexOf('en/students/mai') === 0) return;
 
           var isEn = rel === 'en' || rel.indexOf('en/') === 0;
           var saved = localStorage.getItem('about.lang');
@@ -132,8 +191,28 @@ const footerCols = {
               </a>
             ))}
           </nav>
+          {altHref && (
+            <div class="lang-switch" aria-label={t.langLabel}>
+              <a
+                href={lang === 'en' ? altHref : current}
+                data-lang="ru"
+                aria-current={lang === 'ru' ? 'true' : undefined}
+                title="Русский"
+              >
+                ru
+              </a>
+              <a
+                href={lang === 'ru' ? altHref : current}
+                data-lang="en"
+                aria-current={lang === 'en' ? 'true' : undefined}
+                title="English"
+              >
+                en
+              </a>
+            </div>
+          )}
           <a class="t1-chat" href={links.chat} target="_blank" rel="noopener">
-            Чат группы →
+            {t1Text.chat}
           </a>
         </div>
         <span class="read-progress" aria-hidden="true" hidden>
@@ -188,23 +267,20 @@ const footerCols = {
     <main>
       <div class="wrap">
         <div id="gate" class="gate" hidden>
-          <h2 class="gate-title">Материалы курса</h2>
-          <p class="lead">
-            Это раздел для студентов курса. Введите код, который я дал на занятии, — откроются
-            материалы.
-          </p>
+          <h2 class="gate-title">{t1Text.gateTitle}</h2>
+          <p class="lead">{t1Text.gateLead}</p>
           <form id="gate-form">
             <input
               id="gate-code"
               type="password"
               name="code"
-              placeholder="Код доступа"
+              placeholder={t1Text.gatePlaceholder}
               autocomplete="off"
-              aria-label="Код доступа"
+              aria-label={t1Text.gatePlaceholder}
             />
-            <button type="submit">Открыть</button>
+            <button type="submit">{t1Text.gateButton}</button>
           </form>
-          <p id="gate-error" class="muted" hidden>Код не подошёл. Проверьте раскладку и попробуйте ещё раз.</p>
+          <p id="gate-error" class="muted" hidden>{t1Text.gateError}</p>
         </div>
 
         <div id="page-content">
@@ -216,9 +292,9 @@ const footerCols = {
     {isT1 ? (
       <footer class="t1-footer">
         <div class="wrap">
-          <span>Т1 + МАИ · курс «Обучение с подкреплением»</span>
+          <span>{t1Text.footer}</span>
           <span>
-            <a href={base}>На портал</a>
+            <a href={base}>{t1Text.back}</a>
           </span>
         </div>
       </footer>
@@ -254,7 +330,7 @@ const footerCols = {
       </footer>
     )}
 
-    <button class="to-top" type="button" aria-label="Наверх">
+    <button class="to-top" type="button" aria-label={t1Text.toTop}>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
         <path d="M12 19V5M5 12l7-7 7 7"></path>
       </svg>

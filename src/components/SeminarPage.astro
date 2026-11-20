@@ -1,0 +1,331 @@
+---
+/**
+ * Страница семинарского занятия — одна на два языка.
+ *
+ * Русский маршрут: src/pages/students/mai/rl/seminars/[id].astro,
+ * английский:      src/pages/en/students/mai/rl/seminars/[id].astro.
+ * Разметка и якоря одни и те же, различаются только подписи (data/course-i18n.ts)
+ * и левая навигация: у русского занятия — меню курса, у английского — короткий
+ * список переведённого и выход на русский курс.
+ */
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import CourseNav from './CourseNav.astro';
+import TopicToc from './TopicToc.astro';
+import GroupTabs from './GroupTabs.astro';
+import { bodyHeadings, createIdNamer } from '../lib/headings.mjs';
+import { withBase } from '../data/site';
+import { courseChrome, groupLabel, variantLabel, answerAnchorLabel } from '../data/course-i18n';
+import type { Lang } from '../data/i18n';
+import { seminarSlug } from '../lib/seminars.mjs';
+
+interface Props {
+  item: CollectionEntry<'seminars'>;
+  lang: Lang;
+  current: string;
+}
+
+const { item, lang, current } = Astro.props;
+const { Content } = await render(item);
+const t = courseChrome[lang];
+const en = lang === 'en';
+
+// Ссылки на материалы: свой файл сайта — через базовый путь, внешний — как есть;
+// файлы открываем в новой вкладке, как на странице темы.
+const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
+const isFile = (value: string) => !value.startsWith('http');
+
+// Якоря блоков: у русского занятия исторические, у английского — свои осмысленные.
+const anchor = en
+  ? {
+      covered: 'what-happened',
+      theory: 'theory',
+      tasks: 'questions',
+      quiz: 'progress-test',
+      assignment: 'assignment',
+      materials: 'materials',
+    }
+  : {
+      covered: 'chto-bylo',
+      theory: 'teoriya',
+      tasks: 'zadachi',
+      quiz: 'rk',
+      assignment: 'zadanie',
+      materials: 'materialy',
+    };
+
+// Группы занятия: задачи раскладываем по группам, переключатель — внизу блока.
+const groupNames = ['А', 'Б'];
+// Якоря ответов: у семинара вопрос-ответ живёт внутри задачи, а подпись — «Ответ»,
+// поэтому id берём из названия задачи (свой namer для задач, свой — для рубежного
+// контроля, заголовки теории нумеруют свой: ids не меняются между языками).
+const tasksNamer = createIdNamer();
+const quizNamer = createIdNamer();
+// Задача без группы — общая: её видит и группа А, и группа Б.
+const belongsTo = (task: { group?: string }, group: string) => {
+  const value = (task.group ?? '').trim();
+  return value === '' || value === group;
+};
+const taskGroups = groupNames.map((group) => ({
+  group,
+  items: item.data.tasks
+    .filter((task) => belongsTo(task, group))
+    .map((task) => {
+      if (!task.answer) return { ...task, qaId: null };
+      return { ...task, qaId: tasksNamer.claim(task.title, en ? 'answer' : 'otvet') };
+    }),
+}));
+
+// Рубежный контроль: вопросы по вариантам, нумерация своя в каждом варианте.
+const quizGroups = groupNames.map((group) => ({
+  group,
+  items: item.data.quiz
+    .filter((question) => belongsTo(question, group))
+    .map((question) => {
+      const qaId = quizNamer.claim(question.title, en ? 'question' : 'vopros');
+      return { ...question, qaId: question.answer ? qaId : null };
+    }),
+}));
+
+// Содержание занятия (правая колонка): блоки страницы + заголовки теории.
+const theoryHeadings = bodyHeadings(item.body);
+
+const toc = [
+  ...(item.data.covered.length > 0
+    ? [{ text: t.coveredTitle, id: anchor.covered, level: 0 }]
+    : []),
+  { text: t.theoryTitle, id: anchor.theory, level: 0 },
+  ...theoryHeadings,
+  ...(item.data.tasks.length > 0
+    ? [{ text: t.tasksTitle, id: anchor.tasks, level: 0 }]
+    : []),
+  ...(item.data.quiz.length > 0
+    ? [{ text: t.quizTitle(item.data.number), id: anchor.quiz, level: 0 }]
+    : []),
+  ...(item.data.assignment
+    ? [{ text: item.data.assignment.title, id: anchor.assignment, level: 0 }]
+    : []),
+  ...(item.data.materials.length > 0
+    ? [{ text: t.materialsTitle, id: anchor.materials, level: 0 }]
+    : []),
+];
+---
+
+<div class="course course--toc">
+  {en ? (
+    <nav class="course-nav">
+      <h2>
+        <a href={withBase('en/students/mai/rl/seminars/')}>Course</a>
+      </h2>
+      <ul>
+        <li>
+          <a
+            href={withBase('en/students/mai/rl/seminars/')}
+            aria-current={current.startsWith(withBase('en/students/mai/rl/seminars/'))
+              ? 'page'
+              : undefined}
+          >
+            Seminars
+          </a>
+        </li>
+      </ul>
+      <h2>Русский курс</h2>
+      <ul>
+        <li>
+          <a href={withBase('students/mai/rl/')}>Все материалы по-русски</a>
+        </li>
+        <li>
+          <a href={withBase(`students/mai/rl/seminars/${seminarSlug(item.id)}/`)}>
+            Это занятие по-русски
+          </a>
+        </li>
+      </ul>
+    </nav>
+  ) : (
+    <CourseNav current={current} />
+  )}
+
+  <article>
+    <p class="muted">
+      {t.seminarLabel} {item.data.number}
+      {item.data.date ? ` · ${item.data.date}` : ''}
+    </p>
+    <h1>{item.data.title}</h1>
+    <p class="lead">{item.data.summary}</p>
+
+    {item.data.covered.length > 0 && (
+      <div class="panel" id={anchor.covered}>
+        <b>{t.coveredTitle}</b>
+        <ul class="tasks">
+          {item.data.covered.map((line) => (
+            <li>{line}</li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    <h2 id={anchor.theory}>{t.theoryTitle}</h2>
+    <Content />
+
+    {item.data.tasks.length > 0 && (
+      <div class="panel" id={anchor.tasks} data-task-switch>
+        <b>{t.tasksTitle}</b>
+
+        {taskGroups.map((group) => (
+          <ol class="tasks task-group" data-task-group={group.group} hidden={group.group !== 'А'}>
+            {group.items.length > 0 ? (
+              group.items.map((task) => (
+                <li>
+                  <b>{task.title}</b>
+                  <p>{task.text}</p>
+                  {task.answer && !item.data.answersHidden && (
+                    <div class="qa">
+                      <details id={task.qaId}>
+                        <summary>
+                          {t.answer}
+                          <a
+                            class="qa-link"
+                            href={`#${task.qaId}`}
+                            aria-label={answerAnchorLabel(task.title, lang)}
+                          >
+                            #
+                          </a>
+                        </summary>
+                        <p>{task.answer}</p>
+                      </details>
+                    </div>
+                  )}
+                </li>
+              ))
+            ) : (
+              <li class="muted">{t.tasksEmpty(group.group)}</li>
+            )}
+          </ol>
+        ))}
+
+        <div class="group-switch" role="tablist" aria-label={t.groupAria}>
+          {taskGroups.map((group) => (
+            <button
+              type="button"
+              role="tab"
+              data-group={group.group}
+              aria-selected={group.group === 'А' ? 'true' : 'false'}
+            >
+              {groupLabel(group.group, lang)}
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {item.data.quiz.length > 0 && (
+      <div class="panel" id={anchor.quiz} data-task-switch>
+        <b>{t.quizTitle(item.data.number)}</b>
+        <p class="muted">{t.quizLead}</p>
+
+        {quizGroups.map((group) => (
+          <ol class="tasks task-group" data-task-group={group.group} hidden={group.group !== 'А'}>
+            {group.items.map((question) => (
+              <li>
+                <b>{question.title}</b>
+                <p>{question.text}</p>
+                {question.options.length > 0 && (
+                  <ul class="quiz-options">
+                    {question.options.map((option) => (
+                      <li>{option}</li>
+                    ))}
+                  </ul>
+                )}
+                {question.answer && (
+                  <div class="qa">
+                    <details id={question.qaId}>
+                      <summary>
+                        {t.answer}
+                        <a
+                          class="qa-link"
+                          href={`#${question.qaId}`}
+                          aria-label={answerAnchorLabel(question.title, lang)}
+                        >
+                          #
+                        </a>
+                      </summary>
+                      <p>{question.answer}</p>
+                    </details>
+                  </div>
+                )}
+              </li>
+            ))}
+          </ol>
+        ))}
+
+        <div class="group-switch" role="tablist" aria-label={t.variantAria}>
+          {quizGroups.map((group) => (
+            <button
+              type="button"
+              role="tab"
+              data-group={group.group}
+              aria-selected={group.group === 'А' ? 'true' : 'false'}
+            >
+              {variantLabel(group.group, lang)}
+            </button>
+          ))}
+        </div>
+      </div>
+    )}
+
+    {item.data.assignment && (
+      <div class="panel" id={anchor.assignment}>
+        <b>{item.data.assignment.title}</b>
+        {item.data.assignment.text && <p>{item.data.assignment.text}</p>}
+
+        {(item.data.assignment.homework || item.data.assignment.files.length > 0) && (
+          <ul class="links">
+            {item.data.assignment.homework && (
+              <li>
+                <a href={href(item.data.assignment.homework.href)}>
+                  {item.data.assignment.homework.title}
+                </a>
+              </li>
+            )}
+            {item.data.assignment.files.map((file) => (
+              <li>
+                <a href={href(file.href)} target={isFile(file.href) ? '_blank' : undefined}>
+                  {file.title}
+                </a>
+              </li>
+            ))}
+          </ul>
+        )}
+
+        {item.data.assignment.due && (
+          <p class="muted">
+            {t.due}: {item.data.assignment.due}
+          </p>
+        )}
+      </div>
+    )}
+
+    {item.data.materials.length > 0 && (
+      <>
+        <h2 id={anchor.materials}>{t.materialsTitle}</h2>
+        <ul class="links">
+          {item.data.materials.map((material) => (
+            <li>
+              {material.href ? (
+                <a href={href(material.href)} target={isFile(material.href) ? '_blank' : undefined}>
+                  {material.title}
+                </a>
+              ) : (
+                <span>{material.title}</span>
+              )}
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+  </article>
+
+  <TopicToc items={toc} title={t.tocTitle} />
+</div>
+
+<GroupTabs />

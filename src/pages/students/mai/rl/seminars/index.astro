@@ -3,9 +3,11 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
+import { seminarLang } from '../../../../../lib/seminars.mjs';
 
+// Список русского курса: английские занятия живут на своём маршруте /en/.
 const items = (await getCollection('seminars'))
-  .filter((item) => !item.data.draft)
+  .filter((item) => !item.data.draft && seminarLang(item.id) === 'ru')
   .sort((a, b) => a.data.number - b.data.number);
 const current = Astro.url.pathname;
 ---

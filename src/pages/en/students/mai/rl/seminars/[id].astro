@@ -1,0 +1,39 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
+import SeminarPage from '../../../../../../components/SeminarPage.astro';
+import { seminarLang, seminarSlug } from '../../../../../../lib/seminars.mjs';
+
+// Английские занятия: файлы из подпапки en/ коллекции seminars.
+// Адрес — тот же слаг, что у русского занятия, но под /en/.
+export async function getStaticPaths() {
+  const all = await getCollection('seminars');
+  const published = all.filter((item) => !item.data.draft);
+  const ruIds = new Set(
+    published.filter((item) => seminarLang(item.id) === 'ru').map((item) => item.id),
+  );
+  return published
+    .filter((item) => seminarLang(item.id) === 'en')
+    .map((item) => {
+      const slug = seminarSlug(item.id);
+      return {
+        params: { id: slug },
+        props: {
+          item,
+          altHref: ruIds.has(slug) ? `students/mai/rl/seminars/${slug}/` : null,
+        },
+      };
+    });
+}
+
+const { item, altHref } = Astro.props;
+---
+
+<BaseLayout
+  title={`Session ${item.data.number}. ${item.data.title}`}
+  description={item.data.summary}
+  lang="en"
+  altHref={altHref}
+>
+  <SeminarPage item={item} lang="en" current={Astro.url.pathname} />
+</BaseLayout>
