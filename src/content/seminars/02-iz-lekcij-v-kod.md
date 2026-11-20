@@ -45,8 +45,10 @@ assignment:
     title: "Домашнее задание по семинару 2 — условие, файлы и срок"
     href: "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
 materials:
-  - title: "Презентация занятия, группа М80-203СВ-25 — после 13.10.2026"
-  - title: "Презентация занятия, группа М80-202СВ-25 — после 13.10.2026"
+  - title: "Презентация занятия, группа М80-203СВ-25 (06.10.2026) — PPTX"
+    href: "/files/course/rl/sem2/s2-labirint-iz-lekcij-v-kod-gr-m80-203-06.10.2026.pptx"
+  - title: "Презентация занятия, группа М80-202СВ-25 (13.10.2026) — PPTX"
+    href: "/files/course/rl/sem2/s2-labirint-iz-lekcij-v-kod-gr-m80-202-13.10.2026.pptx"
 ---
 
 ## Что мы делали на этом занятии
