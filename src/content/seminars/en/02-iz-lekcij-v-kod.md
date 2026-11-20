@@ -45,8 +45,10 @@ assignment:
     title: "Homework for seminar 2 — statement, files and deadline"
     href: "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
 materials:
-  - title: "Session presentation, group М80-203СВ-25 — after 13.10.2026"
-  - title: "Session presentation, group М80-202СВ-25 — after 13.10.2026"
+  - title: "Slides of the session, group М80-203СВ-25 (06.10.2026) — PPTX, in Russian"
+    href: "/files/course/rl/sem2/s2-labirint-iz-lekcij-v-kod-gr-m80-203-06.10.2026.pptx"
+  - title: "Slides of the session, group М80-202СВ-25 (13.10.2026) — PPTX, in Russian"
+    href: "/files/course/rl/sem2/s2-labirint-iz-lekcij-v-kod-gr-m80-202-13.10.2026.pptx"
 ---
 
 ## What we did in this session
