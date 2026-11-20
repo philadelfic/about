@@ -26,6 +26,29 @@ function rehypeBaseImages() {
   };
 }
 
+/**
+ * Таблицы в markdown оборачиваем в прокручиваемый блок: широкая таблица на узком
+ * экране иначе растягивает всю страницу. Скроллится сама таблица, текст — нет.
+ */
+function rehypeTableWrap() {
+  const wrap = (node) => {
+    if (!Array.isArray(node.children)) return;
+    node.children = node.children.map((child) => {
+      if (child.type === 'element' && child.tagName === 'table') {
+        return {
+          type: 'element',
+          tagName: 'div',
+          properties: { className: ['table-wrap'] },
+          children: [child],
+        };
+      }
+      wrap(child);
+      return child;
+    });
+  };
+  return (tree) => wrap(tree);
+}
+
 function collectText(node) {
   if (node.type === 'text') return node.value;
   if (Array.isArray(node.children)) return node.children.map(collectText).join('');
@@ -59,6 +82,6 @@ export default defineConfig({
   build: { format: 'directory' },
   markdown: {
     remarkPlugins: [remarkMath],
-    rehypePlugins: [rehypeBaseImages, rehypeKatex, rehypeHeadingIds],
+    rehypePlugins: [rehypeBaseImages, rehypeKatex, rehypeHeadingIds, rehypeTableWrap],
   },
 });

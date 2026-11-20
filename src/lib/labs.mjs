@@ -7,4 +7,5 @@ export const labOrder = (item) => {
 };
 
 /** Короткая надпись для списка: «Лабораторная 2». */
-export const labKind = (item) => `Лабораторная ${item.data?.number ?? ''}`.trim();
+export const labKind = (item, lang = 'ru') =>
+  `${lang === 'en' ? 'Lab' : 'Лабораторная'} ${item.data?.number ?? ''}`.trim();

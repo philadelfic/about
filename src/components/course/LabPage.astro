@@ -1,0 +1,41 @@
+---
+/** Страница лабораторной работы — одна на два языка. */
+import { render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import CourseNav from '../CourseNav.astro';
+import TopicToc from '../TopicToc.astro';
+import { bodyHeadings } from '../../lib/headings.mjs';
+import { chrome } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+
+interface Props {
+  item: CollectionEntry<'labs'>;
+  lang: Lang;
+  current: string;
+}
+
+const { item, lang, current } = Astro.props;
+const t = chrome(lang);
+const { Content } = await render(item);
+const toc = bodyHeadings(item.body);
+
+const marks = [
+  item.data.seminar ? t.homeworkBySeminar(item.data.seminar) : '',
+  item.data.topic ? t.homeworkByTopic(item.data.topic) : '',
+].join('');
+---
+
+<div class="course course--toc">
+  <CourseNav current={current} lang={lang} />
+
+  <article>
+    <p class="muted">{t.labWord} {item.data.number}{marks}</p>
+    <h1>{item.data.title}</h1>
+    <p class="lead">{item.data.summary}</p>
+    {item.data.due && <p class="lead">{t.submitBy}: {item.data.due}</p>}
+
+    <Content />
+  </article>
+
+  <TopicToc items={toc} title={t.labTocTitle} />
+</div>

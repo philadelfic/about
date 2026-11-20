@@ -1,266 +1,35 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../../components/CourseNav.astro';
-import TopicToc from '../../../../../components/TopicToc.astro';
-import GroupTabs from '../../../../../components/GroupTabs.astro';
-import { bodyHeadings, createIdNamer } from '../../../../../lib/headings.mjs';
-import { withBase } from '../../../../../data/site';
+import SeminarPage from '../../../../../components/SeminarPage.astro';
+import { seminarLang, enSeminarId } from '../../../../../lib/seminars.mjs';
 
+// Русские занятия. Английские лежат в /en/students/mai/rl/seminars/ — там же
+// переключатель языка, который ведёт сюда (или обратно), если перевод есть.
 export async function getStaticPaths() {
-  const items = (await getCollection('seminars')).filter((item) => !item.data.draft);
-  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+  const all = await getCollection('seminars');
+  const published = all.filter((item) => !item.data.draft);
+  const enIds = new Set(published.map((item) => item.id));
+  return published
+    .filter((item) => seminarLang(item.id) === 'ru')
+    .map((item) => ({
+      params: { id: item.id },
+      props: {
+        item,
+        altHref: enIds.has(enSeminarId(item.id))
+          ? `en/students/mai/rl/seminars/${item.id}/`
+          : null,
+      },
+    }));
 }
 
-const { item } = Astro.props;
-const { Content } = await render(item);
-const current = Astro.url.pathname;
-
-// Ссылки на материалы: свой файл сайта — через базовый путь, внешний — как есть;
-// файлы открываем в новой вкладке, как на странице темы.
-const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
-const isFile = (value: string) => !value.startsWith('http');
-
-// Подпись ссылки-якоря: в скринридере список ссылок должен читаться осмысленно,
-// поэтому в подписи — название задачи (первые 60 символов, пробелы сжаты в один).
-const qaLabel = (text: string) => {
-  const line = text.replace(/\s+/g, ' ').trim();
-  return `Ссылка на вопрос: ${line.length > 60 ? `${line.slice(0, 60)}…` : line}`;
-};
-
-// Группы занятия: задачи раскладываем по группам, переключатель — внизу блока.
-const groupNames = ['А', 'Б'];
-// Якоря ответов: у семинара вопрос-ответ живёт внутри задачи, а подпись всегда «Ответ»,
-// поэтому id берём из названия задачи (свой namer для задач, свой — для рубежного контроля,
-// заголовки теории нумеруют свой: ровно как раньше, ids не меняются).
-const tasksNamer = createIdNamer();
-const quizNamer = createIdNamer();
-// Задача без группы — общая: её видит и группа А, и группа Б (так помечены задачи 1–4 семинара 1).
-const belongsTo = (task: { group?: string }, group: string) => {
-  const value = (task.group ?? '').trim();
-  return value === '' || value === group;
-};
-const taskGroups = groupNames.map((group) => ({
-  group,
-  items: item.data.tasks
-    .filter((task) => belongsTo(task, group))
-    .map((task) => {
-      if (!task.answer) return { ...task, qaId: null };
-      return { ...task, qaId: tasksNamer.claim(task.title, 'otvet') };
-    }),
-}));
-
-// Рубежный контроль: вопросы по вариантам, нумерация своя в каждом варианте.
-// Якорь резервируется у каждого вопроса (как раньше), даже если ответа пока нет.
-const quizGroups = groupNames.map((group) => ({
-  group,
-  items: item.data.quiz
-    .filter((question) => belongsTo(question, group))
-    .map((question) => {
-      const qaId = quizNamer.claim(question.title, 'vopros');
-      return { ...question, qaId: question.answer ? qaId : null };
-    }),
-}));
-
-// Содержание занятия (правая колонка): блоки страницы + заголовки теории.
-const theoryHeadings = bodyHeadings(item.body);
-
-const toc = [
-  ...(item.data.covered.length > 0
-    ? [{ text: 'Что было на занятии', id: 'chto-bylo', level: 0 }]
-    : []),
-  { text: 'Теория', id: 'teoriya', level: 0 },
-  ...theoryHeadings,
-  ...(item.data.tasks.length > 0
-    ? [{ text: 'Задачи для проверки понимания', id: 'zadachi', level: 0 }]
-    : []),
-  ...(item.data.quiz.length > 0
-    ? [{ text: `Рубежный контроль №${item.data.number}`, id: 'rk', level: 0 }]
-    : []),
-  ...(item.data.assignment
-    ? [{ text: item.data.assignment.title, id: 'zadanie', level: 0 }]
-    : []),
-  ...(item.data.materials.length > 0
-    ? [{ text: 'Материалы', id: 'materialy', level: 0 }]
-    : []),
-];
+const { item, altHref } = Astro.props;
 ---
 
-<BaseLayout title={`Занятие ${item.data.number}. ${item.data.title}`} description={item.data.summary}>
-  <div class="course course--toc">
-    <CourseNav current={current} />
-
-    <article>
-      <p class="muted">
-        Семинарское занятие {item.data.number}
-        {item.data.date ? ` · ${item.data.date}` : ''}
-      </p>
-      <h1>{item.data.title}</h1>
-      <p class="lead">{item.data.summary}</p>
-
-      {item.data.covered.length > 0 && (
-        <div class="panel" id="chto-bylo">
-          <b>Что было на занятии</b>
-          <ul class="tasks">
-            {item.data.covered.map((line) => (
-              <li>{line}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      <h2 id="teoriya">Теория</h2>
-      <Content />
-
-      {item.data.tasks.length > 0 && (
-        <div class="panel" id="zadachi" data-task-switch>
-          <b>Задачи для проверки понимания материала</b>
-
-          {taskGroups.map((group) => (
-            <ol class="tasks task-group" data-task-group={group.group} hidden={group.group !== 'А'}>
-              {group.items.length > 0 ? (
-                group.items.map((task) => (
-                  <li>
-                    <b>{task.title}</b>
-                    <p>{task.text}</p>
-                    {task.answer && !item.data.answersHidden && (
-                      <div class="qa">
-                        <details id={task.qaId}>
-                          <summary>
-                            Ответ
-                            <a class="qa-link" href={`#${task.qaId}`} aria-label={qaLabel(task.title)}>#</a>
-                          </summary>
-                          <p>{task.answer}</p>
-                        </details>
-                      </div>
-                    )}
-                  </li>
-                ))
-              ) : (
-                <li class="muted">Задачи для группы {group.group} появятся позже.</li>
-              )}
-            </ol>
-          ))}
-
-          <div class="group-switch" role="tablist" aria-label="Группа занятия">
-            {taskGroups.map((group) => (
-              <button
-                type="button"
-                role="tab"
-                data-group={group.group}
-                aria-selected={group.group === 'А' ? 'true' : 'false'}
-              >
-                Группа {group.group}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {item.data.quiz.length > 0 && (
-        <div class="panel" id="rk" data-task-switch>
-          <b>Рубежный контроль №{item.data.number}</b>
-          <p class="muted">
-            Двенадцать вопросов, 12 баллов, 12 минут: десять с выбором ответа и два — своими словами.
-            Вариант — по вашей группе. Ответы спрятаны: сначала отвечаете сами, потом сверяетесь.
-          </p>
-
-          {quizGroups.map((group) => (
-            <ol class="tasks task-group" data-task-group={group.group} hidden={group.group !== 'А'}>
-              {group.items.map((question) => (
-                <li>
-                  <b>{question.title}</b>
-                  <p>{question.text}</p>
-                  {question.options.length > 0 && (
-                    <ul class="quiz-options">
-                      {question.options.map((option) => (
-                        <li>{option}</li>
-                      ))}
-                    </ul>
-                  )}
-                  {question.answer && (
-                    <div class="qa">
-                      <details id={question.qaId}>
-                        <summary>
-                          Ответ
-                          <a class="qa-link" href={`#${question.qaId}`} aria-label={qaLabel(question.title)}>#</a>
-                        </summary>
-                        <p>{question.answer}</p>
-                      </details>
-                    </div>
-                  )}
-                </li>
-              ))}
-            </ol>
-          ))}
-
-          <div class="group-switch" role="tablist" aria-label="Вариант рубежного контроля">
-            {quizGroups.map((group) => (
-              <button
-                type="button"
-                role="tab"
-                data-group={group.group}
-                aria-selected={group.group === 'А' ? 'true' : 'false'}
-              >
-                Вариант {group.group}
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {item.data.assignment && (
-        <div class="panel" id="zadanie">
-          <b>{item.data.assignment.title}</b>
-          {item.data.assignment.text && <p>{item.data.assignment.text}</p>}
-
-          {(item.data.assignment.homework || item.data.assignment.files.length > 0) && (
-            <ul class="links">
-              {item.data.assignment.homework && (
-                <li>
-                  <a href={href(item.data.assignment.homework.href)}>
-                    {item.data.assignment.homework.title}
-                  </a>
-                </li>
-              )}
-              {item.data.assignment.files.map((file) => (
-                <li>
-                  <a href={href(file.href)} target={isFile(file.href) ? '_blank' : undefined}>
-                    {file.title}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )}
-
-          {item.data.assignment.due && (
-            <p class="muted">Срок: {item.data.assignment.due}</p>
-          )}
-        </div>
-      )}
-
-      {item.data.materials.length > 0 && (
-        <>
-          <h2 id="materialy">Материалы</h2>
-          <ul class="links">
-            {item.data.materials.map((material) => (
-              <li>
-                {material.href ? (
-                  <a href={href(material.href)} target={isFile(material.href) ? '_blank' : undefined}>
-                    {material.title}
-                  </a>
-                ) : (
-                  <span>{material.title}</span>
-                )}
-              </li>
-            ))}
-          </ul>
-        </>
-      )}
-    </article>
-
-    <TopicToc items={toc} title="Содержание занятия" />
-  </div>
-
-  <GroupTabs />
+<BaseLayout
+  title={`Занятие ${item.data.number}. ${item.data.title}`}
+  description={item.data.summary}
+  altHref={altHref}
+>
+  <SeminarPage item={item} lang="ru" current={Astro.url.pathname} />
 </BaseLayout>

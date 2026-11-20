@@ -1,232 +1,31 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../../components/CourseNav.astro';
-import TopicToc from '../../../../../components/TopicToc.astro';
-import Simulator from '../../../../../components/Simulator.astro';
-import { withBase } from '../../../../../data/site';
-import { bodyHeadings, createIdNamer } from '../../../../../lib/headings.mjs';
-import { homeworkOrder } from '../../../../../lib/homework.mjs';
+import TopicPage from '../../../../../components/course/TopicPage.astro';
+import { contentLang, enContentId } from '../../../../../lib/course-lang.mjs';
 
+// Русские темы. Английские — в /en/students/mai/rl/topics/.
 export async function getStaticPaths() {
-  const topics = await getCollection('topics');
-  return topics.map((topic) => ({ params: { id: topic.id }, props: { topic } }));
+  const all = await getCollection('topics');
+  const ids = new Set(all.map((item) => item.id));
+  return all
+    .filter((item) => contentLang(item.id) === 'ru')
+    .map((topic) => ({
+      params: { id: topic.id },
+      props: {
+        topic,
+        altHref: ids.has(enContentId(topic.id)) ? `en/students/mai/rl/topics/${topic.id}/` : null,
+      },
+    }));
 }
 
-const { topic } = Astro.props;
-const { Content } = await render(topic);
-const all = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
-const index = all.findIndex((item) => item.id === topic.id);
-const prev = index > 0 ? all[index - 1] : undefined;
-const next = index < all.length - 1 ? all[index + 1] : undefined;
-const current = Astro.url.pathname;
-
-// Задания, привязанные к этой теме (обратная ссылка «тема → задания»).
-const topicHomework = (await getCollection('homework'))
-  .filter((item) => !item.data.draft && item.data.topic === topic.data.number)
-  .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
-
-// Лабораторные работы этой темы (обратная ссылка «тема → лабораторные»).
-const topicLabs = (await getCollection('labs'))
-  .filter((item) => !item.data.draft && item.data.topic === topic.data.number)
-  .sort((a, b) => a.data.number - b.data.number);
-
-// Связь темы с лекциями: тема может закрывать несколько лекций.
-const lectures = topic.data.lectures;
-const lectureNumbers = lectures.map((item) => item.number).join(' и ');
-const lectureDates = lectures.map((item) => item.date).filter(Boolean).join(', ');
-const lectureHeadline = lectures.length
-  ? ` · ${lectures.length > 1 ? 'лекции' : 'лекция'} ${lectureNumbers}`
-  : topic.data.date
-    ? ` · лекция ${topic.data.date}`
-    : '';
-const coveredTitle =
-  lectures.length > 1
-    ? 'Что разбирали'
-    : lectures.length === 1
-      ? `Что разбирали на лекции ${lectures[0].number}${lectures[0].date ? ` · ${lectures[0].date}` : ''}`
-      : 'Что разбирали на лекции';
-const coveredGroups = lectures
-  .map((item) => ({
-    title: `Лекция ${item.number}${item.date ? ` · ${item.date}` : ''}`,
-    items: item.covered,
-  }))
-  .filter((group) => group.items.length > 0);
-
-const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
-const isFile = (value: string) => !value.startsWith('http');
-
-// Подпись ссылки-якоря: в скринридере список ссылок должен читаться осмысленно,
-// поэтому в подписи — сам вопрос (первые 60 символов, пробелы сжаты в один).
-const qaLabel = (text: string) => {
-  const line = text.replace(/\s+/g, ' ').trim();
-  return `Ссылка на вопрос: ${line.length > 60 ? `${line.slice(0, 60)}…` : line}`;
-};
-
-// Содержание темы (правая колонка): разделы страницы + заголовки теории.
-// Якоря вопросов продолжают нумерацию заголовков (общий namer — id уникальны на всей странице).
-const namer = createIdNamer();
-const theoryHeadings = bodyHeadings(topic.body, namer);
-
-const qaItems = topic.data.qa.map((item) => ({
-  ...item,
-  id: namer.claim(item.q, 'vopros'),
-}));
-
-const toc = [
-  ...(topic.data.covered.length > 0 ? [{ text: 'Что разбирали', id: 'chto-razbirali', level: 0 }] : []),
-  { text: 'Теория', id: 'teoriya', level: 0 },
-  ...theoryHeadings,
-  ...(topic.data.qa.length > 0 ? [{ text: 'Вопросы и ответы', id: 'voprosy-i-otvety', level: 0 }] : []),
-  ...(topic.data.terms.length > 0 ? [{ text: 'Терминология', id: 'terminologiya', level: 0 }] : []),
-  ...(topicHomework.length > 0 ? [{ text: 'Задания по теме', id: 'zadaniya-po-teme', level: 0 }] : []),
-  ...(topic.data.simulator ? [{ text: 'Покрутить руками', id: 'simulyator', level: 0 }] : []),
-];
+const { topic, altHref } = Astro.props;
 ---
 
 <BaseLayout
   title={`Тема ${topic.data.number}. ${topic.data.title}`}
   description={topic.data.summary}
+  altHref={altHref}
 >
-  <div class="course course--toc">
-    <CourseNav current={current} />
-
-    <article>
-      <p class="muted">
-        Тема {topic.data.number}{lectureHeadline}
-      </p>
-      <h1>{topic.data.title}</h1>
-      <p class="lead">{topic.data.summary}</p>
-
-      {topic.data.lecture.length > 0 && (
-        <ul class="links materials">
-          {topic.data.lecture.map((item) => (
-            <li>
-              {item.href ? (
-                <a href={href(item.href)} target={isFile(item.href) ? '_blank' : undefined}>
-                  {item.title}
-                </a>
-              ) : (
-                <span>{item.title}</span>
-              )}
-            </li>
-          ))}
-        </ul>
-      )}
-
-      {topic.data.covered.length > 0 && (
-        <div class="panel" id="chto-razbirali">
-          <b>{coveredTitle}</b>
-          {lectures.length > 1 && lectureDates && (
-            <p class="muted">Лекции {lectureNumbers} · {lectureDates}</p>
-          )}
-          {coveredGroups.length > 0 ? (
-            coveredGroups.map((group) => (
-              <div class="covered-group">
-                <p class="covered-group-title">{group.title}</p>
-                <ul class="tasks">
-                  {group.items.map((line) => (
-                    <li>{line}</li>
-                  ))}
-                </ul>
-              </div>
-            ))
-          ) : (
-            <ul class="tasks">
-              {topic.data.covered.map((line) => (
-                <li>{line}</li>
-              ))}
-            </ul>
-          )}
-        </div>
-      )}
-
-      <h2 id="teoriya">Теория</h2>
-      <Content />
-
-      {topic.data.qa.length > 0 && (
-        <>
-          <h2 id="voprosy-i-otvety">Вопросы и ответы</h2>
-          <div class="qa">
-            {qaItems.map((item) => (
-              <details id={item.id}>
-                <summary>
-                  {item.q}
-                  <a class="qa-link" href={`#${item.id}`} aria-label={qaLabel(item.q)}>#</a>
-                </summary>
-                <p>{item.a}</p>
-              </details>
-            ))}
-          </div>
-        </>
-      )}
-
-      {topic.data.terms.length > 0 && (
-        <>
-          <h2 id="terminologiya">Терминология</h2>
-          <table class="terms-table">
-            <thead>
-              <tr>
-                <th>Термин</th>
-                <th>Что это</th>
-              </tr>
-            </thead>
-            <tbody>
-              {topic.data.terms.map((item) => (
-                <tr>
-                  <td>{item.term}</td>
-                  <td>{item.definition}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </>
-      )}
-
-      {topicHomework.length > 0 && (
-        <div class="panel" id="zadaniya-po-teme">
-          <b>Задания по теме</b>
-          <ul class="links">
-            {topicHomework.map((item) => (
-              <li>
-                <a href={withBase(`students/mai/rl/homework/${item.id}/`)}>
-                  {item.data.title}
-                  {item.data.due ? ` · сдать ${item.data.due}` : ''}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {topicLabs.length > 0 && (
-        <div class="panel" id="laboratornye-po-teme">
-          <b>Лабораторные по теме</b>
-          <ul class="links">
-            {topicLabs.map((item) => (
-              <li>
-                <a href={withBase(`students/mai/rl/labs/${item.id}/`)}>
-                  {item.data.title}
-                  {item.data.due ? ` · сдать ${item.data.due}` : ''}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {topic.data.simulator && (
-        <div id="simulyator" class="sim-wrap">
-          <Simulator preset={topic.data.simulator} />
-        </div>
-      )}
-
-      <div class="row" style="margin-top:28px">
-        {prev && <a href={withBase(`students/mai/rl/topics/${prev.id}/`)}>← Тема {prev.data.number}</a>}
-        {next && <a href={withBase(`students/mai/rl/topics/${next.id}/`)}>Тема {next.data.number} →</a>}
-      </div>
-    </article>
-
-    <TopicToc items={toc} />
-  </div>
+  <TopicPage topic={topic} lang="ru" current={Astro.url.pathname} />
 </BaseLayout>

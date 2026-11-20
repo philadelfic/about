@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
+import SectionListPage from '../../../../../../components/course/SectionListPage.astro';
+
+---
+
+<BaseLayout title="Results" description="Check results of the seminar sessions: passes, fails and what is worth revisiting." lang="en" altHref="students/mai/rl/results/">
+  <SectionListPage section="results" lang="en" current={Astro.url.pathname} />
+</BaseLayout>

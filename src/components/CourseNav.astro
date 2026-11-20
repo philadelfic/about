@@ -1,35 +1,46 @@
 ---
+/**
+ * Меню курса в левой колонке. Одно на два языка: адреса и подписи берутся
+ * по lang, списки — только записи своего языка (английские лежат в en/).
+ */
 import { getCollection } from 'astro:content';
 import { withBase } from '../data/site';
 import { homeworkLabel, homeworkOrder } from '../lib/homework.mjs';
 import { labKind, labOrder } from '../lib/labs.mjs';
+import { chrome } from '../data/course-i18n';
+import type { Lang } from '../data/i18n';
+import { contentLang } from '../lib/course-lang.mjs';
 
 interface Props {
   current: string;
+  lang?: Lang;
 }
 
-const { current } = Astro.props;
+const { current, lang = 'ru' } = Astro.props;
+const t = chrome(lang);
+const prefix = lang === 'en' ? 'en/students/mai/rl/' : 'students/mai/rl/';
+const own = (items: any[]) => items.filter((item) => !item.data.draft && contentLang(item.id) === lang);
 
-const topics = (await getCollection('topics')).sort((a, b) => a.data.number - b.data.number);
-const homework = (await getCollection('homework'))
-  .filter((item) => !item.data.draft)
-  .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
-const seminars = (await getCollection('seminars'))
-  .filter((item) => !item.data.draft)
-  .sort((a, b) => a.data.number - b.data.number);
-const results = (await getCollection('results'))
-  .filter((item) => !item.data.draft)
-  .sort((a, b) => a.data.number - b.data.number);
-const labs = (await getCollection('labs'))
-  .filter((item) => !item.data.draft && item.data.issued)
-  .sort((a, b) => labOrder(a) - labOrder(b));
+const topics = own(await getCollection('topics')).sort((a: any, b: any) => a.data.number - b.data.number);
+const homework = own(await getCollection('homework')).sort(
+  (a: any, b: any) => homeworkOrder(a) - homeworkOrder(b)
+);
+const seminars = own(await getCollection('seminars')).sort(
+  (a: any, b: any) => a.data.number - b.data.number
+);
+const results = own(await getCollection('results')).sort(
+  (a: any, b: any) => a.data.number - b.data.number
+);
+const labs = own(await getCollection('labs'))
+  .filter((item: any) => item.data.issued)
+  .sort((a: any, b: any) => labOrder(a) - labOrder(b));
 
 const sections = {
-  topics: withBase('students/mai/rl/topics/'),
-  homework: withBase('students/mai/rl/homework/'),
-  labs: withBase('students/mai/rl/labs/'),
-  seminars: withBase('students/mai/rl/seminars/'),
-  results: withBase('students/mai/rl/results/'),
+  topics: withBase(`${prefix}topics/`),
+  homework: withBase(`${prefix}homework/`),
+  labs: withBase(`${prefix}labs/`),
+  seminars: withBase(`${prefix}seminars/`),
+  results: withBase(`${prefix}results/`),
 };
 
 // Какая часть курса открыта сейчас — от этого зависит нижний список.
@@ -38,49 +49,51 @@ const section = current.startsWith(sections.homework)
   : current.startsWith(sections.labs)
     ? 'labs'
     : current.startsWith(sections.seminars)
-    ? 'seminars'
-    : current.startsWith(sections.results)
-      ? 'results'
-      : 'topics';
+      ? 'seminars'
+      : current.startsWith(sections.results)
+        ? 'results'
+        : 'topics';
 
 const isCurrent = (href: string) => current === href;
 
 // У проверки может быть несколько групп — в подсписке показываем их даты через запятую.
-const resultsLabel = (item: (typeof results)[number]) => {
+const resultsLabel = (item: any) => {
   const dates = item.data.groups
-    .map((group) => group.date)
+    .map((group: any) => group.date)
     .filter(Boolean)
     .join(', ');
-  return `Семинар ${item.data.number}${dates ? ` · ${dates}` : ''}`;
+  return `${t.seminarWord} ${item.data.number}${dates ? ` · ${dates}` : ''}`;
 };
 ---
 
 <nav class="course-nav">
   <h2>
-    <a href={withBase('students/mai/rl/')}>Курс</a>
+    <a href={withBase(prefix)}>{t.courseShort}</a>
   </h2>
   <ul>
     <li>
-      <a href={sections.topics} aria-current={section === 'topics' ? 'page' : undefined}> Темы </a>
+      <a href={sections.topics} aria-current={section === 'topics' ? 'page' : undefined}>
+        {t.navTopics}
+      </a>
     </li>
     <li>
       <a href={sections.homework} aria-current={section === 'homework' ? 'page' : undefined}>
-        Домашние задания
+        {t.navHomework}
       </a>
     </li>
     <li>
       <a href={sections.labs} aria-current={section === 'labs' ? 'page' : undefined}>
-        Лабораторные
+        {t.navLabsShort}
       </a>
     </li>
     <li>
       <a href={sections.seminars} aria-current={section === 'seminars' ? 'page' : undefined}>
-        Семинарские занятия
+        {t.navSeminars}
       </a>
     </li>
     <li>
       <a href={sections.results} aria-current={section === 'results' ? 'page' : undefined}>
-        Результаты
+        {t.navResults}
       </a>
     </li>
   </ul>
@@ -88,11 +101,11 @@ const resultsLabel = (item: (typeof results)[number]) => {
   {section === 'results' && results.length > 0 && (
     <>
       <h2>
-        <a href={sections.results}>Проверки</a>
+        <a href={sections.results}>{t.navChecks}</a>
       </h2>
       <ul>
-        {results.map((item) => {
-          const href = withBase(`students/mai/rl/results/${item.id}/`);
+        {results.map((item: any) => {
+          const href = withBase(`${prefix}results/${item.id.replace(/^en\//, '')}/`);
           return (
             <li>
               <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
@@ -108,16 +121,16 @@ const resultsLabel = (item: (typeof results)[number]) => {
   {section === 'homework' && homework.length > 0 && (
     <>
       <h2>
-        <a href={sections.homework}>Задания</a>
+        <a href={sections.homework}>{t.navTasks}</a>
       </h2>
       <ul>
-        {homework.map((item) => {
-          const href = withBase(`students/mai/rl/homework/${item.id}/`);
+        {homework.map((item: any) => {
+          const href = withBase(`${prefix}homework/${item.id.replace(/^en\//, '')}/`);
           return (
             <li>
               <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-                {homeworkLabel(item)}
-                {item.data.due && <span class="muted"> · к {item.data.due}</span>}
+                {homeworkLabel(item, lang)}
+                {item.data.due && <span class="muted"> · {t.navDue} {item.data.due}</span>}
               </a>
             </li>
           );
@@ -129,15 +142,15 @@ const resultsLabel = (item: (typeof results)[number]) => {
   {section === 'labs' && labs.length > 0 && (
     <>
       <h2>
-        <a href={sections.labs}>Лабораторные</a>
+        <a href={sections.labs}>{t.navLabsShort}</a>
       </h2>
       <ul>
-        {labs.map((item) => {
-          const href = withBase(`students/mai/rl/labs/${item.id}/`);
+        {labs.map((item: any) => {
+          const href = withBase(`${prefix}labs/${item.id.replace(/^en\//, '')}/`);
           return (
             <li>
               <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-                {labKind(item)}
+                {labKind(item, lang)}
                 <span class="muted"> · {item.data.title}</span>
               </a>
             </li>
@@ -150,15 +163,15 @@ const resultsLabel = (item: (typeof results)[number]) => {
   {section === 'seminars' && seminars.length > 0 && (
     <>
       <h2>
-        <a href={sections.seminars}>Занятия</a>
+        <a href={sections.seminars}>{t.navSessions}</a>
       </h2>
       <ul>
-        {seminars.map((item) => {
-          const href = withBase(`students/mai/rl/seminars/${item.id}/`);
+        {seminars.map((item: any) => {
+          const href = withBase(`${prefix}seminars/${item.id.replace(/^en\//, '')}/`);
           return (
             <li>
               <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-                Занятие {item.data.number}
+                {t.seminarWord} {item.data.number}
                 {item.data.date && <span class="muted"> · {item.data.date}</span>}
               </a>
             </li>
@@ -171,11 +184,11 @@ const resultsLabel = (item: (typeof results)[number]) => {
   {section === 'topics' && (
     <>
       <h2>
-        <a href={sections.topics}>Пройденные темы</a>
+        <a href={sections.topics}>{t.navTopicsDone}</a>
       </h2>
       <ul>
-        {topics.map((topic) => {
-          const href = withBase(`students/mai/rl/topics/${topic.id}/`);
+        {topics.map((topic: any) => {
+          const href = withBase(`${prefix}topics/${topic.id.replace(/^en\//, '')}/`);
           return (
             <li>
               <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>

@@ -1,0 +1,9 @@
+---
+import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
+import SectionListPage from '../../../../../../components/course/SectionListPage.astro';
+
+---
+
+<BaseLayout title="Topics" description="Topics of the Reinforcement Learning course: what we went through, the theory and the questions with answers." lang="en" altHref="students/mai/rl/topics/">
+  <SectionListPage section="topics" lang="en" current={Astro.url.pathname} />
+</BaseLayout>

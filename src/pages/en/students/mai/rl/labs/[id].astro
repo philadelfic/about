@@ -1,0 +1,26 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
+import LabPage from '../../../../../../components/course/LabPage.astro';
+import { contentLang, contentSlug } from '../../../../../../lib/course-lang.mjs';
+
+export async function getStaticPaths() {
+  const all = (await getCollection('labs')).filter((item) => !item.data.draft);
+  const ruIds = new Set(all.filter((item) => contentLang(item.id) === 'ru').map((item) => item.id));
+  return all
+    .filter((item) => contentLang(item.id) === 'en')
+    .map((item) => {
+      const slug = contentSlug(item.id);
+      return {
+        params: { id: slug },
+        props: { item, altHref: ruIds.has(slug) ? `students/mai/rl/labs/${slug}/` : null },
+      };
+    });
+}
+
+const { item, altHref } = Astro.props;
+---
+
+<BaseLayout title={item.data.title} description={item.data.summary} lang="en" altHref={altHref}>
+  <LabPage item={item} lang="en" current={Astro.url.pathname} />
+</BaseLayout>
