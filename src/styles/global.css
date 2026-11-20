@@ -761,6 +761,20 @@ article .katex {
   font-size: 1.04em;
 }
 
+/* Формула внутри строки бывает шире колонки (длинная подпись в \text{}): она
+   прокручивается в своей рамке, а не растягивает страницу на телефоне.
+   Блочные формулы не трогаем — у .katex-display своя прокрутка. */
+article p .katex,
+article li .katex,
+article td .katex,
+article th .katex {
+  display: inline-block;
+  max-width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  vertical-align: middle;
+}
+
 article .katex-display {
   /* position: relative — чтобы невидимая MathML-копия формулы (position: absolute)
      считалась внутри блока, а не растягивала страницу: без этого длинная формула
@@ -817,6 +831,17 @@ article blockquote strong {
 /* таблицы статьи (в том числе таблица терминов) — той же мерой, что текст */
 article table {
   max-width: var(--measure);
+}
+
+/* Широкая таблица на узком экране прокручивается внутри своей рамки, а не тащит
+   за собой всю страницу: обёртку ставит rehype-плагин rehypeTableWrap. */
+.table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.table-wrap table {
+  margin-top: 0;
 }
 
 /* контейнер стал шире — длинный текст не растягиваем на всю ширину,
