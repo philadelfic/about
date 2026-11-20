@@ -1,79 +1,15 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../components/CourseNav.astro';
-import { withBase } from '../../../../data/site';
+import CourseLanding from '../../../../components/course/CourseLanding.astro';
+import { chrome } from '../../../../data/course-i18n';
 
-const topics = await getCollection('topics');
-// Заглушки на старых адресах заданий в счёт не идут.
-const homework = (await getCollection('homework')).filter((item) => !item.data.draft);
-const allLabs = (await getCollection('labs')).filter((item) => !item.data.draft);
-const labs = allLabs.filter((item) => item.data.issued);
-const seminars = (await getCollection('seminars')).filter((item) => !item.data.draft);
-const results = (await getCollection('results')).filter((item) => !item.data.draft);
-const current = Astro.url.pathname;
-
-const sections = [
-  {
-    href: withBase('students/mai/rl/topics/'),
-    title: 'Темы',
-    text: `Пройденные темы: что разбирали, теория и вопросы-ответы. Сейчас открыто: ${topics.length}.`,
-  },
-  {
-    href: withBase('students/mai/rl/homework/'),
-    title: 'Домашние задания',
-    text:
-      homework.length > 0
-        ? `Домашние задания: баллы сверх лабораторных — можно добрать (заданий: ${homework.length}).`
-        : 'Домашние задания: баллы сверх лабораторных — так можно добрать недостающее.',
-  },
-  {
-    href: withBase('students/mai/rl/labs/'),
-    title: 'Лабораторные',
-    text:
-      labs.length > 0
-        ? `Лабораторные работы: обязательные, каждая с кодом и таблицами (выдано ${labs.length} из ${allLabs.length}).`
-        : 'Лабораторные работы: обязательные, каждая с кодом и таблицами.',
-  },
-  {
-    href: withBase('students/mai/rl/seminars/'),
-    title: 'Семинарские занятия',
-    text:
-      seminars.length > 0
-        ? `Материалы занятий: что разбирали и что можно повторить (занятий: ${seminars.length}).`
-        : 'Материалы занятий: что разбирали и что можно повторить.',
-  },
-  {
-    href: withBase('students/mai/rl/results/'),
-    title: 'Результаты',
-    text:
-      results.length > 0
-        ? `Зачёты по заданиям занятий: ${results.length}.`
-        : 'Зачёты и незачёты по заданиям занятий.',
-  },
-];
+const t = chrome('ru');
 ---
 
-<BaseLayout title="Обучение с подкреплением" description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, лабораторные работы, семинарские занятия, результаты заданий.">
-  <div class="course">
-    <CourseNav current={current} />
-
-    <div>
-      <p class="muted">Т1 + МАИ · магистратура</p>
-      <h1>Обучение с подкреплением</h1>
-      <p class="lead">Материалы курса: темы, домашние задания, лабораторные работы, семинарские занятия и результаты заданий.</p>
-
-      <div class="cards">
-        {sections.map((section) => (
-          <a class="card" href={section.href}>
-            <h3>{section.title}</h3>
-            <p>{section.text}</p>
-            <span class="more">Открыть →</span>
-          </a>
-        ))}
-      </div>
-
-      <p class="muted">Материалы добавляются по мере прохождения занятий.</p>
-    </div>
-  </div>
+<BaseLayout
+  title={t.landingTitle}
+  description="Материалы курса «Обучение с подкреплением»: темы, домашние задания, лабораторные работы, семинарские занятия, результаты заданий."
+  altHref="en/students/mai/rl/"
+>
+  <CourseLanding lang="ru" current={Astro.url.pathname} />
 </BaseLayout>

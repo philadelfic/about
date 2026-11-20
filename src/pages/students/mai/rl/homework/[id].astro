@@ -1,30 +1,26 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../../components/CourseNav.astro';
+import HomeworkPage from '../../../../../components/course/HomeworkPage.astro';
+import { contentLang, enContentId } from '../../../../../lib/course-lang.mjs';
 
 export async function getStaticPaths() {
-  const items = await getCollection('homework');
-  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+  const all = await getCollection('homework');
+  const ids = new Set(all.map((item) => item.id));
+  return all
+    .filter((item) => contentLang(item.id) === 'ru')
+    .map((item) => ({
+      params: { id: item.id },
+      props: {
+        item,
+        altHref: ids.has(enContentId(item.id)) ? `en/students/mai/rl/homework/${item.id}/` : null,
+      },
+    }));
 }
 
-const { item } = Astro.props;
-const { Content } = await render(item);
-const current = Astro.url.pathname;
+const { item, altHref } = Astro.props;
 ---
 
-<BaseLayout title={item.data.title} description={item.data.summary}>
-  <div class="course">
-    <CourseNav current={current} />
-
-    <article>
-      <p class="muted">
-        Домашнее задание{item.data.lecture ? ` · лекция ${item.data.lecture}` : ''}{item.data.seminar ? ` · семинар ${item.data.seminar}` : ''}{item.data.topic ? ` · тема ${item.data.topic}` : ''}
-      </p>
-      <h1>{item.data.title}</h1>
-      <p class="lead">{item.data.due ? `Сдать: ${item.data.due}` : ''}</p>
-
-      <Content />
-    </article>
-  </div>
+<BaseLayout title={item.data.title} description={item.data.summary} altHref={altHref}>
+  <HomeworkPage item={item} lang="ru" current={Astro.url.pathname} />
 </BaseLayout>

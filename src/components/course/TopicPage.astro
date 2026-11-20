@@ -1,0 +1,258 @@
+---
+/**
+ * Страница темы курса — одна на два языка.
+ * Русский маршрут: src/pages/students/mai/rl/topics/[id].astro,
+ * английский: src/pages/en/students/mai/rl/topics/[id].astro.
+ */
+import { getCollection, render } from 'astro:content';
+import type { CollectionEntry } from 'astro:content';
+import CourseNav from '../CourseNav.astro';
+import TopicToc from '../TopicToc.astro';
+import Simulator from '../Simulator.astro';
+import { withBase } from '../../data/site';
+import { bodyHeadings, createIdNamer } from '../../lib/headings.mjs';
+import { homeworkOrder } from '../../lib/homework.mjs';
+import { contentLang, contentSlug } from '../../lib/course-lang.mjs';
+import { chrome, answerAnchorLabel } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+
+interface Props {
+  topic: CollectionEntry<'topics'>;
+  lang: Lang;
+  current: string;
+}
+
+const { topic, lang, current } = Astro.props;
+const t = chrome(lang);
+const en = lang === 'en';
+const prefix = en ? 'en/students/mai/rl/' : 'students/mai/rl/';
+const { Content } = await render(topic);
+
+const own = <T extends { id: string; data: any }>(items: T[], lang: Lang) =>
+  items.filter((item) => !item.data.draft && contentLang(item.id) === lang);
+
+const all = own(await getCollection('topics'), lang).sort((a, b) => a.data.number - b.data.number);
+const index = all.findIndex((item) => item.id === topic.id);
+const prev = index > 0 ? all[index - 1] : undefined;
+const next = index < all.length - 1 ? all[index + 1] : undefined;
+
+// Задания и лабораторные, привязанные к этой теме (обратные ссылки).
+const topicHomework = own(await getCollection('homework'), lang)
+  .filter((item) => item.data.topic === topic.data.number)
+  .sort((a, b) => homeworkOrder(a) - homeworkOrder(b));
+const topicLabs = own(await getCollection('labs'), lang)
+  .filter((item) => item.data.topic === topic.data.number)
+  .sort((a, b) => a.data.number - b.data.number);
+
+// Связь темы с лекциями: тема может закрывать несколько лекций.
+const lectures = topic.data.lectures;
+const lectureNumbers = lectures.map((item) => item.number).join(en ? ' and ' : ' и ');
+const lectureDates = lectures.map((item) => item.date).filter(Boolean).join(', ');
+const lectureHeadline = lectures.length
+  ? t.lecturesHeadline(lectureNumbers, lectures.length > 1)
+  : topic.data.date
+    ? ` · ${t.lectureWord} ${topic.data.date}`
+    : '';
+const coveredTitle =
+  lectures.length > 1
+    ? t.coveredMany
+    : lectures.length === 1
+      ? t.coveredOnLecture(lectures[0].number, lectures[0].date)
+      : t.coveredOnLecture();
+const coveredGroups = lectures
+  .map((item) => ({ title: t.lectureGroupTitle(item.number, item.date), items: item.covered }))
+  .filter((group) => group.items.length > 0);
+
+const href = (value: string) => (value.startsWith('http') ? value : withBase(value));
+const isFile = (value: string) => !value.startsWith('http');
+
+// Якоря блоков: у русского занятия исторические, у английского — свои осмысленные.
+const anchor = en
+  ? {
+      covered: 'what-we-covered',
+      theory: 'theory',
+      qa: 'questions',
+      terms: 'terminology',
+      homework: 'homework-topic',
+      labs: 'labs-topic',
+      simulator: 'simulator',
+    }
+  : {
+      covered: 'chto-razbirali',
+      theory: 'teoriya',
+      qa: 'voprosy-i-otvety',
+      terms: 'terminologiya',
+      homework: 'zadaniya-po-teme',
+      labs: 'laboratornye-po-teme',
+      simulator: 'simulyator',
+    };
+
+// Содержание темы (правая колонка). Якоря вопросов продолжают нумерацию заголовков.
+const namer = createIdNamer();
+const theoryHeadings = bodyHeadings(topic.body, namer);
+const qaItems = topic.data.qa.map((item) => ({ ...item, id: namer.claim(item.q, en ? 'question' : 'vopros') }));
+
+const toc = [
+  ...(topic.data.covered.length > 0 ? [{ text: t.coveredMany, id: anchor.covered, level: 0 }] : []),
+  { text: t.theoryTitle, id: anchor.theory, level: 0 },
+  ...theoryHeadings,
+  ...(topic.data.qa.length > 0 ? [{ text: t.qaTitle, id: anchor.qa, level: 0 }] : []),
+  ...(topic.data.terms.length > 0 ? [{ text: t.termsTitle, id: anchor.terms, level: 0 }] : []),
+  ...(topicHomework.length > 0 ? [{ text: t.relatedHomework, id: anchor.homework, level: 0 }] : []),
+  ...(topic.data.simulator ? [{ text: t.navLabsShort === 'Labs' ? 'Try it yourself' : 'Покрутить руками', id: anchor.simulator, level: 0 }] : []),
+];
+---
+
+<div class="course course--toc">
+  <CourseNav current={current} lang={lang} />
+
+  <article>
+    <p class="muted">
+      {t.topicWord} {topic.data.number}{lectureHeadline}
+    </p>
+    <h1>{topic.data.title}</h1>
+    <p class="lead">{topic.data.summary}</p>
+
+    {topic.data.lecture.length > 0 && (
+      <ul class="links materials">
+        {topic.data.lecture.map((item) => (
+          <li>
+            {item.href ? (
+              <a href={href(item.href)} target={isFile(item.href) ? '_blank' : undefined}>
+                {item.title}
+              </a>
+            ) : (
+              <span>{item.title}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+    )}
+
+    {topic.data.covered.length > 0 && (
+      <div class="panel" id={anchor.covered}>
+        <b>{coveredTitle}</b>
+        {lectures.length > 1 && lectureDates && (
+          <p class="muted">
+            {t.lecturesWord} {lectureNumbers} · {lectureDates}
+          </p>
+        )}
+        {coveredGroups.length > 0 ? (
+          coveredGroups.map((group) => (
+            <div class="covered-group">
+              <p class="covered-group-title">{group.title}</p>
+              <ul class="tasks">
+                {group.items.map((line) => (
+                  <li>{line}</li>
+                ))}
+              </ul>
+            </div>
+          ))
+        ) : (
+          <ul class="tasks">
+            {topic.data.covered.map((line) => (
+              <li>{line}</li>
+            ))}
+          </ul>
+        )}
+      </div>
+    )}
+
+    <h2 id={anchor.theory}>{t.theoryTitle}</h2>
+    <Content />
+
+    {topic.data.qa.length > 0 && (
+      <>
+        <h2 id={anchor.qa}>{t.qaTitle}</h2>
+        <div class="qa">
+          {qaItems.map((item) => (
+            <details id={item.id}>
+              <summary>
+                {item.q}
+                <a class="qa-link" href={`#${item.id}`} aria-label={answerAnchorLabel(item.q, lang)}>
+                  #
+                </a>
+              </summary>
+              <p>{item.a}</p>
+            </details>
+          ))}
+        </div>
+      </>
+    )}
+
+    {topic.data.terms.length > 0 && (
+      <>
+        <h2 id={anchor.terms}>{t.termsTitle}</h2>
+        <table class="terms-table">
+          <thead>
+            <tr>
+              <th>{t.termCol}</th>
+              <th>{t.meaningCol}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {topic.data.terms.map((item) => (
+              <tr>
+                <td>{item.term}</td>
+                <td>{item.definition}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </>
+    )}
+
+    {topicHomework.length > 0 && (
+      <div class="panel" id={anchor.homework}>
+        <b>{t.relatedHomework}</b>
+        <ul class="links">
+          {topicHomework.map((item) => (
+            <li>
+              <a href={withBase(`${prefix}homework/${contentSlug(item.id)}/`)}>
+                {item.data.title}
+                {item.data.due ? ` · ${t.submitBy.toLowerCase()} ${item.data.due}` : ''}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {topicLabs.length > 0 && (
+      <div class="panel" id={anchor.labs}>
+        <b>{t.relatedLabs}</b>
+        <ul class="links">
+          {topicLabs.map((item) => (
+            <li>
+              <a href={withBase(`${prefix}labs/${contentSlug(item.id)}/`)}>
+                {item.data.title}
+                {item.data.due ? ` · ${t.submitBy.toLowerCase()} ${item.data.due}` : ''}
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    )}
+
+    {topic.data.simulator && (
+      <div id={anchor.simulator} class="sim-wrap">
+        <Simulator preset={topic.data.simulator} />
+      </div>
+    )}
+
+    <div class="row" style="margin-top:28px">
+      {prev && (
+        <a href={withBase(`${prefix}topics/${contentSlug(prev.id)}/`)}>
+          ← {t.prevTopic} {prev.data.number}
+        </a>
+      )}
+      {next && (
+        <a href={withBase(`${prefix}topics/${contentSlug(next.id)}/`)}>
+          {t.prevTopic} {next.data.number} →
+        </a>
+      )}
+    </div>
+  </article>
+
+  <TopicToc items={toc} title={t.topicTocTitle} />
+</div>

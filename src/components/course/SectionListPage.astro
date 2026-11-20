@@ -1,0 +1,132 @@
+---
+/**
+ * Список раздела курса (темы, домашние задания, лабораторные, занятия, результаты) —
+ * один компонент на пять разделов и два языка: отличается только подпись строки.
+ */
+import { getCollection } from 'astro:content';
+import CourseNav from '../CourseNav.astro';
+import { withBase } from '../../data/site';
+import { homeworkKind, homeworkOrder } from '../../lib/homework.mjs';
+import { labKind, labOrder } from '../../lib/labs.mjs';
+import { contentLang, contentSlug } from '../../lib/course-lang.mjs';
+import { chrome } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+
+type Section = 'topics' | 'homework' | 'labs' | 'seminars' | 'results';
+
+interface Props {
+  section: Section;
+  lang: Lang;
+  current: string;
+}
+
+const { section, lang, current } = Astro.props;
+const t = chrome(lang);
+const prefix = lang === 'en' ? 'en/students/mai/rl/' : 'students/mai/rl/';
+
+const own = (items: any[]) => items.filter((item) => !item.data.draft && contentLang(item.id) === lang);
+
+const items = await (async () => {
+  if (section === 'topics') {
+    return own(await getCollection('topics')).sort((a: any, b: any) => a.data.number - b.data.number);
+  }
+  if (section === 'homework') {
+    return own(await getCollection('homework')).sort((a: any, b: any) => homeworkOrder(a) - homeworkOrder(b));
+  }
+  if (section === 'labs') {
+    return own(await getCollection('labs'))
+      .filter((item: any) => item.data.issued)
+      .sort((a: any, b: any) => labOrder(a) - labOrder(b));
+  }
+  if (section === 'seminars') {
+    return own(await getCollection('seminars')).sort((a: any, b: any) => a.data.number - b.data.number);
+  }
+  return own(await getCollection('results')).sort((a: any, b: any) => a.data.number - b.data.number);
+})();
+
+const lectureLabel = (topic: any) => {
+  const list = topic.data.lectures;
+  if (list.length === 0) return topic.data.date ? ` · ${topic.data.date}` : '';
+  const numbers = list.map((item: any) => item.number).join(lang === 'en' ? ' and ' : ' и ');
+  const dates = list.every((item: any) => item.date)
+    ? ` · ${list.map((item: any) => item.date).join(', ')}`
+    : '';
+  return t.lecturesHeadline(numbers, list.length > 1) + dates;
+};
+
+const resultsDates = (item: any) =>
+  item.data.groups
+    .map((group: any) => group.date)
+    .filter(Boolean)
+    .join(' · ');
+
+const groupsLabel = (item: any) => {
+  const names = item.data.groups.map((group: any) => group.name);
+  if (names.length === 0) return '';
+  return t.resultsGroupPrefix(names);
+};
+
+const passedCount = (item: any) =>
+  item.data.groups.reduce(
+    (sum: number, group: any) => sum + group.rows.filter((row: any) => row.status === 'зачёт').length,
+    0
+  );
+const totalCount = (item: any) =>
+  item.data.groups.reduce((sum: number, group: any) => sum + group.rows.length, 0);
+
+const step = (item: any) => {
+  if (section === 'topics') return `${t.topicWord} ${item.data.number}${lectureLabel(item)}`;
+  if (section === 'homework') {
+    return `${homeworkKind(item, lang)}${item.data.due ? `${lang === 'en' ? ' · ' : ' · '}${lang === 'en' ? 'due' : 'к'} ${item.data.due}` : ''}`;
+  }
+  if (section === 'labs') {
+    return `${labKind(item, lang)}${item.data.due ? ` · ${t.submitBy.toLowerCase()} ${item.data.due}` : ''}`;
+  }
+  if (section === 'seminars') {
+    return `${t.seminarWord} ${item.data.number}${item.data.date ? ` · ${item.data.date}` : ''}`;
+  }
+  return `${t.checkWord} ${item.data.number}${resultsDates(item) ? ` · ${resultsDates(item)}` : ''}`;
+};
+
+const subline = (item: any) => {
+  if (section === 'topics') return item.data.summary;
+  if (section === 'homework') return item.data.summary;
+  if (section === 'labs') return item.data.summary;
+  if (section === 'seminars') return item.data.summary;
+  return `${groupsLabel(item)}${t.resultsListLine(passedCount(item), totalCount(item), item.data.groups.length)}`;
+};
+
+const page = {
+  topics: { title: t.topicsTitle, lead: t.topicsLead, empty: t.topicsEmpty },
+  homework: { title: t.homeworkTitle, lead: t.homeworkLead, empty: t.homeworkEmpty },
+  labs: { title: t.labsTitle, lead: t.labsLead, empty: t.labsEmpty },
+  seminars: { title: t.seminarsTitle, lead: t.seminarsLead, empty: t.seminarsEmpty },
+  results: { title: t.resultsWord, lead: t.resultsLead, empty: t.resultsEmpty },
+}[section];
+---
+
+<div class="course">
+  <CourseNav current={current} lang={lang} />
+
+  <div>
+    <p class="muted">{t.courseTitle}</p>
+    <h1>{page.title}</h1>
+    <p class="lead">{page.lead}</p>
+
+    {items.length === 0 ? (
+      <p class="muted">{page.empty}</p>
+    ) : (
+      <ul class="topic-list">
+        {items.map((item: any) => (
+          <li>
+            <a href={withBase(`${prefix}${section}/${contentSlug(item.id)}/`)}>
+              <span class="step">{step(item)}</span>
+              <h3>{item.data.title}</h3>
+              <p class="muted">{subline(item)}</p>
+            </a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</div>

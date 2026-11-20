@@ -1,0 +1,104 @@
+---
+/** Результаты проверки по занятию — одна страница на два языка. */
+import type { CollectionEntry } from 'astro:content';
+import CourseNav from '../CourseNav.astro';
+import GroupTabs from '../GroupTabs.astro';
+import { withBase } from '../../data/site';
+import { chrome } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+
+interface Props {
+  item: CollectionEntry<'results'>;
+  lang: Lang;
+  current: string;
+}
+
+const { item, lang, current } = Astro.props;
+const t = chrome(lang);
+
+// Группы идут как заданы в файле; студентов читают по алфавиту, а не по баллам.
+const groups = item.data.groups.map((group) => {
+  const rows = [...group.rows].sort((a, b) => a.student.localeCompare(b.student, lang === 'en' ? 'en' : 'ru'));
+  const passed = rows.filter((row) => row.status === 'зачёт').length;
+  return { ...group, rows, passed, failed: rows.length - passed };
+});
+const firstGroup = groups[0]?.name;
+const statusLabel = (status: string) =>
+  status === 'зачёт' ? t.passWord : status === 'незачёт' ? t.failWord : status;
+---
+
+<div class="course">
+  <CourseNav current={current} lang={lang} />
+
+  <article>
+    <p class="muted">{t.resultsCheckLine(item.data.number)}</p>
+    <h1>{t.resultsH1(item.data.number, item.data.title)}</h1>
+    <p class="lead">{item.data.summary}</p>
+
+    {groups.length === 0 ? (
+      <p class="muted">{t.noResults}</p>
+    ) : (
+      <div data-task-switch>
+        <div class="group-switch group-switch--top" role="tablist" aria-label={t.navGroup}>
+          {groups.map((group) => (
+            <button
+              type="button"
+              role="tab"
+              data-group={group.name}
+              aria-selected={group.name === firstGroup ? 'true' : 'false'}
+            >
+              {group.name}
+            </button>
+          ))}
+        </div>
+
+        {groups.map((group) => (
+          <div data-task-group={group.name} hidden={group.name !== firstGroup}>
+            <p class="results-summary">
+              {t.resultsSummary(group.name, group.date, group.passed, group.failed, group.rows.length)}
+            </p>
+
+            <table class="results-table">
+              <thead>
+                <tr>
+                  <th>№</th>
+                  <th>{t.studentCol}</th>
+                  <th>{t.resultsColumn(item.data.number)}</th>
+                  <th>{t.improveCol}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {group.rows.map((row, index) => (
+                  <tr>
+                    <td>{index + 1}</td>
+                    <td>{row.student}</td>
+                    <td>
+                      <span class:list={['status', row.status === 'зачёт' ? 'status--pass' : 'status--fail']}>
+                        {statusLabel(row.status)}
+                      </span>
+                    </td>
+                    <td>
+                      {row.links.length > 0 ? (
+                        <ul class="results-links">
+                          {row.links.map((link) => (
+                            <li>
+                              <a href={withBase(link.href)}>{link.title}</a>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <span class="muted">—</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ))}
+      </div>
+    )}
+  </article>
+</div>
+
+<GroupTabs />

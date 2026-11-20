@@ -47,13 +47,6 @@ tasks:
   - title: "Task 9. The bridge: 19 683, 5 478 and 765"
     text: "In tic-tac-toe 3 × 3 there are 19 683 positions if you write the board as it is — three to the ninth. Reachable ones — 5 478. And the table in the lab should come out at about 765. What happened at each step, and what matters more than the size of the table in the lab?"
     answer: "19 683 = 3^9: every cell is either empty, a cross or a nought. 5 478 — the unreachable ones are dropped (for example, where there are two more crosses than noughts). 765 — the board is symmetric: eight symmetries (four rotations times two reflections) collapse into one canonical record, and the table is kept only for it. In the lab the size matters less than the opponent: the agent plays against itself, and every position is recorded from the point of view of the side to move — those are the hardest parts of the assignment, and they are covered in the step-by-step guide."
-assignment:
-  title: "Assignment: lab 1 — tic-tac-toe"
-  text: "In class we went through what the work starts with: the environment (a game, lines, a draw), canonisation of symmetries, an agent with a value table and ε-greedy choice, the TD update, self-play and evaluation against two opponents in both roles. The mandatory studies are α (0.05 and 0.5 against the baseline 0.1) and ε (0.01 and 0.3 against the baseline 0.1), at least a hundred independent runs per point, with the median and interquartile range in the report. The skeleton with gaps, the technical specification and the step-by-step guide are on the lab page (in Russian)."
-  homework:
-    title: "Lab 1 — assignment, criteria, deadlines and the guide (RU)"
-    href: "students/mai/rl/labs/01-krestiki-noliki/"
-  due: "group 1 — 01.12.2026, group 2 — 04.12.2026"
 materials:
   - title: "Class code — archive saper-en.zip (eight files, English)"
     href: "/files/course/rl/sem7/en/saper-en.zip"

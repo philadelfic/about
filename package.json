@@ -8,7 +8,8 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "test": "node --test"
+    "test": "node --test",
+    "check:en": "node scripts/check-en-translation.mjs"
   },
   "dependencies": {
     "astro": "^5.0.0",

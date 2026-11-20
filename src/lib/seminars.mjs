@@ -1,27 +1,17 @@
 /**
- * Язык занятия и адреса-двойники: русская страница в корне курса, английская — в /en/.
- *
- * Правило простое и проверяется тестом: английская запись лежит в подпапке en/
- * (id вида «en/07-saper-4x4»), русская — в корне коллекции с тем же именем файла.
- * Отдельного поля в frontmatter нет: имя файла и есть пара.
+ * Занятия: язык и адреса-двойники. Тонкая обёртка над общим правилом курса,
+ * чтобы старые импорты (страницы занятий, тесты) остались как были.
  */
+import { contentLang, contentSlug, enContentId } from './course-lang.mjs';
 
-/** Язык записи коллекции seminars: 'en' для файлов из подпапки en/, иначе 'ru'. */
-export function seminarLang(id) {
-  return id.startsWith('en/') ? 'en' : 'ru';
-}
+/** Язык записи коллекции seminars: 'en' для файлов из подпапки en/. */
+export const seminarLang = contentLang;
 
 /** Адресный слаг записи: 'en/07-saper-4x4' → '07-saper-4x4'. */
-export function seminarSlug(id) {
-  return id.replace(/^en\//, '');
-}
+export const seminarSlug = contentSlug;
 
-/** id русской записи по любому id: 'en/07-saper-4x4' → '07-saper-4x4'. */
-export function ruSeminarId(id) {
-  return seminarSlug(id);
-}
+/** id русской записи по любому id. */
+export const ruSeminarId = contentSlug;
 
-/** id английской записи по русскому id: '07-saper-4x4' → 'en/07-saper-4x4'. */
-export function enSeminarId(id) {
-  return `en/${seminarSlug(id)}`;
-}
+/** id английской записи по русскому id. */
+export const enSeminarId = enContentId;

@@ -17,7 +17,6 @@ import { bodyHeadings, createIdNamer } from '../lib/headings.mjs';
 import { withBase } from '../data/site';
 import { courseChrome, groupLabel, variantLabel, answerAnchorLabel } from '../data/course-i18n';
 import type { Lang } from '../data/i18n';
-import { seminarSlug } from '../lib/seminars.mjs';
 
 interface Props {
   item: CollectionEntry<'seminars'>;
@@ -112,38 +111,7 @@ const toc = [
 ---
 
 <div class="course course--toc">
-  {en ? (
-    <nav class="course-nav">
-      <h2>
-        <a href={withBase('en/students/mai/rl/seminars/')}>Course</a>
-      </h2>
-      <ul>
-        <li>
-          <a
-            href={withBase('en/students/mai/rl/seminars/')}
-            aria-current={current.startsWith(withBase('en/students/mai/rl/seminars/'))
-              ? 'page'
-              : undefined}
-          >
-            Seminars
-          </a>
-        </li>
-      </ul>
-      <h2>Русский курс</h2>
-      <ul>
-        <li>
-          <a href={withBase('students/mai/rl/')}>Все материалы по-русски</a>
-        </li>
-        <li>
-          <a href={withBase(`students/mai/rl/seminars/${seminarSlug(item.id)}/`)}>
-            Это занятие по-русски
-          </a>
-        </li>
-      </ul>
-    </nav>
-  ) : (
-    <CourseNav current={current} />
-  )}
+  <CourseNav current={current} lang={lang} />
 
   <article>
     <p class="muted">

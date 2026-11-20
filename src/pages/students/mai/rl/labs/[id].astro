@@ -1,40 +1,26 @@
 ---
-import { getCollection, render } from 'astro:content';
+import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../../components/CourseNav.astro';
-import TopicToc from '../../../../../components/TopicToc.astro';
-import { bodyHeadings } from '../../../../../lib/headings.mjs';
+import LabPage from '../../../../../components/course/LabPage.astro';
+import { contentLang, enContentId } from '../../../../../lib/course-lang.mjs';
 
 export async function getStaticPaths() {
-  const items = (await getCollection('labs')).filter((item) => !item.data.draft);
-  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+  const all = (await getCollection('labs')).filter((item) => !item.data.draft);
+  const ids = new Set(all.map((item) => item.id));
+  return all
+    .filter((item) => contentLang(item.id) === 'ru')
+    .map((item) => ({
+      params: { id: item.id },
+      props: {
+        item,
+        altHref: ids.has(enContentId(item.id)) ? `en/students/mai/rl/labs/${item.id}/` : null,
+      },
+    }));
 }
 
-const { item } = Astro.props;
-const { Content } = await render(item);
-const current = Astro.url.pathname;
-
-// Оглавление справа: разделы работы и её пошагового руководства.
-const toc = bodyHeadings(item.body);
+const { item, altHref } = Astro.props;
 ---
 
-<BaseLayout title={`${item.data.title}`} description={item.data.summary}>
-  <div class="course course--toc">
-    <CourseNav current={current} />
-
-    <article>
-      <p class="muted">
-        Лабораторная работа {item.data.number}
-        {item.data.seminar ? ` · семинар ${item.data.seminar}` : ''}
-        {item.data.topic ? ` · тема ${item.data.topic}` : ''}
-      </p>
-      <h1>{item.data.title}</h1>
-      <p class="lead">{item.data.summary}</p>
-      {item.data.due && <p class="lead">Сдать: {item.data.due}</p>}
-
-      <Content />
-    </article>
-
-    <TopicToc items={toc} title="Содержание" />
-  </div>
+<BaseLayout title={item.data.title} description={item.data.summary} altHref={altHref}>
+  <LabPage item={item} lang="ru" current={Astro.url.pathname} />
 </BaseLayout>

@@ -1,68 +1,14 @@
 ---
-import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../../layouts/BaseLayout.astro';
-import { withBase } from '../../../../../../data/site';
-import { courseChrome } from '../../../../../../data/course-i18n';
-import { seminarLang, seminarSlug } from '../../../../../../lib/seminars.mjs';
+import SectionListPage from '../../../../../../components/course/SectionListPage.astro';
 
-// Переведённые занятия. Список короткий и честный: пока переведён один семинар,
-// так и написано — остальной курс на русском.
-const items = (await getCollection('seminars'))
-  .filter((item) => !item.data.draft && seminarLang(item.id) === 'en')
-  .sort((a, b) => a.data.number - b.data.number);
-
-const t = courseChrome.en;
 ---
 
 <BaseLayout
   title="Seminar sessions"
   description="Seminar materials of the Reinforcement Learning course (MAI), English versions."
   lang="en"
-  altHref={null}
+  altHref="students/mai/rl/seminars/"
 >
-  <div class="course">
-    <nav class="course-nav">
-      <h2><a href={withBase('en/students/mai/rl/seminars/')}>Course</a></h2>
-      <ul>
-        <li>
-          <a href={withBase('en/students/mai/rl/seminars/')} aria-current="page"> Seminars </a>
-        </li>
-      </ul>
-      <h2>Русский курс</h2>
-      <ul>
-        <li><a href={withBase('students/mai/rl/')}>Все материалы по-русски</a></li>
-      </ul>
-    </nav>
-
-    <div>
-      <p class="muted">{t.courseTitle}</p>
-      <h1>{t.seminarsTitle}</h1>
-      <p class="lead">{t.seminarsLead}</p>
-
-      {items.length === 0 ? (
-        <p class="muted">{t.seminarsEmpty}</p>
-      ) : (
-        <ul class="topic-list">
-          {items.map((item) => (
-            <li>
-              <a href={withBase(`en/students/mai/rl/seminars/${seminarSlug(item.id)}/`)}>
-                <span class="step">
-                  {t.seminarWord} {item.data.number}
-                  {item.data.date ? ` · ${item.data.date}` : ''}
-                </span>
-                <h3>{item.data.title}</h3>
-                <p class="muted">{item.data.summary}</p>
-              </a>
-            </li>
-          ))}
-        </ul>
-      )}
-
-      <p class="muted">
-        Переведена пока часть курса: остальные занятия, темы, домашние задания и лабораторные —
-        <a href={withBase('students/mai/rl/')}>на русском</a>. Презентации занятий тоже на русском:
-        на странице занятия English-версия материалов — текст, код и инструкции.
-      </p>
-    </div>
-  </div>
+  <SectionListPage section="seminars" lang="en" current={Astro.url.pathname} />
 </BaseLayout>

@@ -1,0 +1,56 @@
+---
+/** Витрина курса (главная страница раздела) — одна на два языка. */
+import { getCollection } from 'astro:content';
+import CourseNav from '../CourseNav.astro';
+import { withBase } from '../../data/site';
+import { contentLang } from '../../lib/course-lang.mjs';
+import { chrome } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+
+interface Props {
+  lang: Lang;
+  current: string;
+}
+
+const { lang, current } = Astro.props;
+const t = chrome(lang);
+const prefix = lang === 'en' ? 'en/students/mai/rl/' : 'students/mai/rl/';
+const own = (items: any[]) => items.filter((item) => !item.data.draft && contentLang(item.id) === lang);
+
+const topics = own(await getCollection('topics'));
+const homework = own(await getCollection('homework'));
+const allLabs = own(await getCollection('labs'));
+const labs = allLabs.filter((item: any) => item.data.issued);
+const seminars = own(await getCollection('seminars'));
+const results = own(await getCollection('results'));
+
+const sections = [
+  { href: withBase(`${prefix}topics/`), title: t.navTopics, text: t.cardTopics(topics.length) },
+  { href: withBase(`${prefix}homework/`), title: t.navHomework, text: t.cardHomework(homework.length) },
+  { href: withBase(`${prefix}labs/`), title: t.navLabs, text: t.cardLabs(labs.length, allLabs.length) },
+  { href: withBase(`${prefix}seminars/`), title: t.navSeminars, text: t.cardSeminars(seminars.length) },
+  { href: withBase(`${prefix}results/`), title: t.navResults, text: t.cardResults(results.length) },
+];
+---
+
+<div class="course">
+  <CourseNav current={current} lang={lang} />
+
+  <div>
+    <p class="muted">{t.landingOverline}</p>
+    <h1>{t.landingTitle}</h1>
+    <p class="lead">{t.landingLead}</p>
+
+    <div class="cards">
+      {sections.map((section) => (
+        <a class="card" href={section.href}>
+          <h3>{section.title}</h3>
+          <p>{section.text}</p>
+          <span class="more">{t.openWord} →</span>
+        </a>
+      ))}
+    </div>
+
+    <p class="muted">{t.landingNote}</p>
+  </div>
+</div>

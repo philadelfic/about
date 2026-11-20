@@ -1,108 +1,30 @@
 ---
 import { getCollection } from 'astro:content';
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import CourseNav from '../../../../../components/CourseNav.astro';
-import GroupTabs from '../../../../../components/GroupTabs.astro';
-import { withBase } from '../../../../../data/site';
+import ResultsPage from '../../../../../components/course/ResultsPage.astro';
+import { contentLang, enContentId } from '../../../../../lib/course-lang.mjs';
 
 export async function getStaticPaths() {
-  const items = (await getCollection('results')).filter((item) => !item.data.draft);
-  return items.map((item) => ({ params: { id: item.id }, props: { item } }));
+  const all = (await getCollection('results')).filter((item) => !item.data.draft);
+  const ids = new Set(all.map((item) => item.id));
+  return all
+    .filter((item) => contentLang(item.id) === 'ru')
+    .map((item) => ({
+      params: { id: item.id },
+      props: {
+        item,
+        altHref: ids.has(enContentId(item.id)) ? `en/students/mai/rl/results/${item.id}/` : null,
+      },
+    }));
 }
 
-const { item } = Astro.props;
-const current = Astro.url.pathname;
-
-// Группы идут как заданы в файле (гр.1, затем гр.2); студентов читают по алфавиту, а не по баллам.
-const groups = item.data.groups.map((group) => {
-  const rows = [...group.rows].sort((a, b) => a.student.localeCompare(b.student, 'ru'));
-  const passed = rows.filter((row) => row.status === 'зачёт').length;
-  return { ...group, rows, passed, failed: rows.length - passed };
-});
-const firstGroup = groups[0]?.name;
+const { item, altHref } = Astro.props;
 ---
 
 <BaseLayout
   title={`Семинар ${item.data.number}. ${item.data.title} — результаты проверки`}
   description={item.data.summary}
+  altHref={altHref}
 >
-  <div class="course">
-    <CourseNav current={current} />
-
-    <article>
-      <p class="muted">Результаты проверки · семинар {item.data.number}</p>
-      <h1>Семинар {item.data.number}. {item.data.title}</h1>
-      <p class="lead">{item.data.summary}</p>
-
-      {groups.length === 0 ? (
-        <p class="muted">Результатов пока нет.</p>
-      ) : (
-        <div data-task-switch>
-          <div class="group-switch group-switch--top" role="tablist" aria-label="Группа">
-            {groups.map((group) => (
-              <button
-                type="button"
-                role="tab"
-                data-group={group.name}
-                aria-selected={group.name === firstGroup ? 'true' : 'false'}
-              >
-                {group.name}
-              </button>
-            ))}
-          </div>
-
-          {groups.map((group) => (
-            <div data-task-group={group.name} hidden={group.name !== firstGroup}>
-              <p class="results-summary">
-                Группа {group.name}
-                {group.date ? ` · занятие ${group.date}` : ''} · Зачёт: {group.passed}
-                {group.failed > 0 ? ` · Незачёт: ${group.failed}` : ''} · Всего: {group.rows.length}
-              </p>
-
-              <table class="results-table">
-                <thead>
-                  <tr>
-                    <th>№</th>
-                    <th>Студент</th>
-                    <th>Семинар {item.data.number}</th>
-                    <th>Что подтянуть</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {group.rows.map((row, index) => (
-                    <tr>
-                      <td>{index + 1}</td>
-                      <td>{row.student}</td>
-                      <td>
-                        <span
-                          class:list={['status', row.status === 'зачёт' ? 'status--pass' : 'status--fail']}
-                        >
-                          {row.status}
-                        </span>
-                      </td>
-                      <td>
-                        {row.links.length > 0 ? (
-                          <ul class="results-links">
-                            {row.links.map((link) => (
-                              <li>
-                                <a href={withBase(link.href)}>{link.title}</a>
-                              </li>
-                            ))}
-                          </ul>
-                        ) : (
-                          <span class="muted">—</span>
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ))}
-        </div>
-      )}
-    </article>
-  </div>
-
-  <GroupTabs />
+  <ResultsPage item={item} lang="ru" current={Astro.url.pathname} />
 </BaseLayout>
