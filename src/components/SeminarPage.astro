@@ -61,8 +61,13 @@ const groupNames = ['А', 'Б'];
 const tasksNamer = createIdNamer();
 const quizNamer = createIdNamer();
 // Задача без группы — общая: её видит и группа А, и группа Б.
+// В английских файлах группы помечены латиницей (A/B) — приводим к тем же А/Б.
+const groupKey = (value?: string) => {
+  const key = (value ?? '').trim();
+  return key === 'A' ? 'А' : key === 'B' ? 'Б' : key;
+};
 const belongsTo = (task: { group?: string }, group: string) => {
-  const value = (task.group ?? '').trim();
+  const value = groupKey(task.group);
   return value === '' || value === group;
 };
 const taskGroups = groupNames.map((group) => ({
