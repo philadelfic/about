@@ -9,11 +9,13 @@
  * По клику на балл открывается карточка «за что баллы и что повторить»; данные
  * для неё лежат в том же JSON и встроены в страницу одним <script id="works-details">.
  */
+import { getCollection } from 'astro:content';
 import CourseNav from '../CourseNav.astro';
 import { withBase } from '../../data/site';
 import { chrome } from '../../data/course-i18n';
 import type { Lang } from '../../data/i18n';
 import data from '../../data/works-20261122.json';
+import { contentLang, contentSlug } from '../../lib/course-lang.mjs';
 
 interface Props {
   /** Адрес страницы — как у соседних страниц раздела; подсветку меню считаем сами. */
@@ -23,6 +25,33 @@ interface Props {
 
 const { lang = 'ru' } = Astro.props;
 const t = chrome(lang);
+
+// Проверки на занятиях — те же записи, что в разделе «Результаты»: списком под таблицей
+// работ, чтобы проверки были рядом с итогами. Ссылка ведёт на страницу проверки.
+const resultsPrefix = lang === 'en' ? 'en/students/mai/rl/results/' : 'students/mai/rl/results/';
+
+const checks = (await getCollection('results'))
+  .filter((item) => !item.data.draft && contentLang(item.id) === lang)
+  .sort((a, b) => a.data.number - b.data.number);
+
+// Подпись карточки: «Занятие N · Название»; даты групп — в сроке под ней.
+const checkStep = (item: (typeof checks)[number]) =>
+  `${lang === 'en' ? 'Session' : 'Занятие'} ${item.data.number} · ${item.data.title}`;
+
+const checkGroups = (item: (typeof checks)[number]) =>
+  item.data.groups
+    .map((group) => (group.date ? `${group.name} (${group.date})` : group.name))
+    .join(' · ');
+
+// Зачёт считаем по строкам всех групп: сколько «зачёт» из общего числа проверенных.
+const checkPassed = (item: (typeof checks)[number]) =>
+  item.data.groups.reduce(
+    (sum, group) => sum + group.rows.filter((row) => row.status === 'зачёт').length,
+    0,
+  );
+
+const checkTotal = (item: (typeof checks)[number]) =>
+  item.data.groups.reduce((sum, group) => sum + group.rows.length, 0);
 
 const works = data.works;
 const bonus = data.bonus;
@@ -51,14 +80,21 @@ const studentWord = (count: number) => {
 type RowDetails = (typeof groups)[number]['rows'][number]['details'];
 type CellDetail = RowDetails[keyof RowDetails];
 
-const cardWorks: Record<string, { short: string; title: string; max: number }> = Object.fromEntries(
-  [...works, bonus].map((work) => [work.key, { short: work.short, title: work.title, max: work.max }]),
-);
+// «Занятия» — баллы за работу на семинарах: это не работа из works, максимума у неё нет.
+const LESSONS = { key: 'lessons', short: 'Занятия', title: 'Баллы за работу на занятиях', max: null };
+
+const cardWorks: Record<string, { short: string; title: string; max: number | null }> = {
+  ...Object.fromEntries(
+    [...works, bonus].map((work) => [work.key, { short: work.short, title: work.title, max: work.max }]),
+  ),
+  [LESSONS.key]: { short: LESSONS.short, title: LESSONS.title, max: LESSONS.max },
+};
 
 const cardCells: Record<string, Record<string, CellDetail>> = {};
 groups.forEach((group, groupIndex) => {
   group.rows.forEach((row, rowIndex) => {
-    cardCells[`${groupIndex}-${rowIndex}`] = row.details;
+    // lessons — синтетический блок «баллы за все занятия»: в карточке вместо таблицы — пояснение.
+    cardCells[`${groupIndex}-${rowIndex}`] = { ...row.details, lessons: row.details.lessons };
   });
 });
 
@@ -132,6 +168,12 @@ const cardData = {
                   <th title={`${work.title} · ${work.hint}`}>{work.short}</th>
                 ))}
                 <th title={`Сумма обязательных работ · максимум ${maxTotal}`}>Итого</th>
+                <th
+                  class="works-lessons"
+                  title="Баллы за работу на занятиях: сумма за все семинары, в итог не входит"
+                >
+                  {LESSONS.short}
+                </th>
                 <th class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
                   Бонус {bonus.short}
                 </th>
@@ -165,6 +207,20 @@ const cardData = {
                   <td class="works-total" title={`Сумма обязательных работ · максимум ${row.max}`}>
                     {cell(row.total)}
                   </td>
+                  <td class="works-lessons" title={`${LESSONS.title} · за что баллы`}>
+                    <button
+                      type="button"
+                      class="works-cell"
+                      data-cell={key}
+                      data-work={LESSONS.key}
+                      data-student={row.student}
+                      data-points={row.lessons}
+                      aria-haspopup="dialog"
+                      aria-label={`${LESSONS.title}: ${row.lessons} — за что баллы`}
+                    >
+                      {cell(row.lessons)}
+                    </button>
+                  </td>
                   <td class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
                     <button
                       type="button"
@@ -193,9 +249,37 @@ const cardData = {
         кто ходит на семинары и работает. В итог (200 баллов) он не входит.
       </p>
       <p>
+        Занятия — баллы за работу на семинарах; в «Итого» (200) не входят, как и бонус MDP.
+      </p>
+      <p>
         Максимумы: каждое ДЗ — 20, лабораторная — до 100; проверено 22.11.2026, баллы рабочие.
       </p>
     </div>
+
+    {/* Проверки на занятиях — списком под таблицей: те же карточки, что в разделе
+        «Результаты», ссылка ведёт на страницу проверки занятия. */}
+    <section>
+      <h2>Проверки на занятиях</h2>
+      <p class="muted">Зачёты и незачёты по заданиям семинаров — что уже проверено.</p>
+
+      {checks.length === 0 ? (
+        <p class="muted">Проверок пока нет — появятся после первого занятия.</p>
+      ) : (
+        <ul class="topic-list">
+          {checks.map((item) => (
+            <li>
+              <a href={withBase(`${resultsPrefix}${contentSlug(item.id)}/`)}>
+                <h3>{checkStep(item)}</h3>
+                <p class="muted">
+                  Группы: {checkGroups(item)} · Зачёт: {checkPassed(item)} из {checkTotal(item)}
+                </p>
+                <span class="more">Смотреть →</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
 
     <dialog id="works-card" class="works-card" aria-labelledby="works-card-title">
       <h2 id="works-card-title" data-card-title></h2>
@@ -210,6 +294,8 @@ const cardData = {
         </thead>
         <tbody data-card-blocks></tbody>
       </table>
+
+      <p class="works-card__note" data-card-note hidden></p>
 
       <div class="works-card__repeat">
         <h3>Что повторить</h3>
@@ -240,7 +326,18 @@ const cardData = {
     const blocksNode = dialog.querySelector('[data-card-blocks]');
     const repeatNode = dialog.querySelector('[data-card-repeat]');
     const linksNode = dialog.querySelector('[data-card-links]');
+    const LESSONS_KEY = 'lessons';
+    const blocksTable = blocksNode.closest('table');
+    const noteNode = dialog.querySelector('[data-card-note]');
     let opener = null;
+
+    // Числительное для «Занятий»: «1 балл», «4 балла», «5 баллов».
+    const plural = (count) => {
+      const mod100 = count % 100;
+      const mod10 = count % 10;
+      const index = mod100 >= 11 && mod100 <= 14 ? 2 : mod10 === 1 ? 0 : mod10 >= 2 && mod10 <= 4 ? 1 : 2;
+      return ['балл', 'балла', 'баллов'][index];
+    };
 
     // Ячейка блока: название, полоска прогресса (сколько взято от максимума) и earned/max.
     const blockRow = (block) => {
@@ -276,11 +373,22 @@ const cardData = {
       if (!work || !detail) return false;
 
       const got = Number(button.dataset.points);
-      titleNode.textContent = button.dataset.student + ' · ' + work.title + ' · ' + got + ' из ' + work.max;
+      // «Занятия» — единственная запись без максимума: в заголовке «N баллов», а вместо таблицы
+      // блоков (у неё один синтетический блок) — строка-пояснение.
+      const isLessons = button.dataset.work === LESSONS_KEY;
+      titleNode.textContent = isLessons
+        ? button.dataset.student + ' · Баллы за занятия · ' + got + ' ' + plural(got)
+        : button.dataset.student + ' · ' + work.title + ' · ' + got + ' из ' + work.max;
       dialog.dataset.state = got > 0 ? 'scored' : 'zero';
 
-      blocksNode.replaceChildren(...detail.blocks.map(blockRow));
+      blocksTable.hidden = isLessons;
+      noteNode.hidden = !isLessons;
+      noteNode.textContent = isLessons
+        ? 'Набрано ' + got + ' ' + plural(got) + ' за работу на семинарах — сумма по всем проведённым занятиям'
+        : '';
+      blocksNode.replaceChildren(...(isLessons ? [] : detail.blocks.map(blockRow)));
       repeatNode.textContent = detail.repeat;
+      linksNode.hidden = detail.links.length === 0;
       linksNode.replaceChildren(...detail.links.map((link) => {
         const item = document.createElement('li');
         const anchor = document.createElement('a');
@@ -324,7 +432,7 @@ const cardData = {
 </script>
 
 <style>
-  /* Таблица широкая: одиннадцать граф. Баллы — по правому краю, цифры одной ширины,
+  /* Таблица широкая: двенадцать граф. Баллы — по правому краю, цифры одной ширины,
      ноль читается как прочерк, бонус стоит особняком и в итог не входит. */
   .works-count {
     color: var(--muted);
@@ -389,6 +497,14 @@ const cardData = {
   }
 
   .works-table td.works-zero {
+    color: var(--muted);
+  }
+
+  /* Занятия: та же приглушённая подача, что у бонуса, но своим классом — это не бонус MDP. */
+  .works-table .works-lessons {
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    border-left: 1px solid var(--line);
+    font-style: italic;
     color: var(--muted);
   }
 
@@ -514,6 +630,19 @@ const cardData = {
     height: 100%;
     border-radius: inherit;
     background: var(--accent);
+  }
+
+  /* Пояснение вместо таблицы блоков: у «Занятий» блок один синтетический, таблица не нужна. */
+  .works-card__note {
+    margin: 0;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--border, var(--line));
+    color: var(--muted);
+  }
+
+  .works-card__blocks[hidden],
+  .works-card__links[hidden] {
+    display: none;
   }
 
   /* «Что повторить» — текст проверки как есть, ссылки на темы и работу ниже. */
