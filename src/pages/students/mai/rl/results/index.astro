@@ -1,9 +1,23 @@
 ---
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
 import SectionListPage from '../../../../../components/course/SectionListPage.astro';
+import { withBase } from '../../../../../data/site';
 
 ---
 
 <BaseLayout title="Результаты" description="Результаты проверок на семинарских занятиях курса «Обучение с подкреплением»: зачёты, незачёты и что подтянуть." altHref="en/students/mai/rl/results/">
-  <SectionListPage section="results" lang="ru" current={Astro.url.pathname} />
+  <SectionListPage section="results" lang="ru" current={Astro.url.pathname}>
+    {/* Итоги семестра отдельной страницей: в списке только проверки занятий, без неё
+        сводку по домашним и лабораторным не найти. */}
+    <div class="cards">
+      <a class="card" href={withBase('students/mai/rl/works/')}>
+        <h3>Итоги работ семестра: ДЗ и лабораторные</h3>
+        <p>
+          Баллы за домашние задания, семинарские работы и лабораторную и бонус за MDP — по группам,
+          проверено 22.11.2026.
+        </p>
+        <span class="more">Смотреть →</span>
+      </a>
+    </div>
+  </SectionListPage>
 </BaseLayout>

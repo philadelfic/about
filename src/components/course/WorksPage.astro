@@ -1,0 +1,226 @@
+---
+/**
+ * Страница «Работы семестра»: итоги проверки домашних заданий и лабораторных.
+ *
+ * Данные — src/data/works-20261122.json (сборка: work/students-order-20261122/build_works_json.py),
+ * публично только «Фамилия И.». MDP «крестики-нолики» — бонус, в итог 200 баллов не входит.
+ */
+import CourseNav from '../CourseNav.astro';
+import GroupTabs from '../GroupTabs.astro';
+import { withBase } from '../../data/site';
+import { chrome } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+import data from '../../data/works-20261122.json';
+
+interface Props {
+  /** Адрес страницы — как у соседних страниц раздела; подсветку меню считаем сами. */
+  current: string;
+  lang?: Lang;
+}
+
+const { lang = 'ru' } = Astro.props;
+const t = chrome(lang);
+
+const works = data.works;
+const bonus = data.bonus;
+const groups = data.groups;
+const firstGroup = groups[0]?.name;
+const humanDate = (value: string) => value.split('-').reverse().join('.');
+
+// 0 баллов — это «не сделано»: в таблице ставим тире, чтобы глаз читал пустоту, а не цифру.
+const cell = (value: number) => (value > 0 ? String(value) : '—');
+const points = (row: { points: Record<string, number> }) => row.points;
+
+// «Работы семестра» — часть раздела «Результаты»: меню курса подсвечивает его.
+// Своей строки в подсписке проверок у страницы нет — там только проверки занятий.
+const navCurrent = withBase(lang === 'en' ? 'en/students/mai/rl/results/' : 'students/mai/rl/results/');
+
+const studentWord = (count: number) => {
+  const forms = lang === 'en' ? ['student', 'students', 'students'] : ['студент', 'студента', 'студентов'];
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  const index = mod100 >= 11 && mod100 <= 14 ? 2 : mod10 === 1 ? 0 : mod10 >= 2 && mod10 <= 4 ? 1 : 2;
+  return `${count} ${forms[index]}`;
+};
+---
+
+<div class="course">
+  <CourseNav current={navCurrent} lang={lang} />
+
+  <article>
+    <p class="muted">{t.courseTitle}</p>
+    <h1>Работы семестра: домашние задания и лабораторные</h1>
+    <p class="lead">
+      Итоги проверки работ за семестр на {humanDate(data.updated)}: баллы за домашние задания, семинарские
+      работы и лабораторную. В «Итого» входят только обязательные работы (до 200 баллов), MDP
+      «крестики-нолики» — отдельный бонус.
+    </p>
+
+    {groups.length === 0 ? (
+      <p class="muted">Работы ещё не проверены.</p>
+    ) : (
+      <div data-task-switch>
+        <div class="group-switch group-switch--top" role="tablist" aria-label={t.navGroup}>
+          {groups.map((group) => (
+            <button
+              type="button"
+              role="tab"
+              data-group={group.name}
+              aria-selected={group.name === firstGroup ? 'true' : 'false'}
+            >
+              {group.name}
+            </button>
+          ))}
+        </div>
+
+        {groups.map((group) => (
+          <div data-task-group={group.name} hidden={group.name !== firstGroup}>
+            <p class="works-count">
+              {group.name} · {studentWord(group.rows.length)} · проверено {humanDate(data.updated)}
+            </p>
+
+            <div class="works-scroll">
+              <table class="results-table works-table">
+                <thead>
+                  <tr>
+                    <th title="Номер строки">№</th>
+                    <th>Студент</th>
+                    {works.map((work) => (
+                      <th title={`${work.title} · ${work.hint}`}>{work.short}</th>
+                    ))}
+                    <th title={`Сумма обязательных работ · максимум ${group.rows[0]?.max ?? 200}`}>Итого</th>
+                    <th class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
+                      Бонус {bonus.short}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {group.rows.map((row, index) => (
+                    <tr>
+                      <td>{index + 1}</td>
+                      <td>{row.student}</td>
+                      {works.map((work) => (
+                        <td
+                          class:list={{ 'works-zero': points(row)[work.key] === 0 }}
+                          title={`${work.title} · ${work.hint}`}
+                        >
+                          {cell(points(row)[work.key])}
+                        </td>
+                      ))}
+                      <td class="works-total" title={`Сумма обязательных работ · максимум ${row.max}`}>
+                        {cell(row.total)}
+                      </td>
+                      <td class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
+                        {cell(row.bonus)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+    )}
+
+    <div class="works-notes">
+      <p>
+        MDP «крестики-нолики» — не обязательное задание: это подготовка к семинару по вопросу MDP, бонус тем,
+        кто ходит на семинары и работает. В итог (200 баллов) он не входит.
+      </p>
+      <p>
+        Максимумы: каждое ДЗ — 20, лабораторная — до 100; проверено 22.11.2026, баллы рабочие.
+      </p>
+    </div>
+  </article>
+</div>
+
+<GroupTabs />
+
+<style>
+  /* Таблица широкая: одиннадцать граф. Баллы — по правому краю, цифры одной ширины,
+     ноль читается как прочерк, бонус стоит особняком и в итог не входит. */
+  .works-count {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .works-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .works-table {
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .works-table th,
+  .works-table td {
+    padding: 8px 7px;
+    white-space: nowrap;
+  }
+
+  .works-table th {
+    text-align: right;
+    vertical-align: bottom;
+  }
+
+  .works-table td {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Первая графа — номер, вторая — студент: обе слева и по содержимому. */
+  .works-table th:nth-child(1),
+  .works-table td:nth-child(1) {
+    width: 2.5em;
+    text-align: left;
+  }
+
+  .works-table th:nth-child(2),
+  .works-table td:nth-child(2) {
+    width: auto;
+    min-width: 9em;
+    text-align: left;
+  }
+
+  /* Графы работ — по содержимому: глобальные ширины таблицы результатов здесь малы. */
+  .works-table th:nth-child(3),
+  .works-table td:nth-child(3) {
+    width: auto;
+  }
+
+  .works-table .works-total {
+    font-weight: 600;
+  }
+
+  .works-table td.works-zero {
+    color: var(--muted);
+  }
+
+  /* Бонус: приглушённый фон и курсив — видно, что это не обязательная работа. */
+  .works-table .works-bonus {
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    border-left: 1px solid var(--line);
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  .works-notes {
+    max-width: var(--measure);
+    margin-top: 30px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .works-notes p {
+    margin: 0 0 10px;
+  }
+
+  .works-notes p:last-child {
+    margin-bottom: 0;
+  }
+</style>
