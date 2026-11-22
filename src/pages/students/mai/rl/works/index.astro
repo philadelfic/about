@@ -1,0 +1,12 @@
+---
+import BaseLayout from '../../../../../layouts/BaseLayout.astro';
+import WorksPage from '../../../../../components/course/WorksPage.astro';
+---
+
+<BaseLayout
+  title="Работы семестра"
+  description="Итоги проверки работ семестра курса «Обучение с подкреплением»: баллы за домашние задания, семинарские работы и лабораторную, бонус за MDP — по группам."
+  altHref={null}
+>
+  <WorksPage current={Astro.url.pathname} lang="ru" />
+</BaseLayout>

@@ -328,6 +328,26 @@ strong { font-weight: 600; }
 
 .card .more { display: inline-block; margin-top: 12px; font-size: 14px; color: var(--accent); }
 
+/* Кнопка-переход на страницу с таблицей (страница-вход раздела «Результаты»). */
+.entry-cta {
+  display: inline-block;
+  margin: 30px 0 0;
+  padding: 15px 28px;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--line));
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--accent);
+  font-size: 17px;
+  font-weight: 600;
+  transition: transform 0.18s ease, border-color 0.18s ease;
+}
+
+.entry-cta:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  text-decoration: none;
+}
+
 .row {
   display: flex;
   flex-wrap: wrap;

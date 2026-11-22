@@ -1,0 +1,814 @@
+---
+/**
+ * Страница «Работы семестра»: итоги проверки домашних заданий и лабораторных.
+ *
+ * Данные — src/data/works-20261122.json (сборка: work/students-order-20261122/build_works_json.py,
+ * разбивка баллов по блокам — build_details.py там же), публично только «Фамилия И.».
+ * MDP «крестики-нолики» — бонус, в итог 200 баллов не входит.
+ *
+ * Проверки на занятиях (коллекция results) — такие же колонки таблицы: «З1», «З2», …, перед
+ * «Итого»; в ячейке «✓» / «✗», по клику — карточка проверки со ссылками «что подтянуть».
+ *
+ * По клику на балл открывается карточка «за что баллы и что повторить»; данные
+ * для неё лежат в том же JSON и встроены в страницу одним <script id="works-details">.
+ */
+import { getCollection } from 'astro:content';
+import CourseNav from '../CourseNav.astro';
+import { withBase } from '../../data/site';
+import { chrome } from '../../data/course-i18n';
+import type { Lang } from '../../data/i18n';
+import data from '../../data/works-20261122.json';
+import { contentLang } from '../../lib/course-lang.mjs';
+
+interface Props {
+  /** Адрес страницы — как у соседних страниц раздела; подсветку меню считаем сами. */
+  current: string;
+  lang?: Lang;
+}
+
+const { current, lang = 'ru' } = Astro.props;
+const t = chrome(lang);
+
+// Проверки на занятиях — колонки общей таблицы работ: по одной на каждую проверку из
+// коллекции results. Строки results подписаны так же, как студенты в таблице («Гришин П.»),
+// поэтому проверку сопоставляем со студентом по подписи.
+const checks = (await getCollection('results'))
+  .filter((item) => !item.data.draft && contentLang(item.id) === lang)
+  .sort((a, b) => a.data.number - b.data.number);
+
+type CheckRow = { status: 'зачёт' | 'незачёт'; links: { title: string; href: string }[] };
+
+// Пояснение вместо таблицы блоков в карточке проверки: блоков рубрики у зачёта нет.
+const checkNote = (number: number, status: CheckRow['status']) =>
+  status === 'незачёт'
+    ? lang === 'en'
+      ? 'Not passed — worth reviewing the topics from the links below'
+      : 'Незачёт — стоит подтянуть темы по ссылкам'
+    : lang === 'en'
+      ? `Passed at session ${number}. What to review — follow the links below`
+      : `Зачёт на занятии ${number}. Что подтянуть — по ссылкам ниже`;
+
+// Подпись статуса для title и aria-label: в данных он по-русски, на английской странице — по-английски.
+const checkStatusLabel = (status: CheckRow['status'] | null) => {
+  if (!status) return lang === 'en' ? 'not checked' : 'не отмечен';
+  if (lang === 'en') return status === 'зачёт' ? 'pass' : 'fail';
+  return status;
+};
+
+const checkHint = lang === 'en' ? 'pass/fail at the session' : 'зачёт/незачёт на семинаре';
+
+const checkColumns = checks.map((item) => ({
+  /** Ключ работы в таблице и в карточке: check-1, check-2, … */
+  key: `check-${item.data.number}`,
+  number: item.data.number,
+  short: `З${item.data.number}`,
+  title: `${lang === 'en' ? 'Session' : 'Занятие'} ${item.data.number} · ${item.data.title}`,
+  /** Строки проверки по подписи студента: один студент встречается в группах не больше раза. */
+  rows: new Map<string, CheckRow>(
+    item.data.groups.flatMap((group) =>
+      group.rows.map((row) => [row.student, { status: row.status, links: row.links }] as const),
+    ),
+  ),
+}));
+
+const works = data.works;
+const bonus = data.bonus;
+const groups = data.groups;
+const humanDate = (value: string) => value.split('-').reverse().join('.');
+
+// 0 баллов — это «не сделано»: в таблице ставим тире, чтобы глаз читал пустоту, а не цифру.
+const cell = (value: number) => (value > 0 ? String(value) : '—');
+const points = (row: { points: Record<string, number> }) => row.points;
+
+const studentWord = (count: number) => {
+  const forms = lang === 'en' ? ['student', 'students', 'students'] : ['студент', 'студента', 'студентов'];
+  const mod100 = count % 100;
+  const mod10 = count % 10;
+  const index = mod100 >= 11 && mod100 <= 14 ? 2 : mod10 === 1 ? 0 : mod10 >= 2 && mod10 <= 4 ? 1 : 2;
+  return `${count} ${forms[index]}`;
+};
+
+// Данные карточки: работы (подпись и максимум) и разбивка по блокам для каждой
+// ячейки таблицы. Ключ ячейки — «номер группы-номер строки», чтобы не тащить в
+// скрипт имена студентов: имя берём из data-атрибута кнопки.
+type RowDetails = (typeof groups)[number]['rows'][number]['details'];
+type CellDetail = RowDetails[keyof RowDetails];
+
+// «Занятия» — баллы за работу на семинарах: это не работа из works, максимума у неё нет.
+const LESSONS = { key: 'lessons', short: 'Занятия', title: 'Баллы за работу на занятиях', max: null };
+
+const cardWorks: Record<string, { short: string; title: string; max: number | null }> = {
+  ...Object.fromEntries(
+    [...works, bonus].map((work) => [work.key, { short: work.short, title: work.title, max: work.max }]),
+  ),
+  // Проверки занятий — записи без максимума: в карточке «зачёт/незачёт», а не баллы из максимума.
+  ...Object.fromEntries(
+    checkColumns.map((check) => [check.key, { short: check.short, title: check.title, max: null }]),
+  ),
+  [LESSONS.key]: { short: LESSONS.short, title: LESSONS.title, max: LESSONS.max },
+};
+
+// Пояснение вместо блоков (занятия, проверки) — необязательное поле карточки.
+type CardCell = CellDetail & { note?: string };
+
+const cardCells: Record<string, Record<string, CardCell>> = {};
+groups.forEach((group, groupIndex) => {
+  group.rows.forEach((row, rowIndex) => {
+    // lessons — синтетический блок «баллы за все занятия»: в карточке вместо таблицы — пояснение.
+    // check-N — проверка занятия: блоков нет, вместо таблицы пояснение и ссылки «что подтянуть».
+    const checkCells: Record<string, CardCell> = {};
+    checkColumns.forEach((check) => {
+      const entry = check.rows.get(row.student);
+      if (!entry) return;
+      checkCells[check.key] = {
+        blocks: [],
+        note: checkNote(check.number, entry.status),
+        repeat: '',
+        links: entry.links,
+      };
+    });
+    cardCells[`${groupIndex}-${rowIndex}`] = {
+      ...row.details,
+      lessons: row.details.lessons,
+      ...checkCells,
+    };
+  });
+});
+
+// Один общий список: группы остаются только в данных, в таблицу идёт короткая запись
+// «203», «202», а если группы нет — тире.
+const groupLabel = (name: string) => name.match(/\d{3}/)?.[0] ?? '—';
+
+const tableRows = groups.flatMap((group, groupIndex) =>
+  group.rows.map((row, rowIndex) => ({
+    row,
+    // Ключ ячейки — «номер группы-номер строки»: по нему карточка ищет разбивку в cardCells.
+    key: `${groupIndex}-${rowIndex}`,
+    group: groupLabel(group.name),
+  })),
+);
+
+// Порядок общего списка: «Итого» по убыванию, затем бонус по убыванию, затем фамилия.
+const surname = (student: string) => student.split(' ')[0];
+const sortedRows = [...tableRows].sort(
+  (a, b) =>
+    b.row.total - a.row.total ||
+    b.row.bonus - a.row.bonus ||
+    surname(a.row.student).localeCompare(surname(b.row.student), 'ru'),
+);
+
+const maxTotal = tableRows[0]?.row.max ?? 200;
+
+// «Сдано» — непустые ячейки таблицы: обязательные работы и бонус MDP.
+const submittedWorks = sortedRows.reduce(
+  (sum, { row }) =>
+    sum + works.filter((work) => points(row)[work.key] > 0).length + (row.bonus > 0 ? 1 : 0),
+  0,
+);
+
+// Ссылки в карточке лежат относительными путями курса: база портала и язык — здесь.
+const cardData = {
+  prefix: withBase(lang === 'en' ? 'en/' : ''),
+  works: cardWorks,
+  cells: cardCells,
+  // Слова статуса для заголовка карточки проверки — по языку страницы.
+  checkWords: { pass: lang === 'en' ? 'pass' : 'зачёт', fail: lang === 'en' ? 'fail' : 'незачёт' },
+};
+---
+
+<div class="course">
+  <CourseNav current={current} lang={lang} />
+
+  <article>
+    <p class="muted">{t.courseTitle}</p>
+    <h1>Работы семестра: домашние задания и лабораторные</h1>
+    <p class="lead">
+      Итоги проверки работ за семестр на {humanDate(data.updated)}: баллы за домашние задания, семинарские
+      работы и лабораторную. В «Итого» входят только обязательные работы (до 200 баллов), MDP
+      «крестики-нолики» — отдельный бонус.
+    </p>
+
+    {sortedRows.length === 0 ? (
+      <p class="muted">Работы ещё не проверены.</p>
+    ) : (
+      <>
+        <p class="works-count">
+          {studentWord(sortedRows.length)}, из них {submittedWorks} работ сдано · проверено {humanDate(data.updated)}
+        </p>
+
+        <div class="works-scroll">
+          <table class="results-table works-table">
+            <thead>
+              <tr>
+                <th title="Номер строки">№</th>
+                <th>Студент</th>
+                <th class="works-group" title={t.navGroup}>Группа</th>
+                {works.map((work) => (
+                  <th title={`${work.title} · ${work.hint}`}>{work.short}</th>
+                ))}
+                {checkColumns.map((check, checkIndex) => (
+                  <th
+                    class:list={{ 'works-check': true, 'works-check--first': checkIndex === 0 }}
+                    title={`${check.title} — ${checkHint}`}
+                  >
+                    {check.short}
+                  </th>
+                ))}
+                <th title={`Сумма обязательных работ · максимум ${maxTotal}`}>Итого</th>
+                <th
+                  class="works-lessons"
+                  title="Баллы за работу на занятиях: сумма за все семинары, в итог не входит"
+                >
+                  {LESSONS.short}
+                </th>
+                <th class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
+                  Бонус {bonus.short}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedRows.map(({ row, key, group }, index) => (
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{row.student}</td>
+                  <td class="works-group">{group}</td>
+                  {works.map((work) => (
+                    <td
+                      class:list={{ 'works-zero': points(row)[work.key] === 0 }}
+                      title={`${work.title} · ${work.hint} · за что баллы`}
+                    >
+                      <button
+                        type="button"
+                        class="works-cell"
+                        data-cell={key}
+                        data-work={work.key}
+                        data-student={row.student}
+                        data-points={points(row)[work.key]}
+                        aria-haspopup="dialog"
+                        aria-label={`${work.title}: ${points(row)[work.key]} из ${work.max} — за что баллы`}
+                      >
+                        {cell(points(row)[work.key])}
+                      </button>
+                    </td>
+                  ))}
+                  {checkColumns.map((check, checkIndex) => {
+                    const entry = check.rows.get(row.student);
+                    const status = entry ? entry.status : null;
+                    return (
+                      <td
+                        class:list={{
+                          'works-check': true,
+                          'works-check--first': checkIndex === 0,
+                          'works-zero': !entry,
+                        }}
+                        title={`${check.title} · ${checkStatusLabel(status)}`}
+                      >
+                        <button
+                          type="button"
+                          class="works-cell"
+                          data-cell={key}
+                          data-work={check.key}
+                          data-student={row.student}
+                          data-points={status === 'зачёт' ? 1 : 0}
+                          aria-haspopup="dialog"
+                          aria-label={`${check.title}: ${checkStatusLabel(status)} — подробности`}
+                        >
+                          {status === 'зачёт' ? (
+                            <span class="status status--pass">✓</span>
+                          ) : status === 'незачёт' ? (
+                            <span class="status status--fail">✗</span>
+                          ) : (
+                            '—'
+                          )}
+                        </button>
+                      </td>
+                    );
+                  })}
+                  <td class="works-total" title={`Сумма обязательных работ · максимум ${row.max}`}>
+                    {cell(row.total)}
+                  </td>
+                  <td class="works-lessons" title={`${LESSONS.title} · за что баллы`}>
+                    <button
+                      type="button"
+                      class="works-cell"
+                      data-cell={key}
+                      data-work={LESSONS.key}
+                      data-student={row.student}
+                      data-points={row.lessons}
+                      aria-haspopup="dialog"
+                      aria-label={`${LESSONS.title}: ${row.lessons} — за что баллы`}
+                    >
+                      {cell(row.lessons)}
+                    </button>
+                  </td>
+                  <td class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
+                    <button
+                      type="button"
+                      class="works-cell"
+                      data-cell={key}
+                      data-work={bonus.key}
+                      data-student={row.student}
+                      data-points={row.bonus}
+                      aria-haspopup="dialog"
+                      aria-label={`${bonus.title}: ${row.bonus} из ${bonus.max} — за что баллы`}
+                    >
+                      {cell(row.bonus)}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
+    )}
+
+    <div class="works-notes">
+      <p>
+        MDP «крестики-нолики» — не обязательное задание: это подготовка к семинару по вопросу MDP, бонус тем,
+        кто ходит на семинары и работает. В итог (200 баллов) он не входит.
+      </p>
+      <p>
+        Занятия — баллы за работу на семинарах; в «Итого» (200) не входят, как и бонус MDP.
+      </p>
+      <p>
+        Максимумы: каждое ДЗ — 20, лабораторная — до 100; проверено 22.11.2026, баллы рабочие.
+      </p>
+    </div>
+
+
+    <dialog id="works-card" class="works-card" aria-labelledby="works-card-title">
+      <h2 id="works-card-title" data-card-title></h2>
+
+      <table class="works-card__blocks">
+        <thead>
+          <tr>
+            <th scope="col">Блок рубрики</th>
+            <th scope="col" class="block-bar" aria-label="Прогресс"></th>
+            <th scope="col" class="block-points">Баллы</th>
+          </tr>
+        </thead>
+        <tbody data-card-blocks></tbody>
+      </table>
+
+      <p class="works-card__note" data-card-note hidden></p>
+
+      <div class="works-card__repeat" data-card-repeat-block>
+        <h3>Что повторить</h3>
+        <p data-card-repeat></p>
+      </div>
+
+      <ul class="works-card__links" data-card-links></ul>
+
+      <div class="works-card__foot">
+        <button type="button" class="works-card__close" data-card-close>Закрыть</button>
+      </div>
+    </dialog>
+  </article>
+</div>
+
+
+{/* Данные карточки — одним куском JSON: скрипт ниже читает их и заполняет диалог. */}
+<script is:inline type="application/json" id="works-details" set:html={JSON.stringify(cardData)}></script>
+
+<script is:inline>
+  (() => {
+    const source = document.getElementById('works-details');
+    const dialog = document.getElementById('works-card');
+    if (!source || !dialog || typeof dialog.showModal !== 'function') return;
+
+    const data = JSON.parse(source.textContent || '{}');
+    const titleNode = dialog.querySelector('[data-card-title]');
+    const blocksNode = dialog.querySelector('[data-card-blocks]');
+    const repeatNode = dialog.querySelector('[data-card-repeat]');
+    const linksNode = dialog.querySelector('[data-card-links]');
+    const LESSONS_KEY = 'lessons';
+    // Проверки занятия: ключи вида «check-1» — блоков нет, в карточке пояснение и ссылки.
+    const CHECK_PREFIX = 'check-';
+    const blocksTable = blocksNode.closest('table');
+    const noteNode = dialog.querySelector('[data-card-note]');
+    const repeatBlockNode = dialog.querySelector('[data-card-repeat-block]');
+    let opener = null;
+
+    // Числительное для «Занятий»: «1 балл», «4 балла», «5 баллов».
+    const plural = (count) => {
+      const mod100 = count % 100;
+      const mod10 = count % 10;
+      const index = mod100 >= 11 && mod100 <= 14 ? 2 : mod10 === 1 ? 0 : mod10 >= 2 && mod10 <= 4 ? 1 : 2;
+      return ['балл', 'балла', 'баллов'][index];
+    };
+
+    // Ячейка блока: название, полоска прогресса (сколько взято от максимума) и earned/max.
+    const blockRow = (block) => {
+      const tr = document.createElement('tr');
+
+      const name = document.createElement('td');
+      name.className = 'block-name';
+      name.textContent = block.title;
+
+      const bar = document.createElement('td');
+      bar.className = 'block-bar';
+      const track = document.createElement('span');
+      track.className = 'bar';
+      const fill = document.createElement('span');
+      fill.className = 'bar-fill';
+      const share = block.max > 0 ? Math.round((block.earned / block.max) * 100) : 0;
+      fill.style.width = share + '%';
+      track.append(fill);
+      bar.append(track);
+
+      const points = document.createElement('td');
+      points.className = 'block-points';
+      points.textContent = block.earned + '/' + block.max;
+
+      tr.append(name, bar, points);
+      return tr;
+    };
+
+    const openCard = (button) => {
+      const work = data.works[button.dataset.work];
+      const row = data.cells[button.dataset.cell];
+      const detail = row ? row[button.dataset.work] : null;
+      if (!work || !detail) return false;
+
+      const got = Number(button.dataset.points);
+      // «Занятия» — запись без максимума: в заголовке «N баллов», а вместо таблицы блоков
+      // (у неё один синтетический блок) — строка-пояснение. Проверки занятия (check-N) устроены
+      // так же: блоков нет, вместо них пояснение и ссылки «что подтянуть».
+      const isLessons = button.dataset.work === LESSONS_KEY;
+      const isCheck = button.dataset.work.startsWith(CHECK_PREFIX);
+      const words = data.checkWords || { pass: 'зачёт', fail: 'незачёт' };
+      titleNode.textContent = isLessons
+        ? button.dataset.student + ' · Баллы за занятия · ' + got + ' ' + plural(got)
+        : isCheck
+          ? button.dataset.student + ' · ' + work.title + ' · ' + (got > 0 ? words.pass : words.fail)
+          : button.dataset.student + ' · ' + work.title + ' · ' + got + ' из ' + work.max;
+      dialog.dataset.state = got > 0 ? 'scored' : 'zero';
+
+      // Пояснение вместо таблицы блоков: у занятий и проверок блоков рубрики нет.
+      const note = isLessons
+        ? 'Набрано ' + got + ' ' + plural(got) + ' за работу на семинарах — сумма по всем проведённым занятиям'
+        : isCheck
+          ? detail.note || ''
+          : '';
+      blocksTable.hidden = isLessons || isCheck;
+      noteNode.hidden = note === '';
+      noteNode.textContent = note;
+      blocksNode.replaceChildren(...(isLessons || isCheck ? [] : detail.blocks.map(blockRow)));
+      // «Что повторить» есть только у работ; у занятий и проверок текст пустой — блок прячем.
+      repeatBlockNode.hidden = detail.repeat === '';
+      repeatNode.textContent = detail.repeat;
+      linksNode.hidden = detail.links.length === 0;
+      linksNode.replaceChildren(...detail.links.map((link) => {
+        const item = document.createElement('li');
+        const anchor = document.createElement('a');
+        anchor.href = data.prefix + link.href;
+        anchor.textContent = link.title;
+        item.append(anchor);
+        return item;
+      }));
+      return true;
+    };
+
+    // Один обработчик на страницу: балл в таблице — единственный источник карточки.
+    document.addEventListener('click', (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+      if (target.closest('[data-card-close]')) {
+        dialog.close();
+        return;
+      }
+      const button = target.closest('button[data-cell]');
+      if (!button || !openCard(button)) return;
+      opener = button;
+      if (!dialog.open) dialog.showModal();
+    });
+
+    // Клик по фону закрывает карточку: <dialog> сам получает клик вне своего прямоугольника.
+    dialog.addEventListener('click', (event) => {
+      if (event.target !== dialog) return;
+      const box = dialog.getBoundingClientRect();
+      const inside = event.clientX >= box.left && event.clientX <= box.right
+        && event.clientY >= box.top && event.clientY <= box.bottom;
+      if (!inside) dialog.close();
+    });
+
+    // После закрытия возвращаем фокус на тот балл, с которого открыли (и по Esc тоже).
+    dialog.addEventListener('close', () => {
+      if (opener) opener.focus();
+      opener = null;
+    });
+  })();
+</script>
+
+<style>
+  /* Таблица широкая: двенадцать граф. Баллы — по правому краю, цифры одной ширины,
+     ноль читается как прочерк, бонус стоит особняком и в итог не входит. */
+  .works-count {
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .works-scroll {
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .works-table {
+    margin-top: 4px;
+    font-size: 14px;
+  }
+
+  .works-table th,
+  .works-table td {
+    padding: 8px 7px;
+    white-space: nowrap;
+  }
+
+  .works-table th {
+    text-align: right;
+    vertical-align: bottom;
+  }
+
+  .works-table td {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Первая графа — номер, вторая — студент: обе слева и по содержимому. */
+  .works-table th:nth-child(1),
+  .works-table td:nth-child(1) {
+    width: 2.5em;
+    text-align: left;
+  }
+
+  .works-table th:nth-child(2),
+  .works-table td:nth-child(2) {
+    width: auto;
+    min-width: 9em;
+    text-align: left;
+  }
+
+  /* Третья графа (группа) — по содержимому: глобальные ширины таблицы результатов здесь малы. */
+  .works-table th:nth-child(3),
+  .works-table td:nth-child(3) {
+    width: auto;
+  }
+
+  /* Графа группы: короткая запись «203», слева и приглушённо. */
+  .works-table .works-group {
+    min-width: 4.5em;
+    text-align: left;
+    color: var(--muted);
+  }
+
+  .works-table .works-total {
+    font-weight: 600;
+  }
+
+  .works-table td.works-zero {
+    color: var(--muted);
+  }
+
+  /* Проверки на занятиях: колонки «✓» / «✗» отделены от работ линией слева. */
+  .works-table .works-check--first {
+    border-left: 1px solid var(--line);
+  }
+
+  /* Занятия: та же приглушённая подача, что у бонуса, но своим классом — это не бонус MDP. */
+  .works-table .works-lessons {
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    border-left: 1px solid var(--line);
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* Бонус: приглушённый фон и курсив — видно, что это не обязательная работа. */
+  .works-table .works-bonus {
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+    border-left: 1px solid var(--line);
+    font-style: italic;
+    color: var(--muted);
+  }
+
+  /* Балл в ячейке — кнопка: та же цифра, но по наведению подчёркивание и курсор-рука. */
+  .works-table .works-cell {
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 2px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    line-height: inherit;
+    cursor: pointer;
+  }
+
+  .works-table .works-cell:hover,
+  .works-table .works-cell:focus-visible {
+    border-bottom-color: currentColor;
+  }
+
+  .works-table .works-cell:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Карточка «за что баллы»: нативный <dialog>, до 560px, прокрутка внутри. */
+  .works-card {
+    width: min(560px, calc(100vw - 24px));
+    max-height: calc(100vh - 40px);
+    margin: auto;
+    padding: 18px 20px 16px;
+    border: 1px solid var(--border, var(--line));
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow: auto;
+    box-shadow: 0 12px 40px rgba(16, 18, 22, 0.18);
+  }
+
+  .works-card::backdrop {
+    background: rgba(16, 18, 22, 0.45);
+  }
+
+  .works-card h2 {
+    margin: 0 0 14px;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* Блоки рубрики: название, полоска на 6px и earned/max последней графой. */
+  .works-card__blocks {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .works-card__blocks th {
+    padding: 0 0 6px;
+    border-bottom: 1px solid var(--border, var(--line));
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .works-card__blocks td {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border, var(--line));
+    vertical-align: middle;
+  }
+
+  .works-card__blocks tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .works-card__blocks .block-name {
+    padding-right: 12px;
+  }
+
+  .works-card__blocks .block-bar {
+    width: 84px;
+    padding-right: 10px;
+  }
+
+  .works-card__blocks .block-points {
+    width: 4.5em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Полоска прогресса: 6px, акцент — «сколько взято» от максимума блока. */
+  .works-card .bar {
+    display: block;
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fg) 12%, transparent);
+    overflow: hidden;
+  }
+
+  .works-card .bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+  }
+
+  /* Пояснение вместо таблицы блоков: у «Занятий» блок один синтетический, таблица не нужна. */
+  .works-card__note {
+    margin: 0;
+    padding: 10px 0 0;
+    border-top: 1px solid var(--border, var(--line));
+    color: var(--muted);
+  }
+
+  .works-card__blocks[hidden],
+  .works-card__repeat[hidden],
+  .works-card__links[hidden] {
+    display: none;
+  }
+
+  /* «Что повторить» — текст проверки как есть, ссылки на темы и работу ниже. */
+  .works-card__repeat {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border, var(--line));
+  }
+
+  .works-card__repeat h3 {
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .works-card__repeat p {
+    margin: 0;
+  }
+
+  .works-card__links {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+  }
+
+  .works-card__links li {
+    margin: 0 0 4px;
+  }
+
+  .works-card__links a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .works-card__foot {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+
+  /* Кнопка «Закрыть» — та же пилюля, что кнопки групп, только светлее. */
+  .works-card .works-card__close {
+    padding: 7px 16px;
+    border: 1px solid var(--border, var(--line));
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .works-card .works-card__close:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Узкий экран: полоска схлопывается до 48px, чтобы название блока не ломалось по слогам. */
+  @media (max-width: 480px) {
+    .works-card {
+      padding: 16px 14px 14px;
+    }
+
+    .works-card__blocks .block-bar {
+      width: 48px;
+    }
+  }
+
+  .works-notes {
+    max-width: var(--measure);
+    margin-top: 30px;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 15px;
+  }
+
+  .works-notes p {
+    margin: 0 0 10px;
+  }
+
+  .works-notes p:last-child {
+    margin-bottom: 0;
+  }
+</style>

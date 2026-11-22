@@ -1,9 +1,30 @@
 ---
+/**
+ * «Результаты» — точка входа раздела. Отдельных страниц проверок больше нет:
+ * проверки на занятиях, баллы за работы и бонус MDP живут в одной таблице
+ * «Работы семестра» (students/mai/rl/works/), сюда ведёт одна большая кнопка.
+ */
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import SectionListPage from '../../../../../components/course/SectionListPage.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
+import { withBase } from '../../../../../data/site';
+import { chrome } from '../../../../../data/course-i18n';
 
+const t = chrome('ru');
 ---
 
-<BaseLayout title="Результаты" description="Результаты проверок на семинарских занятиях курса «Обучение с подкреплением»: зачёты, незачёты и что подтянуть." altHref="en/students/mai/rl/results/">
-  <SectionListPage section="results" lang="ru" current={Astro.url.pathname} />
+<BaseLayout
+  title="Результаты"
+  description="Все проверки и баллы курса «Обучение с подкреплением» собраны в одной таблице — по студентам, работам и занятиям."
+  altHref="en/students/mai/rl/results/"
+>
+  <div class="course">
+    <CourseNav current={Astro.url.pathname} lang="ru" />
+
+    <div>
+      <p class="muted">{t.courseTitle}</p>
+      <h1>Результаты</h1>
+      <p class="lead">Все проверки и баллы собраны в одной таблице — по студентам, работам и занятиям</p>
+      <a class="entry-cta" href={withBase('students/mai/rl/works/')}>Открыть таблицу →</a>
+    </div>
+  </div>
 </BaseLayout>
