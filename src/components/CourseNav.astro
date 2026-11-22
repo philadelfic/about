@@ -2,6 +2,9 @@
 /**
  * Меню курса в левой колонке. Одно на два языка: адреса и подписи берутся
  * по lang, списки — только записи своего языка (английские лежат в en/).
+ *
+ * Отдельных страниц проверок больше нет: все проверки и баллы живут в одной
+ * таблице «Работы семестра», поэтому пункт «Результаты» ведёт сразу на неё.
  */
 import { getCollection } from 'astro:content';
 import { withBase } from '../data/site';
@@ -28,42 +31,38 @@ const homework = own(await getCollection('homework')).sort(
 const seminars = own(await getCollection('seminars')).sort(
   (a: any, b: any) => a.data.number - b.data.number
 );
-const results = own(await getCollection('results')).sort(
-  (a: any, b: any) => a.data.number - b.data.number
-);
 const labs = own(await getCollection('labs'))
   .filter((item: any) => item.data.issued)
   .sort((a: any, b: any) => labOrder(a) - labOrder(b));
+
+// Таблица работ одна на весь раздел: своего адреса у проверок нет, пункт меню
+// ведёт прямо на неё. Английской таблицы пока нет — она одна, русская.
+const worksPath = withBase('students/mai/rl/works/');
 
 const sections = {
   topics: withBase(`${prefix}topics/`),
   homework: withBase(`${prefix}homework/`),
   labs: withBase(`${prefix}labs/`),
   seminars: withBase(`${prefix}seminars/`),
-  results: withBase(`${prefix}results/`),
+  results: worksPath,
 };
 
 // Какая часть курса открыта сейчас — от этого зависит нижний список.
+// «Результаты» — это и страница-вход раздела (results/), и сама таблица (works/).
+const isResults =
+  current.startsWith(worksPath) || current.startsWith(withBase(`${prefix}results/`));
+
 const section = current.startsWith(sections.homework)
   ? 'homework'
   : current.startsWith(sections.labs)
     ? 'labs'
     : current.startsWith(sections.seminars)
       ? 'seminars'
-      : current.startsWith(sections.results)
+      : isResults
         ? 'results'
         : 'topics';
 
 const isCurrent = (href: string) => current === href;
-
-// У проверки может быть несколько групп — в подсписке показываем их даты через запятую.
-const resultsLabel = (item: any) => {
-  const dates = item.data.groups
-    .map((group: any) => group.date)
-    .filter(Boolean)
-    .join(', ');
-  return `${t.seminarWord} ${item.data.number}${dates ? ` · ${dates}` : ''}`;
-};
 ---
 
 <nav class="course-nav">
@@ -97,26 +96,6 @@ const resultsLabel = (item: any) => {
       </a>
     </li>
   </ul>
-
-  {section === 'results' && results.length > 0 && (
-    <>
-      <h2>
-        <a href={sections.results}>{t.navChecks}</a>
-      </h2>
-      <ul>
-        {results.map((item: any) => {
-          const href = withBase(`${prefix}results/${item.id.replace(/^en\//, '')}/`);
-          return (
-            <li>
-              <a href={href} aria-current={isCurrent(href) ? 'page' : undefined}>
-                {resultsLabel(item)}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </>
-  )}
 
   {section === 'homework' && homework.length > 0 && (
     <>

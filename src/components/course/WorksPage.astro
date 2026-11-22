@@ -26,7 +26,7 @@ interface Props {
   lang?: Lang;
 }
 
-const { lang = 'ru' } = Astro.props;
+const { current, lang = 'ru' } = Astro.props;
 const t = chrome(lang);
 
 // Проверки на занятиях — колонки общей таблицы работ: по одной на каждую проверку из
@@ -79,10 +79,6 @@ const humanDate = (value: string) => value.split('-').reverse().join('.');
 // 0 баллов — это «не сделано»: в таблице ставим тире, чтобы глаз читал пустоту, а не цифру.
 const cell = (value: number) => (value > 0 ? String(value) : '—');
 const points = (row: { points: Record<string, number> }) => row.points;
-
-// «Работы семестра» — часть раздела «Результаты»: меню курса подсвечивает его.
-// Своей строки в подсписке проверок у страницы нет — там только проверки занятий.
-const navCurrent = withBase(lang === 'en' ? 'en/students/mai/rl/results/' : 'students/mai/rl/results/');
 
 const studentWord = (count: number) => {
   const forms = lang === 'en' ? ['student', 'students', 'students'] : ['студент', 'студента', 'студентов'];
@@ -181,7 +177,7 @@ const cardData = {
 ---
 
 <div class="course">
-  <CourseNav current={navCurrent} lang={lang} />
+  <CourseNav current={current} lang={lang} />
 
   <article>
     <p class="muted">{t.courseTitle}</p>

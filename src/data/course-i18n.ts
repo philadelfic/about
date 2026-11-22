@@ -151,8 +151,7 @@ export const courseChrome = {
       count > 0
         ? `Материалы занятий: что разбирали и что можно повторить (занятий: ${count}).`
         : 'Материалы занятий: что разбирали и что можно повторить.',
-    cardResults: (count: number) =>
-      count > 0 ? `Зачёты по заданиям занятий: ${count}.` : 'Зачёты и незачёты по заданиям занятий.',
+    cardResults: 'Проверки занятий, баллы за работы и что подтянуть — всё в одной таблице.',
     russianOnly: '',
     translationNote: '',
   },
@@ -270,8 +269,7 @@ export const courseChrome = {
       count > 0
         ? `Materials of the sessions: what we covered and what can be repeated (sessions: ${count}).`
         : 'Materials of the sessions: what we covered and what can be repeated.',
-    cardResults: (count: number) =>
-      count > 0 ? `Checks of the session assignments: ${count}.` : 'Passes and fails on the session assignments.',
+    cardResults: 'Session checks, points for the works and what to revisit — all in one table.',
     russianOnly: '',
     translationNote: '',
   },

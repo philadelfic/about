@@ -22,14 +22,13 @@ const homework = own(await getCollection('homework'));
 const allLabs = own(await getCollection('labs'));
 const labs = allLabs.filter((item: any) => item.data.issued);
 const seminars = own(await getCollection('seminars'));
-const results = own(await getCollection('results'));
 
 const sections = [
   { href: withBase(`${prefix}topics/`), title: t.navTopics, text: t.cardTopics(topics.length) },
   { href: withBase(`${prefix}homework/`), title: t.navHomework, text: t.cardHomework(homework.length) },
   { href: withBase(`${prefix}labs/`), title: t.navLabs, text: t.cardLabs(labs.length, allLabs.length) },
   { href: withBase(`${prefix}seminars/`), title: t.navSeminars, text: t.cardSeminars(seminars.length) },
-  { href: withBase(`${prefix}results/`), title: t.navResults, text: t.cardResults(results.length) },
+  { href: withBase(`${prefix}results/`), title: t.navResults, text: t.cardResults },
 ];
 ---
 

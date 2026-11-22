@@ -1,23 +1,30 @@
 ---
+/**
+ * «Результаты» — точка входа раздела. Отдельных страниц проверок больше нет:
+ * проверки на занятиях, баллы за работы и бонус MDP живут в одной таблице
+ * «Работы семестра» (students/mai/rl/works/), сюда ведёт одна большая кнопка.
+ */
 import BaseLayout from '../../../../../layouts/BaseLayout.astro';
-import SectionListPage from '../../../../../components/course/SectionListPage.astro';
+import CourseNav from '../../../../../components/CourseNav.astro';
 import { withBase } from '../../../../../data/site';
+import { chrome } from '../../../../../data/course-i18n';
 
+const t = chrome('ru');
 ---
 
-<BaseLayout title="Результаты" description="Результаты проверок на семинарских занятиях курса «Обучение с подкреплением»: зачёты, незачёты и что подтянуть." altHref="en/students/mai/rl/results/">
-  <SectionListPage section="results" lang="ru" current={Astro.url.pathname}>
-    {/* Итоги семестра отдельной страницей: в списке только проверки занятий, без неё
-        сводку по домашним и лабораторным не найти. */}
-    <div class="cards">
-      <a class="card" href={withBase('students/mai/rl/works/')}>
-        <h3>Итоги работ семестра: ДЗ и лабораторные</h3>
-        <p>
-          Баллы за домашние задания, семинарские работы и лабораторную и бонус за MDP — по группам,
-          проверено 22.11.2026.
-        </p>
-        <span class="more">Смотреть →</span>
-      </a>
+<BaseLayout
+  title="Результаты"
+  description="Все проверки и баллы курса «Обучение с подкреплением» собраны в одной таблице — по студентам, работам и занятиям."
+  altHref="en/students/mai/rl/results/"
+>
+  <div class="course">
+    <CourseNav current={Astro.url.pathname} lang="ru" />
+
+    <div>
+      <p class="muted">{t.courseTitle}</p>
+      <h1>Результаты</h1>
+      <p class="lead">Все проверки и баллы собраны в одной таблице — по студентам, работам и занятиям</p>
+      <a class="entry-cta" href={withBase('students/mai/rl/works/')}>Открыть таблицу →</a>
     </div>
-  </SectionListPage>
+  </div>
 </BaseLayout>

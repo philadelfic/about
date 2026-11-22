@@ -1,7 +1,7 @@
 ---
 /**
- * Список раздела курса (темы, домашние задания, лабораторные, занятия, результаты) —
- * один компонент на пять разделов и два языка: отличается только подпись строки.
+ * Список раздела курса (темы, домашние задания, лабораторные, занятия) —
+ * один компонент на разделы и два языка: отличается только подпись строки.
  */
 import { getCollection } from 'astro:content';
 import CourseNav from '../CourseNav.astro';
@@ -12,7 +12,7 @@ import { contentLang, contentSlug } from '../../lib/course-lang.mjs';
 import { chrome } from '../../data/course-i18n';
 import type { Lang } from '../../data/i18n';
 
-type Section = 'topics' | 'homework' | 'labs' | 'seminars' | 'results';
+type Section = 'topics' | 'homework' | 'labs' | 'seminars';
 
 interface Props {
   section: Section;
@@ -38,10 +38,7 @@ const items = await (async () => {
       .filter((item: any) => item.data.issued)
       .sort((a: any, b: any) => labOrder(a) - labOrder(b));
   }
-  if (section === 'seminars') {
-    return own(await getCollection('seminars')).sort((a: any, b: any) => a.data.number - b.data.number);
-  }
-  return own(await getCollection('results')).sort((a: any, b: any) => a.data.number - b.data.number);
+  return own(await getCollection('seminars')).sort((a: any, b: any) => a.data.number - b.data.number);
 })();
 
 const lectureLabel = (topic: any) => {
@@ -54,26 +51,6 @@ const lectureLabel = (topic: any) => {
   return t.lecturesHeadline(numbers, list.length > 1) + dates;
 };
 
-const resultsDates = (item: any) =>
-  item.data.groups
-    .map((group: any) => group.date)
-    .filter(Boolean)
-    .join(' · ');
-
-const groupsLabel = (item: any) => {
-  const names = item.data.groups.map((group: any) => group.name);
-  if (names.length === 0) return '';
-  return t.resultsGroupPrefix(names);
-};
-
-const passedCount = (item: any) =>
-  item.data.groups.reduce(
-    (sum: number, group: any) => sum + group.rows.filter((row: any) => row.status === 'зачёт').length,
-    0
-  );
-const totalCount = (item: any) =>
-  item.data.groups.reduce((sum: number, group: any) => sum + group.rows.length, 0);
-
 const step = (item: any) => {
   if (section === 'topics') return `${t.topicWord} ${item.data.number}${lectureLabel(item)}`;
   if (section === 'homework') {
@@ -82,26 +59,17 @@ const step = (item: any) => {
   if (section === 'labs') {
     return `${labKind(item, lang)}${item.data.due ? ` · ${t.submitBy.toLowerCase()} ${item.data.due}` : ''}`;
   }
-  if (section === 'seminars') {
-    return `${t.seminarWord} ${item.data.number}${item.data.date ? ` · ${item.data.date}` : ''}`;
-  }
-  return `${t.checkWord} ${item.data.number}${resultsDates(item) ? ` · ${resultsDates(item)}` : ''}`;
+  return `${t.seminarWord} ${item.data.number}${item.data.date ? ` · ${item.data.date}` : ''}`;
 };
 
-const subline = (item: any) => {
-  if (section === 'topics') return item.data.summary;
-  if (section === 'homework') return item.data.summary;
-  if (section === 'labs') return item.data.summary;
-  if (section === 'seminars') return item.data.summary;
-  return `${groupsLabel(item)}${t.resultsListLine(passedCount(item), totalCount(item), item.data.groups.length)}`;
-};
+// Подпись строки у всех четырёх разделов одна — краткое описание записи.
+const subline = (item: any) => item.data.summary;
 
 const page = {
   topics: { title: t.topicsTitle, lead: t.topicsLead, empty: t.topicsEmpty },
   homework: { title: t.homeworkTitle, lead: t.homeworkLead, empty: t.homeworkEmpty },
   labs: { title: t.labsTitle, lead: t.labsLead, empty: t.labsEmpty },
   seminars: { title: t.seminarsTitle, lead: t.seminarsLead, empty: t.seminarsEmpty },
-  results: { title: t.resultsWord, lead: t.resultsLead, empty: t.resultsEmpty },
 }[section];
 ---
 
@@ -112,10 +80,6 @@ const page = {
     <p class="muted">{t.courseTitle}</p>
     <h1>{page.title}</h1>
     <p class="lead">{page.lead}</p>
-
-    {/* Содержимое слота — над списком: так страница результатов ставит карточку-ссылку
-        на «Работы семестра». Разделы, которым слот не нужен, ничего не передают. */}
-    <slot />
 
     {items.length === 0 ? (
       <p class="muted">{page.empty}</p>
