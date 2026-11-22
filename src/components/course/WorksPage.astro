@@ -2,8 +2,12 @@
 /**
  * Страница «Работы семестра»: итоги проверки домашних заданий и лабораторных.
  *
- * Данные — src/data/works-20261122.json (сборка: work/students-order-20261122/build_works_json.py),
- * публично только «Фамилия И.». MDP «крестики-нолики» — бонус, в итог 200 баллов не входит.
+ * Данные — src/data/works-20261122.json (сборка: work/students-order-20261122/build_works_json.py,
+ * разбивка баллов по блокам — build_details.py там же), публично только «Фамилия И.».
+ * MDP «крестики-нолики» — бонус, в итог 200 баллов не входит.
+ *
+ * По клику на балл открывается карточка «за что баллы и что повторить»; данные
+ * для неё лежат в том же JSON и встроены в страницу одним <script id="works-details">.
  */
 import CourseNav from '../CourseNav.astro';
 import GroupTabs from '../GroupTabs.astro';
@@ -42,6 +46,30 @@ const studentWord = (count: number) => {
   const index = mod100 >= 11 && mod100 <= 14 ? 2 : mod10 === 1 ? 0 : mod10 >= 2 && mod10 <= 4 ? 1 : 2;
   return `${count} ${forms[index]}`;
 };
+
+// Данные карточки: работы (подпись и максимум) и разбивка по блокам для каждой
+// ячейки таблицы. Ключ ячейки — «номер группы-номер строки», чтобы не тащить в
+// скрипт имена студентов: имя берём из data-атрибута кнопки.
+type RowDetails = (typeof groups)[number]['rows'][number]['details'];
+type CellDetail = RowDetails[keyof RowDetails];
+
+const cardWorks: Record<string, { short: string; title: string; max: number }> = Object.fromEntries(
+  [...works, bonus].map((work) => [work.key, { short: work.short, title: work.title, max: work.max }]),
+);
+
+const cardCells: Record<string, Record<string, CellDetail>> = {};
+groups.forEach((group, groupIndex) => {
+  group.rows.forEach((row, rowIndex) => {
+    cardCells[`${groupIndex}-${rowIndex}`] = row.details;
+  });
+});
+
+// Ссылки в карточке лежат относительными путями курса: база портала и язык — здесь.
+const cardData = {
+  prefix: withBase(lang === 'en' ? 'en/' : ''),
+  works: cardWorks,
+  cells: cardCells,
+};
 ---
 
 <div class="course">
@@ -73,7 +101,7 @@ const studentWord = (count: number) => {
           ))}
         </div>
 
-        {groups.map((group) => (
+        {groups.map((group, groupIndex) => (
           <div data-task-group={group.name} hidden={group.name !== firstGroup}>
             <p class="works-count">
               {group.name} · {studentWord(group.rows.length)} · проверено {humanDate(data.updated)}
@@ -95,23 +123,45 @@ const studentWord = (count: number) => {
                   </tr>
                 </thead>
                 <tbody>
-                  {group.rows.map((row, index) => (
+                  {group.rows.map((row, rowIndex) => (
                     <tr>
-                      <td>{index + 1}</td>
+                      <td>{rowIndex + 1}</td>
                       <td>{row.student}</td>
                       {works.map((work) => (
                         <td
                           class:list={{ 'works-zero': points(row)[work.key] === 0 }}
-                          title={`${work.title} · ${work.hint}`}
+                          title={`${work.title} · ${work.hint} · за что баллы`}
                         >
-                          {cell(points(row)[work.key])}
+                          <button
+                            type="button"
+                            class="works-cell"
+                            data-cell={`${groupIndex}-${rowIndex}`}
+                            data-work={work.key}
+                            data-student={row.student}
+                            data-points={points(row)[work.key]}
+                            aria-haspopup="dialog"
+                            aria-label={`${work.title}: ${points(row)[work.key]} из ${work.max} — за что баллы`}
+                          >
+                            {cell(points(row)[work.key])}
+                          </button>
                         </td>
                       ))}
                       <td class="works-total" title={`Сумма обязательных работ · максимум ${row.max}`}>
                         {cell(row.total)}
                       </td>
                       <td class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
-                        {cell(row.bonus)}
+                        <button
+                          type="button"
+                          class="works-cell"
+                          data-cell={`${groupIndex}-${rowIndex}`}
+                          data-work={bonus.key}
+                          data-student={row.student}
+                          data-points={row.bonus}
+                          aria-haspopup="dialog"
+                          aria-label={`${bonus.title}: ${row.bonus} из ${bonus.max} — за что баллы`}
+                        >
+                          {cell(row.bonus)}
+                        </button>
                       </td>
                     </tr>
                   ))}
@@ -132,10 +182,133 @@ const studentWord = (count: number) => {
         Максимумы: каждое ДЗ — 20, лабораторная — до 100; проверено 22.11.2026, баллы рабочие.
       </p>
     </div>
+
+    <dialog id="works-card" class="works-card" aria-labelledby="works-card-title">
+      <h2 id="works-card-title" data-card-title></h2>
+
+      <table class="works-card__blocks">
+        <thead>
+          <tr>
+            <th scope="col">Блок рубрики</th>
+            <th scope="col" class="block-bar" aria-label="Прогресс"></th>
+            <th scope="col" class="block-points">Баллы</th>
+          </tr>
+        </thead>
+        <tbody data-card-blocks></tbody>
+      </table>
+
+      <div class="works-card__repeat">
+        <h3>Что повторить</h3>
+        <p data-card-repeat></p>
+      </div>
+
+      <ul class="works-card__links" data-card-links></ul>
+
+      <div class="works-card__foot">
+        <button type="button" class="works-card__close" data-card-close>Закрыть</button>
+      </div>
+    </dialog>
   </article>
 </div>
 
 <GroupTabs />
+
+{/* Данные карточки — одним куском JSON: скрипт ниже читает их и заполняет диалог. */}
+<script is:inline type="application/json" id="works-details" set:html={JSON.stringify(cardData)}></script>
+
+<script is:inline>
+  (() => {
+    const source = document.getElementById('works-details');
+    const dialog = document.getElementById('works-card');
+    if (!source || !dialog || typeof dialog.showModal !== 'function') return;
+
+    const data = JSON.parse(source.textContent || '{}');
+    const titleNode = dialog.querySelector('[data-card-title]');
+    const blocksNode = dialog.querySelector('[data-card-blocks]');
+    const repeatNode = dialog.querySelector('[data-card-repeat]');
+    const linksNode = dialog.querySelector('[data-card-links]');
+    let opener = null;
+
+    // Ячейка блока: название, полоска прогресса (сколько взято от максимума) и earned/max.
+    const blockRow = (block) => {
+      const tr = document.createElement('tr');
+
+      const name = document.createElement('td');
+      name.className = 'block-name';
+      name.textContent = block.title;
+
+      const bar = document.createElement('td');
+      bar.className = 'block-bar';
+      const track = document.createElement('span');
+      track.className = 'bar';
+      const fill = document.createElement('span');
+      fill.className = 'bar-fill';
+      const share = block.max > 0 ? Math.round((block.earned / block.max) * 100) : 0;
+      fill.style.width = share + '%';
+      track.append(fill);
+      bar.append(track);
+
+      const points = document.createElement('td');
+      points.className = 'block-points';
+      points.textContent = block.earned + '/' + block.max;
+
+      tr.append(name, bar, points);
+      return tr;
+    };
+
+    const openCard = (button) => {
+      const work = data.works[button.dataset.work];
+      const row = data.cells[button.dataset.cell];
+      const detail = row ? row[button.dataset.work] : null;
+      if (!work || !detail) return false;
+
+      const got = Number(button.dataset.points);
+      titleNode.textContent = button.dataset.student + ' · ' + work.title + ' · ' + got + ' из ' + work.max;
+      dialog.dataset.state = got > 0 ? 'scored' : 'zero';
+
+      blocksNode.replaceChildren(...detail.blocks.map(blockRow));
+      repeatNode.textContent = detail.repeat;
+      linksNode.replaceChildren(...detail.links.map((link) => {
+        const item = document.createElement('li');
+        const anchor = document.createElement('a');
+        anchor.href = data.prefix + link.href;
+        anchor.textContent = link.title;
+        item.append(anchor);
+        return item;
+      }));
+      return true;
+    };
+
+    // Один обработчик на страницу: балл в таблице — единственный источник карточки.
+    document.addEventListener('click', (event) => {
+      const target = event.target instanceof Element ? event.target : null;
+      if (!target) return;
+      if (target.closest('[data-card-close]')) {
+        dialog.close();
+        return;
+      }
+      const button = target.closest('button[data-cell]');
+      if (!button || !openCard(button)) return;
+      opener = button;
+      if (!dialog.open) dialog.showModal();
+    });
+
+    // Клик по фону закрывает карточку: <dialog> сам получает клик вне своего прямоугольника.
+    dialog.addEventListener('click', (event) => {
+      if (event.target !== dialog) return;
+      const box = dialog.getBoundingClientRect();
+      const inside = event.clientX >= box.left && event.clientX <= box.right
+        && event.clientY >= box.top && event.clientY <= box.bottom;
+      if (!inside) dialog.close();
+    });
+
+    // После закрытия возвращаем фокус на тот балл, с которого открыли (и по Esc тоже).
+    dialog.addEventListener('close', () => {
+      if (opener) opener.focus();
+      opener = null;
+    });
+  })();
+</script>
 
 <style>
   /* Таблица широкая: одиннадцать граф. Баллы — по правому краю, цифры одной ширины,
@@ -205,6 +378,196 @@ const studentWord = (count: number) => {
     border-left: 1px solid var(--line);
     font-style: italic;
     color: var(--muted);
+  }
+
+  /* Балл в ячейке — кнопка: та же цифра, но по наведению подчёркивание и курсор-рука. */
+  .works-table .works-cell {
+    appearance: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    border-bottom: 1px solid transparent;
+    border-radius: 2px;
+    background: none;
+    color: inherit;
+    font: inherit;
+    font-variant-numeric: tabular-nums;
+    line-height: inherit;
+    cursor: pointer;
+  }
+
+  .works-table .works-cell:hover,
+  .works-table .works-cell:focus-visible {
+    border-bottom-color: currentColor;
+  }
+
+  .works-table .works-cell:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+
+  /* Карточка «за что баллы»: нативный <dialog>, до 560px, прокрутка внутри. */
+  .works-card {
+    width: min(560px, calc(100vw - 24px));
+    max-height: calc(100vh - 40px);
+    margin: auto;
+    padding: 18px 20px 16px;
+    border: 1px solid var(--border, var(--line));
+    border-radius: 12px;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1.5;
+    overflow: auto;
+    box-shadow: 0 12px 40px rgba(16, 18, 22, 0.18);
+  }
+
+  .works-card::backdrop {
+    background: rgba(16, 18, 22, 0.45);
+  }
+
+  .works-card h2 {
+    margin: 0 0 14px;
+    font-family: var(--serif);
+    font-size: 19px;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  /* Блоки рубрики: название, полоска на 6px и earned/max последней графой. */
+  .works-card__blocks {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .works-card__blocks th {
+    padding: 0 0 6px;
+    border-bottom: 1px solid var(--border, var(--line));
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .works-card__blocks td {
+    padding: 7px 0;
+    border-bottom: 1px solid var(--border, var(--line));
+    vertical-align: middle;
+  }
+
+  .works-card__blocks tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .works-card__blocks .block-name {
+    padding-right: 12px;
+  }
+
+  .works-card__blocks .block-bar {
+    width: 84px;
+    padding-right: 10px;
+  }
+
+  .works-card__blocks .block-points {
+    width: 4.5em;
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+
+  /* Полоска прогресса: 6px, акцент — «сколько взято» от максимума блока. */
+  .works-card .bar {
+    display: block;
+    height: 6px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--fg) 12%, transparent);
+    overflow: hidden;
+  }
+
+  .works-card .bar-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--accent);
+  }
+
+  /* «Что повторить» — текст проверки как есть, ссылки на темы и работу ниже. */
+  .works-card__repeat {
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border, var(--line));
+  }
+
+  .works-card__repeat h3 {
+    margin: 0 0 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+  }
+
+  .works-card__repeat p {
+    margin: 0;
+  }
+
+  .works-card__links {
+    margin: 12px 0 0;
+    padding: 0;
+    list-style: none;
+    font-size: 14px;
+  }
+
+  .works-card__links li {
+    margin: 0 0 4px;
+  }
+
+  .works-card__links a {
+    color: var(--accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+  }
+
+  .works-card__foot {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 18px;
+  }
+
+  /* Кнопка «Закрыть» — та же пилюля, что кнопки групп, только светлее. */
+  .works-card .works-card__close {
+    padding: 7px 16px;
+    border: 1px solid var(--border, var(--line));
+    border-radius: 999px;
+    background: transparent;
+    color: var(--fg);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+  }
+
+  .works-card .works-card__close:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* Узкий экран: полоска схлопывается до 48px, чтобы название блока не ломалось по слогам. */
+  @media (max-width: 480px) {
+    .works-card {
+      padding: 16px 14px 14px;
+    }
+
+    .works-card__blocks .block-bar {
+      width: 48px;
+    }
   }
 
   .works-notes {
