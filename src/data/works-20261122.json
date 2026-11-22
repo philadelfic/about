@@ -45,7 +45,7 @@
     }
   ],
   "bonus": {
-    "key": "bonus",
+    "key": "mdp",
     "short": "MDP",
     "title": "Работа-MDP: крестики-нолики",
     "hint": "бонус, максимум 50, в итог не входит",
@@ -100,8 +100,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -131,8 +131,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -159,11 +159,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -188,8 +188,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -228,33 +228,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -277,15 +251,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -336,8 +332,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -395,11 +391,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -468,33 +464,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -517,15 +487,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -576,8 +568,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -635,11 +627,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -699,8 +691,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -725,43 +748,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
+                  "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -871,11 +859,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -900,8 +888,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -940,33 +928,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -998,6 +960,32 @@
                 {
                   "title": "Тема 2 · Агент и среда",
                   "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
+                },
+                {
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -1115,11 +1103,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1144,8 +1132,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -1184,33 +1172,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -1242,6 +1204,32 @@
                 {
                   "title": "Тема 2 · Агент и среда",
                   "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
+                },
+                {
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -1355,11 +1343,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1428,6 +1416,37 @@
                 }
               ]
             },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
             "lab": {
               "blocks": [
                 {
@@ -1455,41 +1474,6 @@
                 {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -1537,11 +1521,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -1571,8 +1555,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1625,11 +1609,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -1659,8 +1643,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 20,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 15,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 10,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 4,
+                  "max": 5
+                }
+              ],
+              "repeat": "Снят 1 балл из 50. Pdf похож на методичку: инструкции «начните/храните», нет ФИО и кода tic_tac_toe.py — переоформить как свой отчёт.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1685,28 +1700,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
+                  "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Работа проверена целиком — разбивки по блокам рубрики в проверке нет",
-                  "earned": 49,
-                  "max": 50
-                }
-              ],
-              "repeat": "Работа проверена целиком, разбивки по блокам рубрики в проверке нет: снято 1 из 50. Что именно поправить — уточни у преподавателя на занятии.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -1788,8 +1783,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1816,11 +1811,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1842,11 +1837,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -1876,8 +1871,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -1908,41 +1934,6 @@
                 {
                   "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -2052,11 +2043,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2078,11 +2069,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -2121,6 +2112,37 @@
                 }
               ]
             },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
             "lab": {
               "blocks": [
                 {
@@ -2148,41 +2170,6 @@
                 {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -2230,11 +2217,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -2261,11 +2248,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2292,11 +2279,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2318,11 +2305,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -2361,33 +2348,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -2410,15 +2371,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -2466,11 +2449,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -2497,11 +2480,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2528,11 +2511,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2554,11 +2537,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -2588,8 +2571,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2614,43 +2628,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
+                  "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -2732,8 +2711,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2760,11 +2739,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -2786,11 +2765,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -2829,33 +2808,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -2878,15 +2831,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -2996,11 +2971,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3057,41 +3032,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -3114,15 +3063,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -3204,8 +3175,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3232,11 +3203,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3258,11 +3229,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -3289,41 +3260,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -3346,15 +3291,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -3402,11 +3369,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -3433,11 +3400,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3464,11 +3431,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3490,11 +3457,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -3524,38 +3491,12 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -3578,15 +3519,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -3681,16 +3644,31 @@
             "l4": {
               "blocks": [
                 {
-                  "title": "Работа проверена целиком — разбивки по блокам рубрики в проверке нет",
-                  "earned": 19,
-                  "max": 20
+                  "title": "Среда и агент, s и a",
+                  "earned": 5,
+                  "max": 5
+                },
+                {
+                  "title": "Награда из трёх слагаемых",
+                  "earned": 4,
+                  "max": 5
+                },
+                {
+                  "title": "Эпизодичность, γ=0,99 и ε-жадная",
+                  "earned": 5,
+                  "max": 5
+                },
+                {
+                  "title": "Метрики улучшения и почему q нельзя строкой",
+                  "earned": 5,
+                  "max": 5
                 }
               ],
-              "repeat": "Работа проверена целиком, разбивки по блокам рубрики в проверке нет: снято 1 из 20. Что именно поправить — уточни у преподавателя на занятии.",
+              "repeat": "Снят 1 балл из 20. В п.3 формула вознаграждения описана словами, без коэффициентов — выписать r = k₁Δx + k₂·upright − k₃Σa² и пояснить каждое слагаемое.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3715,8 +3693,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -3746,8 +3724,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3772,43 +3781,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
+                  "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -3859,8 +3833,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -3890,8 +3864,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3918,11 +3892,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -3982,8 +3956,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4014,41 +4019,6 @@
                 {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -4130,8 +4100,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4158,11 +4128,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4222,38 +4192,12 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -4285,6 +4229,32 @@
                 {
                   "title": "Тема 2 · Агент и среда",
                   "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
+                },
+                {
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -4370,8 +4340,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4398,11 +4368,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4471,33 +4441,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -4520,15 +4464,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -4642,11 +4608,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4706,42 +4672,12 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
-                }
-              ]
-            },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 37,
-                  "max": 43
-                }
-              ],
-              "repeat": "Ответ 6.3 пустой — это ключевой вопрос на 2 балла (постоянный α ближе к TD, различие on-policy/off-policy). В 6.2, 7.1 и 7.2 нет чисел: выводы про σ и ε надо подкреплять медианами из своих таблиц, а в 9.2 — дописать фразу о том, что осталось непонятным.",
-              "links": [
-                {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                },
-                {
-                  "title": "Лабораторная 2 · условие и критерии",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -4773,6 +4709,36 @@
                 {
                   "title": "Тема 2 · Агент и среда",
                   "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
+                },
+                {
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 37,
+                  "max": 43
+                }
+              ],
+              "repeat": "Ответ 6.3 пустой — это ключевой вопрос на 2 балла (постоянный α ближе к TD, различие on-policy/off-policy). В 6.2, 7.1 и 7.2 нет чисел: выводы про σ и ε надо подкреплять медианами из своих таблиц, а в 9.2 — дописать фразу о том, что осталось непонятным.",
+              "links": [
+                {
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                },
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -4851,11 +4817,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4915,8 +4881,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -4946,8 +4912,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -4978,41 +4975,6 @@
                 {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -5091,11 +5053,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5122,11 +5084,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5148,11 +5110,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -5191,33 +5153,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 14,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 43,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 43,
-                  "max": 43
-                }
-              ],
-              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -5245,10 +5181,32 @@
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 14,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 43,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 43,
+                  "max": 43
+                }
+              ],
+              "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -5334,8 +5292,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5362,11 +5320,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5388,11 +5346,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -5419,11 +5377,42 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5454,41 +5443,6 @@
                 {
                   "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -5536,11 +5490,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -5567,11 +5521,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5598,11 +5552,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5624,11 +5578,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -5655,11 +5609,42 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5690,41 +5675,6 @@
                 {
                   "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -5772,11 +5722,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -5803,11 +5753,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5834,11 +5784,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5860,11 +5810,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -5891,11 +5841,42 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -5926,41 +5907,6 @@
                 {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -6008,11 +5954,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -6039,11 +5985,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6070,11 +6016,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6096,11 +6042,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -6127,11 +6073,42 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6162,41 +6139,6 @@
                 {
                   "title": "Семинар 3 · Многорукий бандит",
                   "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -6278,8 +6220,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6336,11 +6278,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -6367,41 +6309,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -6424,15 +6340,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -6483,8 +6421,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -6514,8 +6452,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6542,11 +6480,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6568,11 +6506,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -6599,41 +6537,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -6656,15 +6568,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -6774,11 +6708,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -6800,11 +6734,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -6831,41 +6765,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -6888,15 +6796,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -6944,11 +6874,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -6975,11 +6905,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7006,11 +6936,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7067,41 +6997,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -7124,15 +7028,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -7211,11 +7137,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7242,11 +7168,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7268,11 +7194,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -7299,41 +7225,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -7356,15 +7256,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -7417,11 +7339,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -7448,11 +7370,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7479,11 +7401,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7505,11 +7427,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -7539,8 +7461,39 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7565,43 +7518,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
+                  "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -7649,11 +7567,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -7680,11 +7598,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7711,11 +7629,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7737,11 +7655,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -7768,11 +7686,42 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
+                }
+              ]
+            },
+            "mdp": {
+              "blocks": [
+                {
+                  "title": "Постановка: S, A, P, R, γ",
+                  "earned": 0,
+                  "max": 20
+                },
+                {
+                  "title": "Корректность модели",
+                  "earned": 0,
+                  "max": 15
+                },
+                {
+                  "title": "Выводы и обоснования",
+                  "earned": 0,
+                  "max": 10
+                },
+                {
+                  "title": "Оформление и полнота",
+                  "earned": 0,
+                  "max": 5
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7797,43 +7746,8 @@
               "repeat": "Все блоки рубрики закрыты полностью — повторять нечего.",
               "links": [
                 {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
+                  "title": "Лабораторная 2 · условие и критерии",
                   "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
-              "blocks": [
-                {
-                  "title": "Постановка: S, A, P, R, γ",
-                  "earned": 0,
-                  "max": 20
-                },
-                {
-                  "title": "Корректность модели",
-                  "earned": 0,
-                  "max": 15
-                },
-                {
-                  "title": "Выводы и обоснования",
-                  "earned": 0,
-                  "max": 10
-                },
-                {
-                  "title": "Оформление и полнота",
-                  "earned": 0,
-                  "max": 5
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Тема 3 · Марковский процесс",
-                  "href": "students/mai/rl/topics/03-markovskij-process/"
-                },
-                {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             }
@@ -7881,11 +7795,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -7912,11 +7826,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7943,11 +7857,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -7969,11 +7883,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -8012,33 +7926,7 @@
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -8061,15 +7949,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
@@ -8117,11 +8027,11 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 2",
-                  "href": "students/mai/rl/homework/01-process-8-shagov/"
+                  "title": "Тема 2 · Агент и среда",
+                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
                 }
               ]
             },
@@ -8148,11 +8058,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 3",
-                  "href": "students/mai/rl/homework/02-model-sredy/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -8179,11 +8089,11 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по лекции 4",
-                  "href": "students/mai/rl/homework/03-skelet-v-simulyatore/"
+                  "title": "Тема 3 · Марковский процесс",
+                  "href": "students/mai/rl/topics/03-markovskij-process/"
                 }
               ]
             },
@@ -8205,11 +8115,11 @@
                   "max": 4
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 2",
-                  "href": "students/mai/rl/homework/04-sobrat-rabotu-iz-blokov/"
+                  "title": "Семинар 2 · Из лекций в код",
+                  "href": "students/mai/rl/seminars/02-iz-lekcij-v-kod/"
                 }
               ]
             },
@@ -8236,41 +8146,15 @@
                   "max": 2
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
-                  "title": "Домашнее задание по семинару 3",
-                  "href": "students/mai/rl/homework/06-domashnee-zadanie-po-seminaru-3/"
+                  "title": "Семинар 3 · Многорукий бандит",
+                  "href": "students/mai/rl/seminars/03-mnogorukij-bandit/"
                 }
               ]
             },
-            "lab": {
-              "blocks": [
-                {
-                  "title": "Код: check.py и прогон",
-                  "earned": 0,
-                  "max": 14
-                },
-                {
-                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
-                  "earned": 0,
-                  "max": 43
-                },
-                {
-                  "title": "Двадцать ответов на вопросы",
-                  "earned": 0,
-                  "max": 43
-                }
-              ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
-              "links": [
-                {
-                  "title": "Лабораторная 2: многорукий бандит в движущемся мире",
-                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
-                }
-              ]
-            },
-            "bonus": {
+            "mdp": {
               "blocks": [
                 {
                   "title": "Постановка: S, A, P, R, γ",
@@ -8293,15 +8177,37 @@
                   "max": 5
                 }
               ],
-              "repeat": "Работа не сдана: файлов работы нет. Открой условие по ссылке, собери работу и сдай её до срока.",
+              "repeat": "Работа не сдана.",
               "links": [
                 {
                   "title": "Тема 3 · Марковский процесс",
                   "href": "students/mai/rl/topics/03-markovskij-process/"
+                }
+              ]
+            },
+            "lab": {
+              "blocks": [
+                {
+                  "title": "Код: check.py и прогон",
+                  "earned": 0,
+                  "max": 14
                 },
                 {
-                  "title": "Тема 2 · Агент и среда",
-                  "href": "students/mai/rl/topics/02-agent-i-sreda/"
+                  "title": "Пять таблиц: медианы, IQR, своё окно сидов",
+                  "earned": 0,
+                  "max": 43
+                },
+                {
+                  "title": "Двадцать ответов на вопросы",
+                  "earned": 0,
+                  "max": 43
+                }
+              ],
+              "repeat": "Работа не сдана.",
+              "links": [
+                {
+                  "title": "Лабораторная 2 · условие и критерии",
+                  "href": "students/mai/rl/labs/02-laboratornaya-2/"
                 }
               ]
             }
