@@ -10,7 +10,6 @@
  * для неё лежат в том же JSON и встроены в страницу одним <script id="works-details">.
  */
 import CourseNav from '../CourseNav.astro';
-import GroupTabs from '../GroupTabs.astro';
 import { withBase } from '../../data/site';
 import { chrome } from '../../data/course-i18n';
 import type { Lang } from '../../data/i18n';
@@ -28,7 +27,6 @@ const t = chrome(lang);
 const works = data.works;
 const bonus = data.bonus;
 const groups = data.groups;
-const firstGroup = groups[0]?.name;
 const humanDate = (value: string) => value.split('-').reverse().join('.');
 
 // 0 баллов — это «не сделано»: в таблице ставим тире, чтобы глаз читал пустоту, а не цифру.
@@ -64,6 +62,37 @@ groups.forEach((group, groupIndex) => {
   });
 });
 
+// Один общий список: группы остаются только в данных, в таблицу идёт короткая запись
+// «203», «202», а если группы нет — тире.
+const groupLabel = (name: string) => name.match(/\d{3}/)?.[0] ?? '—';
+
+const tableRows = groups.flatMap((group, groupIndex) =>
+  group.rows.map((row, rowIndex) => ({
+    row,
+    // Ключ ячейки — «номер группы-номер строки»: по нему карточка ищет разбивку в cardCells.
+    key: `${groupIndex}-${rowIndex}`,
+    group: groupLabel(group.name),
+  })),
+);
+
+// Порядок общего списка: «Итого» по убыванию, затем бонус по убыванию, затем фамилия.
+const surname = (student: string) => student.split(' ')[0];
+const sortedRows = [...tableRows].sort(
+  (a, b) =>
+    b.row.total - a.row.total ||
+    b.row.bonus - a.row.bonus ||
+    surname(a.row.student).localeCompare(surname(b.row.student), 'ru'),
+);
+
+const maxTotal = tableRows[0]?.row.max ?? 200;
+
+// «Сдано» — непустые ячейки таблицы: обязательные работы и бонус MDP.
+const submittedWorks = sortedRows.reduce(
+  (sum, { row }) =>
+    sum + works.filter((work) => points(row)[work.key] > 0).length + (row.bonus > 0 ? 1 : 0),
+  0,
+);
+
 // Ссылки в карточке лежат относительными путями курса: база портала и язык — здесь.
 const cardData = {
   prefix: withBase(lang === 'en' ? 'en/' : ''),
@@ -84,93 +113,78 @@ const cardData = {
       «крестики-нолики» — отдельный бонус.
     </p>
 
-    {groups.length === 0 ? (
+    {sortedRows.length === 0 ? (
       <p class="muted">Работы ещё не проверены.</p>
     ) : (
-      <div data-task-switch>
-        <div class="group-switch group-switch--top" role="tablist" aria-label={t.navGroup}>
-          {groups.map((group) => (
-            <button
-              type="button"
-              role="tab"
-              data-group={group.name}
-              aria-selected={group.name === firstGroup ? 'true' : 'false'}
-            >
-              {group.name}
-            </button>
-          ))}
-        </div>
+      <>
+        <p class="works-count">
+          {studentWord(sortedRows.length)}, из них {submittedWorks} работ сдано · проверено {humanDate(data.updated)}
+        </p>
 
-        {groups.map((group, groupIndex) => (
-          <div data-task-group={group.name} hidden={group.name !== firstGroup}>
-            <p class="works-count">
-              {group.name} · {studentWord(group.rows.length)} · проверено {humanDate(data.updated)}
-            </p>
-
-            <div class="works-scroll">
-              <table class="results-table works-table">
-                <thead>
-                  <tr>
-                    <th title="Номер строки">№</th>
-                    <th>Студент</th>
-                    {works.map((work) => (
-                      <th title={`${work.title} · ${work.hint}`}>{work.short}</th>
-                    ))}
-                    <th title={`Сумма обязательных работ · максимум ${group.rows[0]?.max ?? 200}`}>Итого</th>
-                    <th class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
-                      Бонус {bonus.short}
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {group.rows.map((row, rowIndex) => (
-                    <tr>
-                      <td>{rowIndex + 1}</td>
-                      <td>{row.student}</td>
-                      {works.map((work) => (
-                        <td
-                          class:list={{ 'works-zero': points(row)[work.key] === 0 }}
-                          title={`${work.title} · ${work.hint} · за что баллы`}
-                        >
-                          <button
-                            type="button"
-                            class="works-cell"
-                            data-cell={`${groupIndex}-${rowIndex}`}
-                            data-work={work.key}
-                            data-student={row.student}
-                            data-points={points(row)[work.key]}
-                            aria-haspopup="dialog"
-                            aria-label={`${work.title}: ${points(row)[work.key]} из ${work.max} — за что баллы`}
-                          >
-                            {cell(points(row)[work.key])}
-                          </button>
-                        </td>
-                      ))}
-                      <td class="works-total" title={`Сумма обязательных работ · максимум ${row.max}`}>
-                        {cell(row.total)}
-                      </td>
-                      <td class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
-                        <button
-                          type="button"
-                          class="works-cell"
-                          data-cell={`${groupIndex}-${rowIndex}`}
-                          data-work={bonus.key}
-                          data-student={row.student}
-                          data-points={row.bonus}
-                          aria-haspopup="dialog"
-                          aria-label={`${bonus.title}: ${row.bonus} из ${bonus.max} — за что баллы`}
-                        >
-                          {cell(row.bonus)}
-                        </button>
-                      </td>
-                    </tr>
+        <div class="works-scroll">
+          <table class="results-table works-table">
+            <thead>
+              <tr>
+                <th title="Номер строки">№</th>
+                <th>Студент</th>
+                <th class="works-group" title={t.navGroup}>Группа</th>
+                {works.map((work) => (
+                  <th title={`${work.title} · ${work.hint}`}>{work.short}</th>
+                ))}
+                <th title={`Сумма обязательных работ · максимум ${maxTotal}`}>Итого</th>
+                <th class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
+                  Бонус {bonus.short}
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              {sortedRows.map(({ row, key, group }, index) => (
+                <tr>
+                  <td>{index + 1}</td>
+                  <td>{row.student}</td>
+                  <td class="works-group">{group}</td>
+                  {works.map((work) => (
+                    <td
+                      class:list={{ 'works-zero': points(row)[work.key] === 0 }}
+                      title={`${work.title} · ${work.hint} · за что баллы`}
+                    >
+                      <button
+                        type="button"
+                        class="works-cell"
+                        data-cell={key}
+                        data-work={work.key}
+                        data-student={row.student}
+                        data-points={points(row)[work.key]}
+                        aria-haspopup="dialog"
+                        aria-label={`${work.title}: ${points(row)[work.key]} из ${work.max} — за что баллы`}
+                      >
+                        {cell(points(row)[work.key])}
+                      </button>
+                    </td>
                   ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        ))}
-      </div>
+                  <td class="works-total" title={`Сумма обязательных работ · максимум ${row.max}`}>
+                    {cell(row.total)}
+                  </td>
+                  <td class="works-bonus" title={`${bonus.title} · ${bonus.hint}`}>
+                    <button
+                      type="button"
+                      class="works-cell"
+                      data-cell={key}
+                      data-work={bonus.key}
+                      data-student={row.student}
+                      data-points={row.bonus}
+                      aria-haspopup="dialog"
+                      aria-label={`${bonus.title}: ${row.bonus} из ${bonus.max} — за что баллы`}
+                    >
+                      {cell(row.bonus)}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </>
     )}
 
     <div class="works-notes">
@@ -211,7 +225,6 @@ const cardData = {
   </article>
 </div>
 
-<GroupTabs />
 
 {/* Данные карточки — одним куском JSON: скрипт ниже читает их и заполняет диалог. */}
 <script is:inline type="application/json" id="works-details" set:html={JSON.stringify(cardData)}></script>
@@ -358,10 +371,17 @@ const cardData = {
     text-align: left;
   }
 
-  /* Графы работ — по содержимому: глобальные ширины таблицы результатов здесь малы. */
+  /* Третья графа (группа) — по содержимому: глобальные ширины таблицы результатов здесь малы. */
   .works-table th:nth-child(3),
   .works-table td:nth-child(3) {
     width: auto;
+  }
+
+  /* Графа группы: короткая запись «203», слева и приглушённо. */
+  .works-table .works-group {
+    min-width: 4.5em;
+    text-align: left;
+    color: var(--muted);
   }
 
   .works-table .works-total {
